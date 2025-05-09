@@ -10,6 +10,22 @@ declare global {
 
 const props = defineProps<{
   scoreData?: ArrayBuffer | null
+  file?: string
+  tracks?: number[]
+  tex?: boolean
+  player?: boolean
+  width?: number
+  engine?: 'svg' | 'skia'
+  settings?: Record<string, any>
+}>();
+
+const emit = defineEmits<{
+  (e: 'scoreLoaded'): void
+  (e: 'renderStarted'): void
+  (e: 'renderFinished'): void
+  (e: 'partialRenderFinished'): void
+  (e: 'playerStateChanged', state: any): void
+  (e: 'error', error: Error): void
 }>();
 
 const alphaTabRef = ref<HTMLDivElement>();
@@ -23,10 +39,11 @@ onMounted(() => {
 
   loading.value = true;
   
-  api = new window.alphaTab.AlphaTabApi(alphaTabRef.value, {
+  const baseSettings = {
     core: {
       fontDirectory: '/fonts/',
       logLevel: window.alphaTab.LogLevel.Warning,
+      engine: props.engine || 'svg',
       fontLoader: async (fontName: string) => {
         try {
           // 首先尝试加载本地 .otf 字体
@@ -59,16 +76,43 @@ onMounted(() => {
       }
     },
     display: {
-      staveProfile: 'default'
-    }
-  });
+      staveProfile: 'default',
+      width: props.width
+    },
+    player: {
+      enablePlayer: props.player || false
+    },
+    ...(props.settings || {})
+  };
+
+  // 合并用户自定义设置
+  api = new window.alphaTab.AlphaTabApi(alphaTabRef.value, baseSettings);
 
   // 添加事件监听
+  api.scoreLoaded.on(() => {
+    emit('scoreLoaded');
+  });
+  
   api.renderStarted.on(() => {
     loading.value = true;
+    emit('renderStarted');
   });
+  
   api.renderFinished.on(() => {
     loading.value = false;
+    emit('renderFinished');
+  });
+  
+  api.partialRenderFinished.on(() => {
+    emit('partialRenderFinished');
+  });
+  
+  api.playerStateChanged.on((state: any) => {
+    emit('playerStateChanged', state);
+  });
+  
+  api.error.on((error: Error) => {
+    emit('error', error);
   });
 
   // 监听属性变化
@@ -76,7 +120,47 @@ onMounted(() => {
     if (newData) {
       api.load(newData);
     }
+  });
+
+  watch(() => props.file, (newFile) => {
+    if (newFile) {
+      if (props.tex) {
+        api.loadTex(newFile);
+      } else {
+        fetch(newFile)
+          .then(res => res.arrayBuffer())
+          .then(data => api.load(data))
+          .catch(err => emit('error', err));
+      }
+    }
   }, { immediate: true });
+
+  watch(() => props.tracks, (newTracks) => {
+    if (newTracks && api) {
+      api.renderTracks(newTracks);
+    }
+  });
+
+  watch(() => props.width, (newWidth) => {
+    if (newWidth && api) {
+      api.settings.display.width = newWidth;
+      api.updateSettings();
+    }
+  });
+
+  watch(() => props.engine, (newEngine) => {
+    if (newEngine && api) {
+      api.settings.core.engine = newEngine;
+      api.updateSettings();
+    }
+  });
+
+  watch(() => props.player, (newPlayer) => {
+    if (api) {
+      api.settings.player.enablePlayer = newPlayer || false;
+      api.updateSettings();
+    }
+  });
 });
 
 onUnmounted(() => {
@@ -101,7 +185,9 @@ onUnmounted(() => {
   min-height: 200px;
   width: 100%;
   margin: 0 auto;
-  padding: 20px;
+  padding: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .loading {
@@ -109,33 +195,67 @@ onUnmounted(() => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  padding: 10px;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 4px;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-size: 0.875rem;
+  z-index: 10;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
 }
 
 .font-loading,
 .font-error {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 8px;
-  border-radius: 4px;
-  font-size: 12px;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  z-index: 10;
+  opacity: 0;
+  animation: fadeIn 0.3s ease forwards;
 }
 
 .font-loading {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .font-error {
-  background: rgba(255, 200, 200, 0.8);
+  background: rgba(255, 200, 200, 0.9);
   color: #d32f2f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .alphatab-viewport {
   width: 100%;
-  min-width: 600px;
   height: auto;
+  transition: all 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .alphatab-container {
+    padding: 0.5rem;
+  }
+  
+  .alphatab-viewport {
+    min-width: unset;
+    width: calc(100vw - 1rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .font-loading,
+  .font-error {
+    font-size: 0.625rem;
+    padding: 0.25rem 0.5rem;
+  }
 }
 </style>
