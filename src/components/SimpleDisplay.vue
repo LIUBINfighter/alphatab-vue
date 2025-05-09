@@ -25,7 +25,7 @@ onMounted(() => {
   
   api = new window.alphaTab.AlphaTabApi(alphaTabRef.value, {
     core: {
-      fontDirectory: '/fonts',
+      fontDirectory: '/fonts/',
       logLevel: window.alphaTab.LogLevel.Warning,
       fontLoader: async (fontName: string) => {
         try {
