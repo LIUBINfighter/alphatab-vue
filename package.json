@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
+    "setup-fonts": "node setup-fonts.js",
+    "dev": "npm run setup-fonts && vite",
+    "build": "npm run setup-fonts && vue-tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

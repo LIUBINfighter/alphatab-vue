@@ -56,35 +56,47 @@ const initializeAlphaTab = () => {
   
   // 合并默认设置与用户设置
   const settings = new alphaTab.Settings();
+  
+  // 配置自定义字体路径
+  settings.core.fontDirectory = '/fonts/';
+  
+  // 合并用户设置
   Object.assign(settings, props.settings);
   
-  // 创建API实例
-  api = new alphaTab.AlphaTabApi(alphaTabContainer.value, settings);
+  console.log('初始化AlphaTab，字体路径:', settings.core.fontDirectory);
   
-  // 设置事件监听器
-  api.scoreLoaded.on((score) => {
-    loading.value = false;
-    emit('scoreLoaded', score);
-    emit('loaded', score);
-  });
-  
-  api.renderStarted.on(() => {
-    emit('renderStarted');
-  });
-  
-  api.renderFinished.on(() => {
-    emit('renderFinished');
-    emit('rendered');
-  });
+  try {
+    // 创建API实例
+    api = new alphaTab.AlphaTabApi(alphaTabContainer.value, settings);
+    
+    // 设置事件监听器
+    api.scoreLoaded.on((score) => {
+      loading.value = false;
+      emit('scoreLoaded', score);
+      emit('loaded', score);
+    });
+    
+    api.renderStarted.on(() => {
+      emit('renderStarted');
+    });
+    
+    api.renderFinished.on(() => {
+      emit('renderFinished');
+      emit('rendered');
+    });
 
-  // 设置初始缩放
-  if (props.initialZoom !== 1.0) {
-    api.settings.display.scale = props.initialZoom;
-  }
-  
-  // 加载文件（如果有）
-  if (props.file) {
-    loadFile();
+    // 设置初始缩放
+    if (props.initialZoom !== 1.0) {
+      api.settings.display.scale = props.initialZoom;
+    }
+    
+    // 加载文件（如果有）
+    if (props.file) {
+      loadFile();
+    }
+  } catch (error) {
+    console.error('初始化AlphaTab失败:', error);
+    emit('error', '初始化渲染引擎失败，请检查控制台');
   }
 };
 
