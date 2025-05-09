@@ -17,7 +17,8 @@ const playerState = reactive({
   playbackSpeed: 1,
   isLooping: false,
   metronomeEnabled: false,
-  countInEnabled: false
+  countInEnabled: false,
+  isInitialized: false // 添加初始化状态标记
 })
 
 // 显示设置
@@ -43,29 +44,59 @@ const formatDuration = (milliseconds: number) => {
 // API引用
 let api: any = null
 
-onMounted(() => {
-  if (scoreRef.value) {
-    api = new alphaTab.AlphaTabApi(scoreRef.value, {
-      player: {
-        enablePlayer: true,
-        soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@alpha/dist/soundfont/sonivox.sf2',
-        scrollElement: viewportRef.value,
-        scrollOffsetX: -10,
-        scrollMode: alphaTab.ScrollMode.Continuous,
-        scrollSpeed: 300
-      },
-      display: {
-        scale: displaySettings.scale,
-        layoutMode: getLayoutMode(displaySettings.layoutMode)
-      }
-    })
+// 初始化 AlphaTab
+const initializeAlphaTab = () => {
+  if (scoreRef.value && !playerState.isInitialized) {
+    playerState.isInitialized = true
     
-    // 加载文件
-    api.load('../assets/scores/东方妖妖梦 - 幽雅に咲かせ、墨染の桜　～ Border of Life(Drop D).gp5')
-    
-    // 设置事件处理
-    setupEvents()
+    try {
+      api = new alphaTab.AlphaTabApi(scoreRef.value, {
+        player: {
+          enablePlayer: true,
+          soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@alpha/dist/soundfont/sonivox.sf2',
+          scrollElement: viewportRef.value,
+          scrollOffsetX: -10,
+          scrollMode: alphaTab.ScrollMode.Continuous,
+          scrollSpeed: 300
+        },
+        display: {
+          scale: displaySettings.scale,
+          layoutMode: getLayoutMode(displaySettings.layoutMode),
+          resources: {
+            // 使用CDN字体文件，避免本地字体加载问题
+            bravuraFontFamily: 'Bravura',
+            bravuraUrl: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@alpha/dist/font/Bravura.woff'
+          }
+        }
+      })
+      
+      // 设置错误处理
+      api.renderer.renderFinished.on(() => {
+        console.log('渲染完成');
+      });
+      
+      api.renderer.error.on((e) => {
+        console.error('渲染错误', e);
+      });
+      
+      // 修改文件加载路径，使用public文件夹路径
+      api.load('/scores/吉他与孤独与蓝色星球.gpx').catch(error => {
+        console.error('加载曲谱失败:', error);
+        alert('加载曲谱失败，请检查文件路径是否正确。错误: ' + error.message);
+      });
+      
+      // 设置事件处理
+      setupEvents()
+    } catch (error) {
+      console.error('初始化AlphaTab失败:', error);
+      alert('初始化播放器失败: ' + error);
+      playerState.isInitialized = false; // 重置状态以便用户可以重试
+    }
   }
+}
+
+onMounted(() => {
+  // 不要自动初始化，等待用户交互
 })
 
 // 设置AlphaTab事件
@@ -113,6 +144,12 @@ const getLayoutMode = (mode: string) => {
 
 // 控制方法
 const playPause = () => {
+  // 确保在用户交互后初始化
+  if (!playerState.isInitialized) {
+    initializeAlphaTab()
+    return
+  }
+  
   if (!playerState.isReady) return
   api.playPause()
 }
@@ -179,6 +216,13 @@ const print = () => {
 
 <template>
   <div class="player">
+    <div v-if="!playerState.isInitialized" class="initialization-notice">
+      <button class="btn init-button" @click="initializeAlphaTab">
+        加载曲谱
+      </button>
+      <p>点击按钮加载曲谱并初始化播放器</p>
+      <p class="small-text">注意：确保文件 "/public/scores/吉他与孤独与蓝色星球.gpx" 存在</p>
+    </div>
     <div class="at-wrap">
       <!-- 控制栏 -->
       <div class="at-controls">
@@ -370,5 +414,27 @@ select {
   padding: 4px;
   border-radius: 4px;
   border: 1px solid #ddd;
+}
+
+.initialization-notice {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.init-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  margin-bottom: 10px;
+}
+
+.small-text {
+  font-size: 12px;
+  color: #666;
 }
 </style>
