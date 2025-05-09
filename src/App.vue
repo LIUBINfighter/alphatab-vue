@@ -21,11 +21,16 @@ loadExampleScore();
 </script>
 
 <template>
-  <div>
+  <div class="app-container">
     <SimpleDisplay :score-data="scoreFile"/>
-    <!-- 书写传参等 -->
   </div>
 </template>
 
 <style scoped>
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
 </style>
