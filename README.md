@@ -42,3 +42,7 @@
 1. 安装依赖：`npm install`
 2. 开发模式：`npm run dev`
 3. 构建项目：`npm run build`
+
+## 问题日志
+
+1. 远程加载字体不靠谱，记得将对应字体文件 `Bravura.otf` `Bravura.woff`复制到 `Public/fonts` 目录下。
