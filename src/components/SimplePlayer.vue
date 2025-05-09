@@ -179,8 +179,6 @@ const print = () => {
 
 <template>
   <div class="player">
-    <h1>AlphatabPlayer</h1>
-    
     <div class="at-wrap">
       <!-- 控制栏 -->
       <div class="at-controls">
