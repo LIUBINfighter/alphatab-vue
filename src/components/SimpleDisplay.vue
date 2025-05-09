@@ -23,40 +23,39 @@ onMounted(() => {
 
   loading.value = true;
   
-  // 初始化 AlphaTab，添加字体加载错误处理
   api = new window.alphaTab.AlphaTabApi(alphaTabRef.value, {
     core: {
       fontDirectory: '/fonts',
       logLevel: window.alphaTab.LogLevel.Warning,
-      // 添加字体加载错误处理和CDN备选
-      fontLoader: (fontName: string) => {
-        return new Promise((resolve, reject) => {
-          // 首先尝试加载本地字体
-          fetch(`/fonts/${fontName}.otf`)
-            .then(response => {
-              if (!response.ok) throw new Error('本地字体加载失败');
-              return response.arrayBuffer();
-            })
-            .then(resolve)
-            .catch(() => {
-              console.warn(`本地字体 ${fontName} 加载失败，尝试使用CDN`);
-              // 回退到CDN
-              fetch(`https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/font/${fontName}.otf`)
-                .then(response => {
-                  if (!response.ok) throw new Error('CDN字体加载失败');
-                  return response.arrayBuffer();
-                })
-                .then(resolve)
-                .catch(err => {
-                  console.error('字体加载失败:', err);
-                  fontError.value = true;
-                  reject(err);
-                });
-            })
-            .finally(() => {
-              fontLoading.value = false;
-            });
-        });
+      fontLoader: async (fontName: string) => {
+        try {
+          // 首先尝试加载本地 .otf 字体
+          const otfResponse = await fetch(`/fonts/${fontName}.otf`);
+          if (otfResponse.ok) {
+            fontLoading.value = false;
+            return await otfResponse.arrayBuffer();
+          }
+
+          // 如果 .otf 失败，尝试加载本地 .woff 字体
+          const woffResponse = await fetch(`/fonts/${fontName}.woff`);
+          if (woffResponse.ok) {
+            fontLoading.value = false;
+            return await woffResponse.arrayBuffer();
+          }
+
+          // 如果本地字体都失败，回退到 CDN
+          console.warn(`本地字体 ${fontName} 加载失败，尝试使用CDN`);
+          const cdnResponse = await fetch(`https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/font/${fontName}.otf`);
+          if (!cdnResponse.ok) throw new Error('CDN字体加载失败');
+          
+          fontLoading.value = false;
+          return await cdnResponse.arrayBuffer();
+        } catch (err) {
+          console.error('字体加载失败:', err);
+          fontError.value = true;
+          fontLoading.value = false;
+          throw err;
+        }
       }
     },
     display: {
