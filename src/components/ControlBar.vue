@@ -1,12 +1,8 @@
 <template>
   <div class="at-controls">
-    <div class="at-controls-left">
-      <div class="at-song-info">
-        <span class="at-song-title"></span> -
-        <span class="at-song-artist"></span>
-      </div>
-    </div>
+    <ShortInfo />
     <div class="at-controls-right">
+      <TimePosition />
       <StopButton />
       <PlayPauseButton />
       <SpeedControl />
@@ -23,6 +19,8 @@
 
 <script setup>
 import { inject } from 'vue'
+import ShortInfo from './controls/ShortInfo.vue'
+import TimePosition from './controls/TimePosition.vue'
 import CountInButton from './controls/CountInButton.vue'
 import MetronomeButton from './controls/MetronomeButton.vue'
 import LoopButton from './controls/LoopButton.vue'
