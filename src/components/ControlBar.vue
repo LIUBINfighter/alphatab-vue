@@ -7,10 +7,14 @@
       </div>
     </div>
     <div class="at-controls-right">
+      <StopButton />
+      <PlayPauseButton />
+      <!-- <SpeedControl /> -->
       <CountInButton />
       <MetronomeButton />
       <LoopButton />
       <PrintButton />
+      <DownloadButton />
       <ZoomControl />
       <LayoutControl />
     </div>
@@ -25,6 +29,10 @@ import LoopButton from './controls/LoopButton.vue'
 import PrintButton from './controls/PrintButton.vue'
 import ZoomControl from './controls/ZoomControl.vue'
 import LayoutControl from './controls/LayoutControl.vue'
+import PlayPauseButton from './controls/PlayPauseButton.vue'
+import StopButton from './controls/StopButton.vue'
+// import SpeedControl from './controls/SpeedControl.vue'
+import DownloadButton from './controls/DownloadButton.vue'
 
 // 确保 alphaTabApi 已被提供
 const api = inject('alphaTabApi')
@@ -38,12 +46,18 @@ const api = inject('alphaTabApi')
   background: #436d9d;
   color: #fff;
 }
+
 .at-controls>div {
   display: flex;
   justify-content: flex-start;
   align-content: center;
   align-items: center;
 }
+
+.at-controls-center {
+  flex: 0 1 auto;
+}
+
 .at-controls>div>* {
   display: flex;
   text-align: center;
@@ -53,6 +67,7 @@ const api = inject('alphaTabApi')
   padding: 4px;
   margin: 0 3px;
 }
+
 .at-controls .btn {
   color: #fff;
   border-radius: 0;
@@ -61,13 +76,16 @@ const api = inject('alphaTabApi')
   height: 40px;
   font-size: 16px;
 }
+
 .at-controls a.active {
   background: #5588c7;
   text-decoration: none;
 }
+
 .at-controls .btn i {
   vertical-align: top;
 }
+
 .at-controls select {
   -moz-appearance: none;
   -webkit-appearance: none;
@@ -85,6 +103,7 @@ const api = inject('alphaTabApi')
   -moz-text-align-last: center;
   cursor: pointer;
 }
+
 .at-song-title {
   font-weight: bold;
 }
