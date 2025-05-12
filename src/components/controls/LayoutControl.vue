@@ -1,133 +1,78 @@
 <template>
-  <div class="at-layout-control" ref="layoutControlRef">
-    <div class="btn-group">
-      <button 
-        type="button" 
-        class="btn layout-btn" 
-        @click="toggleDropdown"
-      >
-        <LayoutGrid class="icon" />
-        <span class="at-layout-label">{{ layoutLabels[layout] }}</span>
-      </button>
-      <div class="layout-dropdown" v-if="isOpen" @click.stop>
-        <div 
-          v-for="(label, value) in layoutLabels" 
-          :key="value" 
-          class="layout-item"
-          @click="selectLayout(value)"
-        >
-          {{ label }}
-        </div>
-      </div>
-    </div>
+  <div class="at-control">
+    <LayoutGrid class="control-icon" />
+    <select
+      class="control-select"
+      v-model="layout"
+      @change="selectLayout(layout)"
+    >
+      <option v-for="(label, value) in layoutLabels" :key="value" :value="value">
+        {{ label }}
+      </option>
+    </select>
   </div>
 </template>
 
 <script setup>
-import { ref, inject, onMounted, onUnmounted } from 'vue'
+import { ref, inject, onMounted } from 'vue'
 import { LayoutGrid } from 'lucide-vue-next'
 
 const alphaTabApi = inject('alphaTabApi')
-const layoutControlRef = ref(null)
-const isOpen = ref(false)
 const layout = ref('page')
 const layoutLabels = {
   'horizontal': 'Horizontal',
   'page': 'Page'
 }
 
-// 切换下拉菜单
-const toggleDropdown = () => {
-  isOpen.value = !isOpen.value
-}
-
-// 选择布局
+// 简化选择布局函数
 const selectLayout = (selectedLayout) => {
   if (alphaTabApi.value) {
-    layout.value = selectedLayout
-    switch (selectedLayout) {
-      case 'horizontal':
-        alphaTabApi.value.settings.display.layoutMode = alphaTab.LayoutMode.Horizontal
-        break
-      case 'page':
-        alphaTabApi.value.settings.display.layoutMode = alphaTab.LayoutMode.Page
-        break
-    }
+    alphaTabApi.value.settings.display.layoutMode = 
+      selectedLayout === 'horizontal' ? alphaTab.LayoutMode.Horizontal : alphaTab.LayoutMode.Page
     alphaTabApi.value.updateSettings()
     alphaTabApi.value.render()
-    isOpen.value = false
   }
 }
 
-// 添加全局点击事件以关闭下拉菜单
-const handleClickOutside = (event) => {
-  if (layoutControlRef.value && !layoutControlRef.value.contains(event.target)) {
-    isOpen.value = false
-  }
-}
-
-// 当组件挂载后同步初始布局模式
 onMounted(() => {
-  // 添加点击外部关闭下拉菜单的事件监听
-  document.addEventListener('click', handleClickOutside)
-  
   if (alphaTabApi.value && alphaTabApi.value.settings.display.layoutMode) {
     layout.value = alphaTabApi.value.settings.display.layoutMode === alphaTab.LayoutMode.Horizontal 
       ? 'horizontal' 
       : 'page'
   }
 })
-
-onUnmounted(() => {
-  // 移除事件监听器
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>
 
 <style scoped>
-.at-layout-control {
+.at-control {
   position: relative;
-}
-
-.layout-btn {
-  color: #fff;
-  background: transparent;
-  border: none;
-  height: 40px;
-  padding: 4px 10px;
   display: flex;
   align-items: center;
+  gap: 4px;
 }
 
-.layout-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.control-icon {
+  width: 20px;
+  height: 20px;
+  color: #fff;
 }
 
-.at-layout-label {
-  margin-left: 5px;
-}
-
-.layout-dropdown {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  z-index: 1000;
-  min-width: 100px;
-}
-
-.layout-item {
-  padding: 8px 16px;
-  color: #333;
+.control-select {
+  appearance: none;
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  padding: 4px 24px 4px 8px;
+  font-size: 14px;
   cursor: pointer;
-  text-align: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 2px center;
+  background-size: 16px;
 }
 
-.layout-item:hover {
-  background-color: #f5f5f5;
+.control-select option {
+  background-color: #2c3e50;
+  color: #fff;
 }
 </style>

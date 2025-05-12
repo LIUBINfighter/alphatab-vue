@@ -1,121 +1,72 @@
 <template>
-  <div class="at-zoom-control" ref="zoomControlRef">
-    <div class="btn-group">
-      <button 
-        type="button" 
-        class="btn zoom-btn" 
-        @click="toggleDropdown"
-      >
-        <Search class="icon" />
-        <span class="at-zoom-label">{{ zoom }}%</span>
-      </button>
-      <div class="zoom-dropdown" v-if="isOpen" @click.stop>
-        <div 
-          v-for="value in zoomLevels" 
-          :key="value" 
-          class="zoom-item"
-          @click="selectZoom(value)"
-        >
-          {{ value }}%
-        </div>
-      </div>
-    </div>
+  <div class="at-control">
+    <Search class="control-icon" />
+    <select
+      class="control-select"
+      v-model="zoom"
+      @change="selectZoom(zoom)"
+    >
+      <option v-for="value in zoomLevels" :key="value" :value="value">
+        {{ value }}%
+      </option>
+    </select>
   </div>
 </template>
 
 <script setup>
-import { ref, inject, onMounted, onUnmounted } from 'vue'
+import { ref, inject, onMounted } from 'vue'
 import { Search } from 'lucide-vue-next'
 
 const alphaTabApi = inject('alphaTabApi')
-const zoomControlRef = ref(null)
-const isOpen = ref(false)
 const zoomLevels = [25, 50, 75, 90, 100, 110, 125, 150, 200]
 const zoom = ref(100)
 
-// 切换下拉菜单
-const toggleDropdown = () => {
-  isOpen.value = !isOpen.value
-}
-
-// 选择缩放等级
+// 简化缩放选择函数
 const selectZoom = (zoomLevel) => {
   if (alphaTabApi.value) {
-    zoom.value = zoomLevel
-    alphaTabApi.value.settings.display.scale = zoomLevel / 100
+    alphaTabApi.value.settings.display.scale = Number(zoomLevel) / 100
     alphaTabApi.value.updateSettings()
     alphaTabApi.value.render()
-    isOpen.value = false
   }
 }
 
-// 添加全局点击事件以关闭下拉菜单
-const handleClickOutside = (event) => {
-  if (zoomControlRef.value && !zoomControlRef.value.contains(event.target)) {
-    isOpen.value = false
-  }
-}
-
-// 当组件挂载后同步初始缩放等级
 onMounted(() => {
-  // 添加点击外部关闭下拉菜单的事件监听
-  document.addEventListener('click', handleClickOutside)
-  
   if (alphaTabApi.value && alphaTabApi.value.settings.display.scale) {
     zoom.value = Math.round(alphaTabApi.value.settings.display.scale * 100)
   }
 })
-
-onUnmounted(() => {
-  // 移除事件监听器
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>
 
 <style scoped>
-.at-zoom-control {
+.at-control {
   position: relative;
-}
-
-.zoom-btn {
-  color: #fff;
-  background: transparent;
-  border: none;
-  height: 40px;
-  padding: 4px 10px;
   display: flex;
   align-items: center;
+  gap: 4px;
 }
 
-.zoom-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.control-icon {
+  width: 20px;
+  height: 20px;
+  color: #fff;
 }
 
-.at-zoom-label {
-  margin-left: 5px;
-}
-
-.zoom-dropdown {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  z-index: 1000;
-  min-width: 100px;
-}
-
-.zoom-item {
-  padding: 8px 16px;
-  color: #333;
+.control-select {
+  appearance: none;
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  padding: 4px 24px 4px 8px;
+  font-size: 14px;
   cursor: pointer;
-  text-align: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 2px center;
+  background-size: 16px;
 }
 
-.zoom-item:hover {
-  background-color: #f5f5f5;
+.control-select option {
+  background-color: #2c3e50;
+  color: #fff;
 }
 </style>
