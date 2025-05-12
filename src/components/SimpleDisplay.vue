@@ -40,10 +40,12 @@ const alphaTabApi = inject('alphaTabApi')
 onMounted(() => {
   if (atMainRef.value && atOverlayRef.value) {
     const settings = {
-      file: 'https://www.alphatab.net/files/canon.gp',
+      file: 'public/scores/吉他与孤独与蓝色星球.gpx',
       player: {
         enablePlayer: true,
-        soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2'
+        soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
+        enableCursor: true,
+        enableHighlights: true
       }
     };
     
@@ -178,5 +180,20 @@ function handleTrackSelected(trackFromEvent) {
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.3);
   padding: 10px;
   border-radius: 4px; /* Optional: for rounded corners */
+}
+
+/* 播放高亮样式 */
+:deep(.at-cursor-bar) {
+  background-color: rgba(64, 196, 255, 0.08);
+}
+
+:deep(.at-cursor-beat) {
+  background-color: rgba(64, 196, 255, 0.25);
+  width: 3px;
+}
+
+:deep(.at-highlight) {
+  fill: #ff5722;
+  stroke: #ff5722;
 }
 </style>

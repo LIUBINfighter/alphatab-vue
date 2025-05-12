@@ -50,8 +50,4 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.disabled {
-  opacity: 0.5;
-  cursor: not-allowed !important;
-}
 </style>
