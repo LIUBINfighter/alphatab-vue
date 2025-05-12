@@ -24,29 +24,32 @@
 </template>
 
 <script setup>
-import { onMounted, ref, toRaw } from 'vue' // 导入 toRaw
-import TrackSelector from './TrackSelector.vue' // Import the new component
-import ControlBar from './ControlBar.vue' // Import ControlBar component
+import { onMounted, ref, toRaw, inject } from 'vue'
+import TrackSelector from './TrackSelector.vue'
+import ControlBar from './ControlBar.vue'
 
 // 引用 AlphaTab 渲染目标元素 (.at-main) 和覆盖层元素 (.at-overlay)
 const atMainRef = ref(null)
 const atOverlayRef = ref(null)
-const alphaTabApiInstance = ref(null) // Store the api instance
-const allTracks = ref([]) // To store all tracks from the score
-const currentActiveTrackIndices = ref(new Set()) // To store indices of active/rendered tracks
+const allTracks = ref([]) 
+const currentActiveTrackIndices = ref(new Set())
+
+// 获取注入的 API 引用
+const alphaTabApi = inject('alphaTabApi')
 
 onMounted(() => {
   if (atMainRef.value && atOverlayRef.value) {
     const settings = {
-      file: 'https://www.alphatab.net/files/canon.gp', // 替换为你自己的谱子路径
-      // player: { // Player settings can be added here if needed
-      //   enablePlayer: true,
-      //   soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2'
-      // }
+      file: 'https://www.alphatab.net/files/canon.gp',
+      player: {
+        enablePlayer: true,
+        soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2'
+      }
     };
-    // Assign to the ref's value property
-    alphaTabApiInstance.value = new alphaTab.AlphaTabApi(atMainRef.value, settings)
-    const api = alphaTabApiInstance.value; // Use local const for convenience in this block
+    
+    // 创建 AlphaTab API 实例并设置全局引用
+    const api = new alphaTab.AlphaTabApi(atMainRef.value, settings)
+    alphaTabApi.value = api; // 设置父组件中提供的引用
 
     // 加载状态覆盖层逻辑
     api.renderStarted.on(() => {
@@ -54,31 +57,32 @@ onMounted(() => {
         atOverlayRef.value.style.display = 'flex';
       }
       // 更新活动音轨
-      // 重要：此处的 api.tracks 指的是 AlphaTab 当前配置为渲染的音轨。
-      // 当使用选择调用 renderTracks 时，api.tracks 将反映该选择。
       const activeIndices = new Set();
       api.tracks.forEach(t => activeIndices.add(t.index));
       currentActiveTrackIndices.value = activeIndices;
     });
+    
     api.renderFinished.on(() => {
       if (atOverlayRef.value) {
         atOverlayRef.value.style.display = 'none';
       }
     });
-    // 如果谱子加载失败，也隐藏覆盖层并显示错误
-    // Populate tracks for the selector when score is loaded
+
+    // 当谱子加载时更新曲目列表
     api.scoreLoaded.on(score => {
       if (!score) {
         if (atOverlayRef.value) {
           atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error loading score.';
-          // 可以选择不隐藏，让用户看到错误信息
-          // setTimeout(() => { if(atOverlayRef.value) atOverlayRef.value.style.display = 'none'; }, 3000);
         }
-        allTracks.value = []; // Clear tracks on error
+        allTracks.value = []; 
       } else {
-        allTracks.value = score.tracks; // Populate tracks
-        // Optionally, render all tracks initially or a default set
-        // api.renderTracks(score.tracks); // This would make all tracks active initially
+        allTracks.value = score.tracks;
+        
+        // 更新歌曲信息
+        const songTitleEl = document.querySelector('.at-song-title');
+        const songArtistEl = document.querySelector('.at-song-artist');
+        if (songTitleEl) songTitleEl.innerText = score.title;
+        if (songArtistEl) songArtistEl.innerText = score.artist;
       }
     });
   } else {
@@ -87,14 +91,11 @@ onMounted(() => {
 })
 
 function handleTrackSelected(trackFromEvent) {
-  if (alphaTabApiInstance.value) {
-    // trackFromEvent 可能是一个 Vue Proxy 对象。
-    // 如果 Proxy 导致克隆问题，AlphaTab 的 renderTracks 可能需要原始对象。
+  if (alphaTabApi.value) {
     const rawTrack = toRaw(trackFromEvent);
-    alphaTabApiInstance.value.renderTracks([rawTrack]);
+    alphaTabApi.value.renderTracks([rawTrack]);
   }
 }
-
 </script>
 
 <style scoped>

@@ -5,10 +5,17 @@
 </template>
 
 <script setup>
+import { inject } from 'vue'
 import { Printer } from 'lucide-vue-next'
 
+const alphaTabApi = inject('alphaTabApi')
+
 const handlePrint = () => {
-  // 打印逻辑
-  window.print()
+  if (alphaTabApi.value) {
+    alphaTabApi.value.print()
+  } else {
+    // 降级为浏览器打印
+    window.print()
+  }
 }
 </script>

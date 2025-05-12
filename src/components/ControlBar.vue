@@ -18,12 +18,16 @@
 </template>
 
 <script setup>
+import { inject } from 'vue'
 import CountInButton from './controls/CountInButton.vue'
 import MetronomeButton from './controls/MetronomeButton.vue'
 import LoopButton from './controls/LoopButton.vue'
 import PrintButton from './controls/PrintButton.vue'
 import ZoomControl from './controls/ZoomControl.vue'
 import LayoutControl from './controls/LayoutControl.vue'
+
+// 确保 alphaTabApi 已被提供
+const api = inject('alphaTabApi')
 </script>
 
 <style scoped>
