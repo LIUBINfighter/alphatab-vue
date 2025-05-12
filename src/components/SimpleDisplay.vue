@@ -106,7 +106,7 @@ function handleTrackSelected(trackFromEvent) {
 <style scoped>
 .at-wrap {
   width: 100%;
-  height: 90vh;
+  height: 97vh;
   margin: 0 auto;
   border: 1px solid rgba(0, 0, 0, 0.12);
   display: flex;
