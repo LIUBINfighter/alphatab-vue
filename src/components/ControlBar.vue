@@ -1,18 +1,18 @@
 <template>
   <div class="at-controls">
-    <ShortInfo />
+    <ShortInfo class="priority-low" />
     <div class="at-controls-right">
-      <TimePosition />
-      <StopButton />
-      <PlayPauseButton />
-      <SpeedControl />
-      <CountInButton />
-      <MetronomeButton />
-      <LoopButton />
-      <PrintButton />
-      <DownloadButton />
-      <ZoomControl />
-      <LayoutControl />
+      <TimePosition class="priority-high" />
+      <StopButton class="priority-low" />
+      <PlayPauseButton class="priority-high" />
+      <SpeedControl class="priority-low" />
+      <CountInButton class="priority-low" />
+      <MetronomeButton class="priority-high" />
+      <LoopButton class="priority-low" />
+      <PrintButton class="priority-low" />
+      <DownloadButton class="priority-low" />
+      <ZoomControl class="priority-low" />
+      <LayoutControl class="priority-low" />
     </div>
   </div>
 </template>
@@ -40,9 +40,18 @@ const api = inject('alphaTabApi')
 .at-controls {
   flex: 0 0 auto;
   display: flex;
-  justify-content: space-between;
   background: #436d9d;
   color: #fff;
+  min-width: min-content;
+  overflow-x: auto;
+  position: relative;
+  z-index: 1010;  /* 确保控制栏在最上层 */
+}
+
+.at-controls-right {
+  display: flex;
+  margin-left: auto;
+  flex-wrap: nowrap;
 }
 
 .at-controls>div {
@@ -110,5 +119,27 @@ const api = inject('alphaTabApi')
   width: 20px;
   height: 20px;
   stroke-width: 1.5px;
+}
+
+/* 确保下拉菜单显示在曲谱上方 */
+:deep(.dropdown-content),
+:deep(.select-wrapper) {
+  position: absolute;
+  z-index: 1011;
+}
+
+/* 响应式控制 */
+@media screen and (max-width: 600px) {
+  .priority-low {
+    display: none !important;
+  }
+  
+  .at-controls {
+    justify-content: center;
+  }
+  
+  .at-controls-right {
+    margin-left: 0;
+  }
 }
 </style>

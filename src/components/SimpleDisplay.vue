@@ -1,4 +1,4 @@
-l<template>
+<template>
   <div class="at-wrap">
     <div class="at-overlay" ref="atOverlayRef" style="display: none;">
       <div class="at-overlay-content">
@@ -105,14 +105,15 @@ function handleTrackSelected(trackFromEvent) {
 
 <style scoped>
 .at-wrap {
-  width: 80vw;
-  height: 80vh;
+  width: 100%;
+  height: 90vh;
   margin: 0 auto;
   border: 1px solid rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
+  min-width: 800px; /* 添加最小宽度 */
 }
 
 .at-content {
