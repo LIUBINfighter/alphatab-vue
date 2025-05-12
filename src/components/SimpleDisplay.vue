@@ -1,4 +1,4 @@
-<template>
+l<template>
   <div class="at-wrap">
     <div class="at-overlay" ref="atOverlayRef" style="display: none;">
       <div class="at-overlay-content">
@@ -45,7 +45,10 @@ onMounted(() => {
         enablePlayer: true,
         soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
         enableCursor: true,
-        enableHighlights: true
+        enableHighlights: true,
+        scrollMode: alphaTab.ScrollMode.Continuous,
+        scrollElement: document.querySelector('.at-viewport'),
+        scrollOffsetY: -30
       }
     };
     
@@ -146,6 +149,8 @@ function handleTrackSelected(trackFromEvent) {
   right: 0;
   bottom: 0;
   padding-right: 20px;
+  scroll-behavior: smooth;
+  scroll-padding-top: 30px;
 }
 
 .at-footer {
@@ -184,16 +189,21 @@ function handleTrackSelected(trackFromEvent) {
 
 /* 播放高亮样式 */
 :deep(.at-cursor-bar) {
-  background-color: rgba(64, 196, 255, 0.08);
+  background-color: rgba(255, 242, 0, 0.25);
+  transition: background-color 0.2s ease;
 }
 
 :deep(.at-cursor-beat) {
-  background-color: rgba(64, 196, 255, 0.25);
+  background-color: rgba(64, 64, 255, 0.75);
   width: 3px;
+  height: 100%;
+  position: absolute;
+  z-index: 10;
 }
 
-:deep(.at-highlight) {
-  fill: #ff5722;
-  stroke: #ff5722;
+:deep(.at-highlight *) {
+  fill: #0078ff;
+  stroke: #0078ff;
+  transition: fill 0.1s ease, stroke 0.1s ease;
 }
 </style>
