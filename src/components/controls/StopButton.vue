@@ -9,45 +9,33 @@ import { ref, inject, onMounted, onUnmounted } from 'vue'
 import { StopCircle } from 'lucide-vue-next'
 
 const alphaTabApi = inject('alphaTabApi')
-const isDisabled = ref(true) // 初始状态禁用，直到谱子加载完成
+const isDisabled = ref(false) // 初始默认启用
 
 // 处理停止播放逻辑
 const handleStop = (e) => {
-  e.stopPropagation()
+  e.preventDefault()
   if (!isDisabled.value && alphaTabApi.value) {
     alphaTabApi.value.stop()
   }
 }
 
-// 监听相关事件
-let scoreLoadedHandler = null
-let playerReadyHandler = null
-
 onMounted(() => {
   if (alphaTabApi.value) {
-    // 当谱子加载完成后启用按钮
-    scoreLoadedHandler = (score) => {
+    // 监听谱子加载状态，确定按钮是否应该被禁用
+    const onScoreLoaded = (score) => {
       isDisabled.value = !score
     }
-    alphaTabApi.value.scoreLoaded.on(scoreLoadedHandler)
     
-    // 当播放器准备好时启用按钮
-    playerReadyHandler = (ready) => {
-      isDisabled.value = !ready
+    // 检查当前是否已加载谱子
+    if (!alphaTabApi.value.score) {
+      isDisabled.value = true
+      alphaTabApi.value.scoreLoaded.on(onScoreLoaded)
     }
-    alphaTabApi.value.playerReady.on(playerReadyHandler)
-  }
-})
-
-onUnmounted(() => {
-  // 清理事件监听器
-  if (alphaTabApi.value) {
-    if (scoreLoadedHandler) {
-      alphaTabApi.value.scoreLoaded.off(scoreLoadedHandler)
-    }
-    if (playerReadyHandler) {
-      alphaTabApi.value.playerReady.off(playerReadyHandler)
-    }
+    
+    // 清理事件
+    onUnmounted(() => {
+      alphaTabApi.value.scoreLoaded.off(onScoreLoaded)
+    })
   }
 })
 </script>

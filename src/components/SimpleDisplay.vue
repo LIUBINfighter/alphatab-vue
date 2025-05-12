@@ -48,8 +48,8 @@ onMounted(() => {
     };
     
     // 创建 AlphaTab API 实例并设置全局引用
-    const api = new alphaTab.AlphaTabApi(atMainRef.value, settings)
-    alphaTabApi.value = api; // 设置父组件中提供的引用
+    alphaTabApi.value = new alphaTab.AlphaTabApi(atMainRef.value, settings)
+    const api = alphaTabApi.value; // 使用本地变量简化代码
 
     // 加载状态覆盖层逻辑
     api.renderStarted.on(() => {
@@ -68,7 +68,7 @@ onMounted(() => {
       }
     });
 
-    // 当谱子加载时更新曲目列表
+    // 确保 api.ready 后再渲染
     api.scoreLoaded.on(score => {
       if (!score) {
         if (atOverlayRef.value) {

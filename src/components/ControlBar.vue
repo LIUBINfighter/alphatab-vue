@@ -9,7 +9,7 @@
     <div class="at-controls-right">
       <StopButton />
       <PlayPauseButton />
-      <!-- <SpeedControl /> -->
+      <SpeedControl />
       <CountInButton />
       <MetronomeButton />
       <LoopButton />
@@ -31,7 +31,7 @@ import ZoomControl from './controls/ZoomControl.vue'
 import LayoutControl from './controls/LayoutControl.vue'
 import PlayPauseButton from './controls/PlayPauseButton.vue'
 import StopButton from './controls/StopButton.vue'
-// import SpeedControl from './controls/SpeedControl.vue'
+import SpeedControl from './controls/SpeedControl.vue'
 import DownloadButton from './controls/DownloadButton.vue'
 
 // 确保 alphaTabApi 已被提供

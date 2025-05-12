@@ -1,10 +1,10 @@
 <template>
-  <div class="at-speed-control">
+  <div class="at-speed-control" ref="speedControlRef">
     <div class="btn-group">
       <button 
         type="button" 
         class="btn speed-btn" 
-        @click="isOpen = !isOpen"
+        @click="toggleDropdown"
         :disabled="isDisabled"
       >
         <Gauge class="icon" />
@@ -25,21 +25,21 @@
 </template>
 
 <script setup>
-import { ref, inject, onClickOutside, onMounted, onUnmounted } from 'vue'
+import { ref, inject, onMounted, onUnmounted } from 'vue'
 import { Gauge } from 'lucide-vue-next'
 
 const alphaTabApi = inject('alphaTabApi')
+const speedControlRef = ref(null)
 const isOpen = ref(false)
-const isDisabled = ref(true)
+const isDisabled = ref(false)
 const currentSpeed = ref('1')
 const speedOptions = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2]
 
-// 关闭下拉菜单的ref
-const speedControlRef = ref(null)
-if (typeof onClickOutside === 'function') {
-  onClickOutside(speedControlRef, () => {
-    isOpen.value = false
-  })
+// 切换下拉菜单
+const toggleDropdown = () => {
+  if (!isDisabled.value) {
+    isOpen.value = !isOpen.value
+  }
 }
 
 // 选择速度
@@ -51,39 +51,38 @@ const selectSpeed = (speed) => {
   }
 }
 
-// 监听相关事件
-let scoreLoadedHandler = null
-let playerReadyHandler = null
+// 添加全局点击事件以关闭下拉菜单
+const handleClickOutside = (event) => {
+  if (speedControlRef.value && !speedControlRef.value.contains(event.target)) {
+    isOpen.value = false
+  }
+}
 
 onMounted(() => {
+  // 添加点击外部关闭下拉菜单的事件监听
+  document.addEventListener('click', handleClickOutside)
+  
   if (alphaTabApi.value) {
-    // 当谱子加载完成后启用控件
-    scoreLoadedHandler = (score) => {
-      isDisabled.value = !score
-    }
-    alphaTabApi.value.scoreLoaded.on(scoreLoadedHandler)
-    
-    // 当播放器准备好时启用控件
-    playerReadyHandler = (ready) => {
-      isDisabled.value = !ready
-    }
-    alphaTabApi.value.playerReady.on(playerReadyHandler)
-    
     // 同步初始速度
-    currentSpeed.value = alphaTabApi.value.playbackSpeed || 1
+    if (alphaTabApi.value.playbackSpeed) {
+      currentSpeed.value = alphaTabApi.value.playbackSpeed
+    }
+    
+    // 检查是否可用
+    if (alphaTabApi.value.score) {
+      isDisabled.value = false
+    } else {
+      const scoreLoadedHandler = (score) => {
+        isDisabled.value = !score
+      }
+      alphaTabApi.value.scoreLoaded.on(scoreLoadedHandler)
+    }
   }
 })
 
 onUnmounted(() => {
-  // 清理事件监听器
-  if (alphaTabApi.value) {
-    if (scoreLoadedHandler) {
-      alphaTabApi.value.scoreLoaded.off(scoreLoadedHandler)
-    }
-    if (playerReadyHandler) {
-      alphaTabApi.value.playerReady.off(playerReadyHandler)
-    }
-  }
+  // 移除事件监听器
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
