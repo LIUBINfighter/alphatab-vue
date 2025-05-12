@@ -4,6 +4,7 @@
     "": {
       "name": "alphatab-vue",
       "dependencies": {
+        "@coderline/alphatab": "^1.5.0",
         "vue": "^3.5.13",
       },
       "devDependencies": {
@@ -23,6 +24,8 @@
     "@babel/parser": ["@babel/parser@7.27.2", "https://registry.npmmirror.com/@babel/parser/-/parser-7.27.2.tgz", { "dependencies": { "@babel/types": "^7.27.1" }, "bin": "./bin/babel-parser.js" }, "sha512-QYLs8299NA7WM/bZAdp+CviYYkVoYXlDW2rzliy3chxd1PQjej7JORuMJDJXJUb9g0TT+B99EwaVLKmX+sPXWw=="],
 
     "@babel/types": ["@babel/types@7.27.1", "https://registry.npmmirror.com/@babel/types/-/types-7.27.1.tgz", { "dependencies": { "@babel/helper-string-parser": "^7.27.1", "@babel/helper-validator-identifier": "^7.27.1" } }, "sha512-+EzkxvLNfiUeKMgy/3luqfsCWFRXLb7U6wNQTk60tovuckwB15B191tJWvpp4HjiQWdJkCxO3Wbvc6jlk3Xb2Q=="],
+
+    "@coderline/alphatab": ["@coderline/alphatab@1.5.0", "https://registry.npmmirror.com/@coderline/alphatab/-/alphatab-1.5.0.tgz", {}, "sha512-XX4O4gC/pt8OGCR48LHKeELxh9flM6piNs2Jv6KW3AjdfE5Qh6RitTmj6mHsY2cI9/RjBkNtlZreR3H4uJ5nNA=="],
 
     "@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.4", "https://registry.npmmirror.com/@esbuild/aix-ppc64/-/aix-ppc64-0.25.4.tgz", { "os": "aix", "cpu": "ppc64" }, "sha512-1VCICWypeQKhVbE9oW/sJaAmjLxhVqacdkvPLEjwlttjfwENRSClS8EjBz0KzRyFSCPDIkuXW34Je/vk7zdB7Q=="],
 
