@@ -1,5 +1,9 @@
 <template>
-  <a class="btn at-download" :class="{ disabled: isDisabled }" @click="handleDownload">
+  <a class="btn at-download" 
+     :class="{ disabled: isDisabled }" 
+     @click="handleDownload"
+     title="Download score"
+  >
     <DownloadCloud class="icon" />
   </a>
 </template>

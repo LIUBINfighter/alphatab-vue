@@ -1,12 +1,17 @@
 <template>
-  <a class="btn toggle at-metronome" :class="{ active: isActive }" @click="toggle">
-    <Music class="icon" />
+  <a class="btn toggle at-metronome" 
+     :class="{ active: isActive }" 
+     @click="toggle"
+     title="Toggle metronome"
+  >
+    <Music2 v-if="!isActive" class="icon" />
+    <Music4 v-else class="icon" />
   </a>
 </template>
 
 <script setup>
 import { ref, inject, onMounted } from 'vue'
-import { Music } from 'lucide-vue-next'
+import { Music2, Music4 } from 'lucide-vue-next'
 
 const alphaTabApi = inject('alphaTabApi')
 const isActive = ref(false)

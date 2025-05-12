@@ -1,5 +1,9 @@
 <template>
-  <a class="btn at-stop" :class="{ disabled: isDisabled }" @click="handleStop">
+  <a class="btn at-stop" 
+     :class="{ disabled: isDisabled }" 
+     @click="handleStop"
+     title="Stop playback"
+  >
     <StopCircle class="icon" />
   </a>
 </template>

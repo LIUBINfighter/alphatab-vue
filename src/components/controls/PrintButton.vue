@@ -1,5 +1,8 @@
 <template>
-  <a class="btn at-print" @click="handlePrint">
+  <a class="btn at-print" 
+     @click="handlePrint"
+     title="Print score"
+  >
     <Printer class="icon" />
   </a>
 </template>

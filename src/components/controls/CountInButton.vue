@@ -1,5 +1,9 @@
 <template>
-  <a class="btn toggle at-count-in" :class="{ active: isActive }" @click="toggle">
+  <a class="btn toggle at-count-in" 
+     :class="{ active: isActive }" 
+     @click="toggle"
+     title="Toggle count-in"
+  >
     <TimerOff v-if="!isActive" class="icon" />
     <Timer v-else class="icon" />
   </a>

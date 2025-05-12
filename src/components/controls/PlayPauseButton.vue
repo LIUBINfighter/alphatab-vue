@@ -1,5 +1,9 @@
 <template>
-  <a class="btn at-play-pause" :class="{ disabled: isDisabled }" @click="handlePlayPause">
+  <a class="btn at-play-pause" 
+     :class="{ disabled: isDisabled }" 
+     @click="handlePlayPause"
+     :title="playerState === 0 ? 'Play' : 'Pause'"
+  >
     <Play v-if="playerState === 0" class="icon" />
     <Pause v-else class="icon" />
   </a>

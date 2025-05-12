@@ -1,12 +1,17 @@
 <template>
-  <a class="btn toggle at-loop" :class="{ active: isActive }" @click="toggle">
-    <Repeat class="icon" />
+  <a class="btn toggle at-loop" 
+     :class="{ active: isActive }" 
+     @click="toggle"
+     title="Loop playback"
+  >
+    <Repeat1 v-if="!isActive" class="icon" />
+    <RepeatIcon v-else class="icon" />
   </a>
 </template>
 
 <script setup>
 import { ref, inject, onMounted } from 'vue'
-import { Repeat } from 'lucide-vue-next'
+import { Repeat as RepeatIcon, Repeat1 } from 'lucide-vue-next'
 
 const alphaTabApi = inject('alphaTabApi')
 const isActive = ref(false)

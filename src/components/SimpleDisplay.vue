@@ -40,7 +40,7 @@ const alphaTabApi = inject('alphaTabApi')
 onMounted(() => {
   if (atMainRef.value && atOverlayRef.value) {
     const settings = {
-      file: 'public/scores/吉他与孤独与蓝色星球.gpx',
+      file: '/scores/吉他与孤独与蓝色星球.gpx',
       player: {
         enablePlayer: true,
         soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
