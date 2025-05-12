@@ -25,7 +25,7 @@
 
 <script setup>
 import { onMounted, ref, toRaw, inject } from 'vue'
-import TrackSelector from './TrackSelector.vue'
+import TrackSelector from './controls/TrackSelector.vue'
 import ControlBar from './ControlBar.vue'
 
 // 引用 AlphaTab 渲染目标元素 (.at-main) 和覆盖层元素 (.at-overlay)
