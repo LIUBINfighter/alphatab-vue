@@ -6,6 +6,7 @@
       "dependencies": {
         "@coderline/alphatab": "^1.5.0",
         "lucide": "^0.509.0",
+        "lucide-vue-next": "^0.509.0",
         "vue": "^3.5.13",
       },
       "devDependencies": {
@@ -177,6 +178,8 @@
     "he": ["he@1.2.0", "https://registry.npmmirror.com/he/-/he-1.2.0.tgz", { "bin": { "he": "bin/he" } }, "sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw=="],
 
     "lucide": ["lucide@0.509.0", "https://registry.npmmirror.com/lucide/-/lucide-0.509.0.tgz", {}, "sha512-+PUi/uilEjgcBuaLXq4y4fh/AHLgFuFyNrMbezuhofkiqRZbbj6cf5E29VndCuFcGsGpo9WIKocmfBB2GTvS7w=="],
+
+    "lucide-vue-next": ["lucide-vue-next@0.509.0", "https://registry.npmmirror.com/lucide-vue-next/-/lucide-vue-next-0.509.0.tgz", { "peerDependencies": { "vue": ">=3.0.1" } }, "sha512-tf13yhsnAhTJbFTJe7iuQ98mgOCUz1SURZc/BHvrc4O/98BzVMllAjXrtk5mshem9gehatpbUDplr5tBSZQKAA=="],
 
     "magic-string": ["magic-string@0.30.17", "https://registry.npmmirror.com/magic-string/-/magic-string-0.30.17.tgz", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.0" } }, "sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA=="],
 

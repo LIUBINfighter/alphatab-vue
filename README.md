@@ -7,3 +7,5 @@ Vite
 Bun
 
 图标库 [lucide](https://lucide.dev/)
+
+`bun add lucide-vue-next`
