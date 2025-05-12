@@ -18,14 +18,15 @@
       </div>
     </div>
     <div class="at-controls">
-      Player controls will go here
+      <ControlBar />
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, toRaw } from 'vue' // 导入 toRaw
 import TrackSelector from './TrackSelector.vue' // Import the new component
+import ControlBar from './ControlBar.vue' // Import ControlBar component
 
 // 引用 AlphaTab 渲染目标元素 (.at-main) 和覆盖层元素 (.at-overlay)
 const atMainRef = ref(null)
@@ -52,7 +53,9 @@ onMounted(() => {
       if (atOverlayRef.value) {
         atOverlayRef.value.style.display = 'flex';
       }
-      // Update active tracks
+      // 更新活动音轨
+      // 重要：此处的 api.tracks 指的是 AlphaTab 当前配置为渲染的音轨。
+      // 当使用选择调用 renderTracks 时，api.tracks 将反映该选择。
       const activeIndices = new Set();
       api.tracks.forEach(t => activeIndices.add(t.index));
       currentActiveTrackIndices.value = activeIndices;
@@ -83,9 +86,12 @@ onMounted(() => {
   }
 })
 
-function handleTrackSelected(track) {
+function handleTrackSelected(trackFromEvent) {
   if (alphaTabApiInstance.value) {
-    alphaTabApiInstance.value.renderTracks([track]);
+    // trackFromEvent 可能是一个 Vue Proxy 对象。
+    // 如果 Proxy 导致克隆问题，AlphaTab 的 renderTracks 可能需要原始对象。
+    const rawTrack = toRaw(trackFromEvent);
+    alphaTabApiInstance.value.renderTracks([rawTrack]);
   }
 }
 
