@@ -15,7 +15,6 @@
 ```vue
 <MetronomeButton />
 ```
-
 ### CountInButton
 倒计时按钮
 
@@ -63,4 +62,33 @@
 - active: 是否激活循环
 
 #### Events
+### PlayPauseButton
+播放/暂停切换按钮
+
+#### 状态
+- playerState: 
+  - 0: 停止状态
+  - 1: 播放中
+  - 2: 暂停中
+
+#### 功能
+- 点击切换播放/暂停状态
+- 自动根据播放器状态更新图标
+- 乐谱未加载时自动禁用
+
+#### 使用示例
+### StopButton
+停止播放按钮
+
+#### 功能
+- 点击停止当前播放
+- 乐谱未加载时自动禁用
+
+#### 使用示例
+```vue
+<StopButton />
+```
+```vue
+<PlayPauseButton />
+```
 - click: 切换循环状态
