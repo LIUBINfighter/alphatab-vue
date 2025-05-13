@@ -13,6 +13,7 @@
       <DownloadButton class="priority-low" />
       <ZoomControl class="priority-low" />
       <LayoutControl class="priority-low" />
+      <TrackControl class="priority-low" />
     </div>
   </div>
 </template>
@@ -27,6 +28,7 @@ import LoopButton from './controls/LoopButton.vue'
 import PrintButton from './controls/PrintButton.vue'
 import ZoomControl from './controls/ZoomControl.vue'
 import LayoutControl from './controls/LayoutControl.vue'
+import TrackControl from './controls/TrackControl.vue'
 import PlayPauseButton from './controls/PlayPauseButton.vue'
 import StopButton from './controls/StopButton.vue'
 import SpeedControl from './controls/SpeedControl.vue'
