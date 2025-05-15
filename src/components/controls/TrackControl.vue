@@ -6,7 +6,7 @@
       v-model="selectedTrackIndex"
       @change="selectTrack"
     >
-      <option value="-1">所有音轨</option> <!-- Option for all tracks -->
+      <option value="-1">所有音轨</option>
       <option v-for="track in tracks" :key="track.index" :value="track.index">
         {{ track.name }}
       </option>
@@ -16,80 +16,62 @@
 
 <script setup>
 import { ref, inject, onMounted, onUnmounted } from 'vue'
-import { Music } from 'lucide-vue-next' // Using Music icon from lucide-vue-next
+import { Music } from 'lucide-vue-next'
 
 const alphaTabApi = inject('alphaTabApi')
 const tracks = ref([])
-const selectedTrackIndex = ref(-1) // -1 for all tracks
+const selectedTrackIndex = ref(-1)
 
-// Function to update displayed tracks based on selection
 const selectTrack = () => {
   if (!alphaTabApi.value || !alphaTabApi.value.score) return
 
-  const score = alphaTabApi.value.score
-  score.tracks.forEach(track => {
-    // Mute/unmute tracks based on selection
-    // If selectedTrackIndex is -1, unmute all. Otherwise, mute all except the selected one.
-    const isMuted = selectedTrackIndex.value !== -1 && track.index !== selectedTrackIndex.value
-    alphaTabApi.value.setTrackMuteState(track.index, isMuted)
-  })
-  // Re-render might be needed depending on alphaTab's API for track visibility
-  // alphaTabApi.value.render() // Or maybe just setTrackMuteState is enough
+  // Render selected tracks
+  if (selectedTrackIndex.value === -1) {
+    // Render all tracks
+    alphaTabApi.value.renderTracks(alphaTabApi.value.score.tracks)
+  } else {
+    // Render only selected track
+    const track = alphaTabApi.value.score.tracks.find(t => t.index === selectedTrackIndex.value)
+    if (track) {
+      alphaTabApi.value.renderTracks([track])
+    }
+  }
 }
 
 onMounted(() => {
   if (alphaTabApi.value) {
-    // Listen for score loaded to get tracks
     const onScoreLoaded = (score) => {
       if (score) {
         tracks.value = score.tracks
-        // Set initial selection based on current mute states if needed,
-        // or default to -1 (All Tracks)
-        // For simplicity, let's default to -1 initially.
-        selectedTrackIndex.value = -1;
+        selectedTrackIndex.value = -1
       } else {
         tracks.value = []
-        selectedTrackIndex.value = -1;
+        selectedTrackIndex.value = -1
       }
     }
 
-    // Listen for track mute state changes to update the dropdown selection
-    // This is important if mute states can be changed by other means
-    const onTrackMuteStateChanged = (args) => {
-         // If multiple tracks are unmuted, the dropdown should probably show "All Tracks"
-         // If only one track is unmuted, show that track
-         // If all are muted, show "All Tracks"
-         const unmutedTracks = alphaTabApi.value.score?.tracks.filter(track => !alphaTabApi.value.isTrackMuted(track.index)) || [];
-
-         if (unmutedTracks.length === alphaTabApi.value.score?.tracks.length || unmutedTracks.length === 0) {
-             selectedTrackIndex.value = -1; // All tracks unmuted or all muted
-         } else if (unmutedTracks.length === 1) {
-             selectedTrackIndex.value = unmutedTracks[0].index; // Only one track unmuted
-         } else {
-             // If multiple tracks are unmuted but not all, the dropdown state is ambiguous.
-             // We might keep the current selection or default to -1.
-             // Let's default to -1 for simplicity in this case.
-             selectedTrackIndex.value = -1;
-         }
+    const onTrackStateChanged = () => {
+      if (!alphaTabApi.value?.score) return
+      
+      const renderedTracks = alphaTabApi.value.tracks
+      if (renderedTracks.length === alphaTabApi.value.score.tracks.length) {
+        selectedTrackIndex.value = -1
+      } else if (renderedTracks.length === 1) {
+        selectedTrackIndex.value = renderedTracks[0].index
+      }
     }
-
 
     alphaTabApi.value.scoreLoaded.on(onScoreLoaded)
-    alphaTabApi.value.trackMuteStateChanged.on(onTrackMuteStateChanged)
+    alphaTabApi.value.renderStarted.on(onTrackStateChanged)
 
-
-    // Check initial score state if already loaded
+    // Initialize if score already loaded
     if (alphaTabApi.value.score) {
-       onScoreLoaded(alphaTabApi.value.score);
-       // Also check initial mute states
-       onTrackMuteStateChanged(null); // Pass null as args are not used
+      onScoreLoaded(alphaTabApi.value.score)
     }
 
-
-    // Cleanup event listeners
     onUnmounted(() => {
       alphaTabApi.value?.scoreLoaded.off(onScoreLoaded)
-      alphaTabApi.value?.trackMuteStateChanged.off(onTrackMuteStateChanged)
+      alphaTabApi.value?.renderStarted.off(onTrackStateChanged)
     })
   }
 })

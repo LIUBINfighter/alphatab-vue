@@ -40,7 +40,8 @@ const alphaTabApi = inject('alphaTabApi')
 onMounted(() => {
   if (atMainRef.value && atOverlayRef.value) {
     const settings = {
-      file: `${import.meta.env.BASE_URL}/scores/吉他与孤独与蓝色星球.gpx`, // 使用 BASE_URL
+      // file: `${import.meta.env.BASE_URL}/scores/吉他与孤独与蓝色星球.gpx`, // 使用 BASE_URL
+      file: `https://www.alphatab.net/files/canon.gp`,
       player: {
         enablePlayer: true,
         soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
