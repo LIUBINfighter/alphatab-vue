@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" class="score-list-modal-backdrop">
+  <div class="score-list-modal-backdrop">
     <div class="score-list-modal-content">
       <h3>选择乐谱</h3>
       <ul>
@@ -7,28 +7,24 @@
           {{ scoreItem.name }}
         </li>
       </ul>
-      <button @click="closeModal">关闭</button>
+      <button @click="closeList">关闭</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-
 const props = defineProps({
-  visible: Boolean,
   scores: Array // [{ name: '乐谱1', path: 'url/to/score1.gpx' }, ...]
 });
 
-const emit = defineEmits(['update:visible', 'score-selected']);
+const emit = defineEmits(['score-selected', 'close']);
 
 function selectScore(scoreItem) {
   emit('score-selected', scoreItem.path);
-  closeModal();
 }
 
-function closeModal() {
-  emit('update:visible', false);
+function closeList() {
+  emit('close');
 }
 </script>
 
