@@ -6,7 +6,7 @@
       v-model="selectedTrackIndex"
       @change="selectTrack"
     >
-      <option value="-1">所有音轨</option>
+      <!-- <option value="-1">所有音轨</option> -->
       <option v-for="track in tracks" :key="track.index" :value="track.index">
         {{ track.name }}
       </option>
@@ -34,11 +34,21 @@ const selectTrack = () => {
   // Render selected tracks
   if (selectedTrackIndex.value === -1) {
     // Render all tracks
+    console.log('正在渲染所有音轨:', alphaTabApi.value.score.tracks.length, '个音轨')
     alphaTabApi.value.renderTracks(alphaTabApi.value.score.tracks)
+    
+    // 验证是否所有音轨都被正确渲染
+    setTimeout(() => {
+      console.log('渲染后检查:', alphaTabApi.value.tracks.length, '个音轨被渲染')
+      if (alphaTabApi.value.tracks.length !== alphaTabApi.value.score.tracks.length) {
+        console.warn('音轨数量不匹配，可能没有全部渲染')
+      }
+    }, 100)
   } else {
     // Render only selected track
     const track = alphaTabApi.value.score.tracks.find(t => t.index === selectedTrackIndex.value)
     if (track) {
+      console.log('正在渲染单个音轨:', track.name)
       alphaTabApi.value.renderTracks([track])
     }
   }
