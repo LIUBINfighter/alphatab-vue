@@ -25,8 +25,14 @@
 
 <script setup>
 import { onMounted, ref, toRaw, inject } from 'vue'
-// import TrackSelector from './controls/TrackSelector.vue'
 import ControlBar from './ControlBar.vue'
+
+const props = defineProps({
+  score: {
+    type: [String, Object],
+    required: true
+  }
+})
 
 // 引用 AlphaTab 渲染目标元素 (.at-main) 和覆盖层元素 (.at-overlay)
 const atMainRef = ref(null)
@@ -40,8 +46,7 @@ const alphaTabApi = inject('alphaTabApi')
 onMounted(() => {
   if (atMainRef.value && atOverlayRef.value) {
     const settings = {
-      // file: `${import.meta.env.BASE_URL}/scores/吉他与孤独与蓝色星球.gpx`, // 使用 BASE_URL
-      file: `https://www.alphatab.net/files/canon.gp`,
+      file: typeof props.score === 'string' ? props.score : undefined,
       player: {
         enablePlayer: true,
         soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
@@ -56,6 +61,11 @@ onMounted(() => {
     // 创建 AlphaTab API 实例并设置全局引用
     alphaTabApi.value = new alphaTab.AlphaTabApi(atMainRef.value, settings)
     const api = alphaTabApi.value; // 使用本地变量简化代码
+
+    // 如果传入的是对象，则直接加载
+    if (typeof props.score === 'object') {
+      api.load(props.score);
+    }
 
     // 加载状态覆盖层逻辑
     api.renderStarted.on(() => {
