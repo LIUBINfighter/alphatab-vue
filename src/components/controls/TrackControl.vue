@@ -15,12 +15,18 @@
 </template>
 
 <script setup>
-import { ref, inject, onMounted, onUnmounted } from 'vue'
+import { ref, inject, onMounted, onUnmounted, watch } from 'vue'
 import { Music } from 'lucide-vue-next'
 
 const alphaTabApi = inject('alphaTabApi')
 const tracks = ref([])
 const selectedTrackIndex = ref(-1)
+
+// 用于存储事件监听器引用，以便在组件卸载时移除它们
+const listeners = {
+  scoreLoaded: null,
+  renderStarted: null
+}
 
 const selectTrack = () => {
   if (!alphaTabApi.value || !alphaTabApi.value.score) return
@@ -38,42 +44,75 @@ const selectTrack = () => {
   }
 }
 
-onMounted(() => {
-  if (alphaTabApi.value) {
-    const onScoreLoaded = (score) => {
-      if (score) {
-        tracks.value = score.tracks
-        selectedTrackIndex.value = -1
-      } else {
-        tracks.value = []
-        selectedTrackIndex.value = -1
-      }
-    }
-
-    const onTrackStateChanged = () => {
-      if (!alphaTabApi.value?.score) return
-      
-      const renderedTracks = alphaTabApi.value.tracks
-      if (renderedTracks.length === alphaTabApi.value.score.tracks.length) {
-        selectedTrackIndex.value = -1
-      } else if (renderedTracks.length === 1) {
-        selectedTrackIndex.value = renderedTracks[0].index
-      }
-    }
-
-    alphaTabApi.value.scoreLoaded.on(onScoreLoaded)
-    alphaTabApi.value.renderStarted.on(onTrackStateChanged)
-
-    // Initialize if score already loaded
-    if (alphaTabApi.value.score) {
-      onScoreLoaded(alphaTabApi.value.score)
-    }
-
-    onUnmounted(() => {
-      alphaTabApi.value?.scoreLoaded.off(onScoreLoaded)
-      alphaTabApi.value?.renderStarted.off(onTrackStateChanged)
-    })
+// 当乐谱加载完成时更新音轨列表
+const onScoreLoaded = (score) => {
+  console.log('Score loaded with tracks:', score?.tracks)
+  
+  if (score) {
+    tracks.value = score.tracks
+    selectedTrackIndex.value = -1
+  } else {
+    tracks.value = []
+    selectedTrackIndex.value = -1
   }
+}
+
+// 当渲染的音轨状态变化时更新选择器状态
+const onTrackStateChanged = () => {
+  if (!alphaTabApi.value?.score) return
+  
+  const renderedTracks = alphaTabApi.value.tracks
+  console.log('Track state changed. Rendered tracks:', renderedTracks.length)
+  
+  if (renderedTracks.length === alphaTabApi.value.score.tracks.length) {
+    selectedTrackIndex.value = -1
+  } else if (renderedTracks.length === 1) {
+    selectedTrackIndex.value = renderedTracks[0].index
+  }
+}
+
+onMounted(() => {
+  console.log('TrackControl mounted, API available:', !!alphaTabApi.value)
+  
+  // 设置观察者监听 alphaTabApi 的变化，以防它是异步加载的
+  watch(() => alphaTabApi.value, (api) => {
+    if (!api) return
+    
+    console.log('AlphaTab API became available')
+    
+    // 移除之前的监听器（如果有）
+    if (listeners.scoreLoaded) {
+      api.scoreLoaded.off(listeners.scoreLoaded)
+    }
+    if (listeners.renderStarted) {
+      api.renderStarted.off(listeners.renderStarted)
+    }
+    
+    // 添加新的监听器
+    listeners.scoreLoaded = onScoreLoaded
+    listeners.renderStarted = onTrackStateChanged
+    
+    api.scoreLoaded.on(listeners.scoreLoaded)
+    api.renderStarted.on(listeners.renderStarted)
+    
+    // 如果乐谱已加载，立即初始化
+    if (api.score) {
+      onScoreLoaded(api.score)
+    }
+  }, { immediate: true })
+})
+
+onUnmounted(() => {
+  // 在组件卸载时清理事件监听器
+  if (alphaTabApi.value) {
+    if (listeners.scoreLoaded) {
+      alphaTabApi.value.scoreLoaded.off(listeners.scoreLoaded)
+    }
+    if (listeners.renderStarted) {
+      alphaTabApi.value.renderStarted.off(listeners.renderStarted)
+    }
+  }
+  console.log('TrackControl unmounted, listeners cleaned up')
 })
 </script>
 
