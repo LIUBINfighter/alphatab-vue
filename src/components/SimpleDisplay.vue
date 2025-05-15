@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, toRaw, inject } from 'vue'
+import { onMounted, ref, toRaw, inject, watch } from 'vue' // 导入 watch
 import ControlBar from './ControlBar.vue'
 
 const props = defineProps({
@@ -43,10 +43,16 @@ const currentActiveTrackIndices = ref(new Set())
 // 获取注入的 API 引用
 const alphaTabApi = inject('alphaTabApi')
 
-onMounted(() => {
+// 封装 AlphaTab 初始化和加载逻辑
+function initializeAlphaTab(scoreFileOrObject) {
   if (atMainRef.value && atOverlayRef.value) {
+    // 如果已有 API 实例，先销毁
+    if (alphaTabApi.value) {
+      alphaTabApi.value.destroy();
+    }
+
     const settings = {
-      file: typeof props.score === 'string' ? props.score : undefined,
+      file: typeof scoreFileOrObject === 'string' ? scoreFileOrObject : undefined,
       player: {
         enablePlayer: true,
         soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
@@ -58,21 +64,18 @@ onMounted(() => {
       }
     };
     
-    // 创建 AlphaTab API 实例并设置全局引用
-    alphaTabApi.value = new alphaTab.AlphaTabApi(atMainRef.value, settings)
-    const api = alphaTabApi.value; // 使用本地变量简化代码
+    alphaTabApi.value = new alphaTab.AlphaTabApi(atMainRef.value, settings);
+    const api = alphaTabApi.value;
 
-    // 如果传入的是对象，则直接加载
-    if (typeof props.score === 'object') {
-      api.load(props.score);
+    if (typeof scoreFileOrObject === 'object') {
+      api.load(scoreFileOrObject);
     }
 
-    // 加载状态覆盖层逻辑
     api.renderStarted.on(() => {
       if (atOverlayRef.value) {
         atOverlayRef.value.style.display = 'flex';
+        atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Music sheet is loading';
       }
-      // 更新活动音轨
       const activeIndices = new Set();
       api.tracks.forEach(t => activeIndices.add(t.index));
       currentActiveTrackIndices.value = activeIndices;
@@ -84,7 +87,6 @@ onMounted(() => {
       }
     });
 
-    // 确保 api.ready 后再渲染
     api.scoreLoaded.on(score => {
       if (!score) {
         if (atOverlayRef.value) {
@@ -94,7 +96,6 @@ onMounted(() => {
       } else {
         allTracks.value = score.tracks;
         
-        // 更新歌曲信息
         const songTitleEl = document.querySelector('.at-song-title');
         const songArtistEl = document.querySelector('.at-song-artist');
         if (songTitleEl) songTitleEl.innerText = score.title;
@@ -104,7 +105,41 @@ onMounted(() => {
   } else {
     console.error('AlphaTab main container or overlay element not found');
   }
+}
+
+onMounted(() => {
+  initializeAlphaTab(props.score);
 })
+
+// 监听 score prop 的变化
+watch(() => props.score, (newScore) => {
+  if (alphaTabApi.value && newScore) {
+    // 显示加载覆盖层
+    if (atOverlayRef.value) {
+        atOverlayRef.value.style.display = 'flex';
+        atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Switching score...';
+    }
+    // 重新初始化或加载新的乐谱
+    // 简单起见，我们重新初始化。如果需要更平滑的过渡，可以考虑仅调用 api.load(newScore)
+    // 但需要确保之前的状态被正确清理。
+    // 对于 URL 字符串，直接重新初始化是比较稳妥的方式。
+    // 对于对象，api.load() 应该足够。
+    
+    // 延迟一点以确保UI更新（加载提示）
+    setTimeout(() => {
+        if (typeof newScore === 'string') {
+            initializeAlphaTab(newScore);
+        } else if (typeof newScore === 'object') {
+            // 如果 API 已经存在，并且我们确定 load 方法能正确处理，
+            // 可以避免完全销毁和重建。
+            // 但为了保证一致性和避免潜在的状态问题，重新初始化通常更安全。
+            initializeAlphaTab(newScore); 
+            // 或者，如果 alphaTabApi.value.load 可以处理好切换：
+            // alphaTabApi.value.load(newScore);
+        }
+    }, 50); // 短暂延迟
+  }
+}, { immediate: false }); // immediate: false 避免在初始挂载时重复加载
 
 function handleTrackSelected(trackFromEvent) {
   if (alphaTabApi.value) {
@@ -178,7 +213,7 @@ function handleTrackSelected(trackFromEvent) {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1002;
+  z-index: 1002; /* 确保在乐谱列表模态框之下 */
 
   /* Blurry dark shade */
   backdrop-filter: blur(3px);
