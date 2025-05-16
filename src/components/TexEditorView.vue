@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch } from 'vue'; // 移除 defineEmits
 import TexEditor from './TexEditor.vue';
 import SimpleDisplay from './SimpleDisplay.vue';
 

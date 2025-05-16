@@ -2,7 +2,7 @@
 import { provide, shallowRef, ref } from 'vue';
 import SimpleDisplay from './components/SimpleDisplay.vue';
 import ScoreList from './components/ScoreList.vue';
-import TexEditorView from './components/TexEditorView.vue'; // 导入 TexEditorView 组件
+import TexEditorView from './components/TexEditorView.vue';
 
 // 使用 shallowRef 避免大型对象的深度响应性
 const alphaTabApi = shallowRef(null);
@@ -35,17 +35,21 @@ function handleNavigation(payload: NavigationPayload) {
 
 function handleScoreSelected(selectedScorePath: string) {
   currentScore.value = selectedScorePath;
-  currentView.value = 'score';
+  currentView.value = 'score'; // 确保切换到乐谱视图
   isScoreListVisible.value = false;
 }
 
 function toggleScoreListVisibility() {
   isScoreListVisible.value = !isScoreListVisible.value;
+  // 移除: if (isScoreListVisible.value) { currentView.value = 'score'; }
+  // 视图切换应由 handleNavigation 或 handleScoreSelected 处理
 }
 
 function closeScoreList() {
   isScoreListVisible.value = false;
 }
+
+// 移除 handleRequestScoreList 函数
 </script>
 
 <template>
@@ -58,12 +62,14 @@ function closeScoreList() {
       @close="closeScoreList"
       @navigate="handleNavigation"
     />
-    <template v-if="currentView === 'score'">
-      <SimpleDisplay :score="currentScore" :key="currentScore" />
-    </template>
-    <template v-else-if="currentView === 'texEditor'">
-      <TexEditorView />
-    </template>
+    <transition name="fade" mode="out-in">
+      <template v-if="currentView === 'score'">
+        <SimpleDisplay :score="currentScore" :key="currentScore" />
+      </template>
+      <template v-else-if="currentView === 'texEditor'">
+        <TexEditorView /> <!-- 移除 @request-score-list 监听 -->
+      </template>
+    </transition>
   </div>
 </template>
 
@@ -96,5 +102,16 @@ function closeScoreList() {
 
 .fab-open-score-list:hover {
   background-color: #365a8a;
+}
+
+/* 过渡动画样式 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
