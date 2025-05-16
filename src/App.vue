@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { provide, shallowRef, ref, computed } from 'vue'; // Import computed
+import { provide, shallowRef, ref, computed } from 'vue';
 import SimpleDisplay from './components/SimpleDisplay.vue';
 import ScoreList from './components/ScoreList.vue';
 import TexEditorView from './components/TexEditorView.vue';
+import GlobalHeader from './components/layout/GlobalHeader.vue'; // Import GlobalHeader
 
 // 使用 shallowRef 避免大型对象的深度响应性
 const alphaTabApi = shallowRef(null);
@@ -71,8 +72,6 @@ function handleScoreSelected(selectedScorePath: string) {
 
 function toggleScoreListVisibility() {
   isScoreListVisible.value = !isScoreListVisible.value;
-  // 移除: if (isScoreListVisible.value) { currentView.value = 'score'; }
-  // 视图切换应由 handleNavigation 或 handleScoreSelected 处理
 }
 
 function closeScoreList() {
@@ -84,7 +83,7 @@ function closeScoreList() {
 
 <template>
   <div id="app-container">
-    <button @click="toggleScoreListVisibility" class="fab-open-score-list" title="选择乐谱">谱</button>
+    <GlobalHeader @toggle-menu="toggleScoreListVisibility" />
     <ScoreList
       v-if="isScoreListVisible"
       :title="scoreListProps.title"
@@ -94,14 +93,16 @@ function closeScoreList() {
       @close="closeScoreList"
       @navigate="handleNavigation"
     />
-    <transition name="fade" mode="out-in">
-      <template v-if="currentView === 'score'">
-        <SimpleDisplay :score="currentScore" :key="currentScore" />
-      </template>
-      <template v-else-if="currentView === 'texEditor'">
-        <TexEditorView /> <!-- 移除 @request-score-list 监听 -->
-      </template>
-    </transition>
+    <main class="main-content">
+      <transition name="fade" mode="out-in">
+        <template v-if="currentView === 'score'">
+          <SimpleDisplay :score="currentScore" :key="currentScore" />
+        </template>
+        <template v-else-if="currentView === 'texEditor'">
+          <TexEditorView />
+        </template>
+      </transition>
+    </main>
   </div>
 </template>
 
@@ -109,31 +110,15 @@ function closeScoreList() {
 #app-container {
   width: 100vw;
   height: 100vh;
-  overflow: hidden; /* 防止在应用级别出现滚动条 */
-  position: relative;
-}
-
-.fab-open-score-list {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #436d9d;
-  color: white;
-  border: none;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  font-size: 20px;
-  cursor: pointer;
+  overflow: hidden;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1005; /* 确保在 SimpleDisplay 之上，但在 ScoreList 模态框之下 */
+  flex-direction: column;
 }
 
-.fab-open-score-list:hover {
-  background-color: #365a8a;
+.main-content {
+  flex-grow: 1;
+  overflow: hidden; /* Changed from overflow-y: auto to prevent scrolling */
+  position: relative; 
 }
 
 /* 过渡动画样式 */

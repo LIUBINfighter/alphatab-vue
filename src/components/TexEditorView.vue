@@ -72,7 +72,7 @@ function handleLoadTex() {
 <style scoped>
 .tex-editor-view-wrapper {
   width: 100%;
-  height: 100vh; /* 占据整个视口高度 */
+  height: 100%; /* Changed from 100vh to 100% to fill parent (.main-content) */
   display: flex;
   flex-direction: column;
   /* Ensure wrapper itself doesn't cause unexpected overflow if children are 100vh */
