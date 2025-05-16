@@ -2,7 +2,12 @@
   <div class="tex-editor-view-wrapper">
     <div class="tex-editor-view">
       <div class="editor-pane">
-        <TexEditor v-model="texContent" />
+        <ToolBar 
+          @new-tex="handleNewTex"
+          @save-tex="handleSaveTex"
+          @load-tex="handleLoadTex"
+        />
+        <TexEditor v-model="texContent" class="tex-editor-component" />
       </div>
       <div class="display-pane">
         <SimpleDisplay 
@@ -16,11 +21,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'; // 移除 defineEmits
+import { ref, watch } from 'vue';
 import TexEditor from './TexEditor.vue';
 import SimpleDisplay from './SimpleDisplay.vue';
+import ToolBar from './editor/ToolBar.vue'; // Import the ToolBar
 
-const texContent = ref(`\\title "AlphaTex Example"
+const STORAGE_KEY = 'alphaTexEditorContent';
+
+const texContent = ref(localStorage.getItem(STORAGE_KEY) || `\\title "AlphaTex Example"
 \\artist "Vue Component"
 \\tempo 120
 \\tuning e4 b3 g3 d3 a2 e2
@@ -39,6 +47,26 @@ watch(texContent, () => {
   // 增加版本号，强制SimpleDisplay重新渲染
   texVersion.value++;
 }, { immediate: false });
+
+function handleNewTex() {
+  texContent.value = '';
+  // Optionally, clear localStorage or ask user
+  // localStorage.removeItem(STORAGE_KEY); 
+}
+
+function handleSaveTex() {
+  localStorage.setItem(STORAGE_KEY, texContent.value);
+  alert('Content saved to localStorage!'); // Simple feedback
+}
+
+function handleLoadTex() {
+  const loadedContent = localStorage.getItem(STORAGE_KEY);
+  if (loadedContent !== null) {
+    texContent.value = loadedContent;
+  } else {
+    alert('No saved content found in localStorage.'); // Simple feedback
+  }
+}
 </script>
 
 <style scoped>
@@ -47,22 +75,30 @@ watch(texContent, () => {
   height: 100vh; /* 占据整个视口高度 */
   display: flex;
   flex-direction: column;
+  /* Ensure wrapper itself doesn't cause unexpected overflow if children are 100vh */
+  overflow: hidden; 
 }
 
 .tex-editor-view {
   display: flex;
-  flex-grow: 1; /* 占据 tex-editor-view-wrapper 的剩余空间 */
-  overflow: hidden; /* 防止子元素溢出导致滚动条 */
+  flex-grow: 1; 
+  overflow: hidden; 
 }
 
 .editor-pane {
-  width: 40%; /* 编辑器占据40%宽度 */
-  height: 100%;
-  padding: 10px;
+  width: 40%; 
+  height: 100%; /* Ensure editor-pane takes full height of its parent */
+  padding: 0; /* Remove padding, toolbar and editor will manage their own */
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Stack ToolBar and TexEditor vertically */
   box-sizing: border-box;
   border-right: 1px solid #ccc;
+}
+
+.tex-editor-component {
+  flex-grow: 1; /* TexEditor takes remaining space in editor-pane */
+  /* TexEditor's internal textarea already has height: 100% relative to this component */
+  overflow: hidden; /* Prevent its own scrollbars if textarea is sized correctly */
 }
 
 .display-pane {
