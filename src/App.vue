@@ -107,12 +107,23 @@ function closeScoreList() {
 </template>
 
 <style scoped>
+/* :global(html, body) {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+} */
+
 #app-container {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
+  width: 100%;
+  height: 97vh;
+  /* height: 100%; */
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .main-content {

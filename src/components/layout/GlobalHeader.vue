@@ -27,7 +27,7 @@ function toggleMenu() {
   color: white;
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  padding: 20px 20px;
   box-sizing: border-box;
   border-bottom: 1px solid #444;
   flex-shrink: 0; /* Prevent header from shrinking if content overflows */

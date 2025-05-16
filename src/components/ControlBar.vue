@@ -8,10 +8,10 @@
       <SpeedControl class="priority-low" v-if="shouldShow('speed-control')" />
       <CountInButton class="priority-low" v-if="shouldShow('count-in')" />
       <MetronomeButton class="priority-high" v-if="shouldShow('metronome')" />
-      <LoopButton class="priority-low" v-if="shouldShow('loop')" />
-      <PrintButton class="priority-low" v-if="shouldShow('print')" />
-      <DownloadButton class="priority-low" v-if="shouldShow('download')" />
-      <ZoomControl class="priority-low" v-if="shouldShow('zoom')" />
+      <!-- <LoopButton class="priority-low" v-if="shouldShow('loop')" /> -->
+      <!-- <PrintButton class="priority-low" v-if="shouldShow('print')" /> -->
+      <!-- <DownloadButton class="priority-low" v-if="shouldShow('download')" /> -->
+      <!-- <ZoomControl class="priority-low" v-if="shouldShow('zoom')" /> -->
       <LayoutControl class="priority-low" v-if="shouldShow('layout')" />
       <TrackControl class="priority-low" v-if="shouldShow('track-control')" />
     </div>
@@ -75,20 +75,21 @@ function shouldShow(featureName) {
   display: flex;
   background: #436d9d;
   color: #fff;
-  /* min-width: min-content; */
   width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
+  max-width: 100%; /* 确保不超出父容器 */
+  overflow-x: auto; /* 在小屏幕上允许横向滚动而不是溢出 */
   position: relative;
   z-index: 1010;  /* 确保控制栏在最上层 */
+  box-sizing: border-box;
+  justify-content: space-between; /* 帮助更好地分布空间 */
+  padding: 0; /* 移除任何可能导致溢出的内边距 */
 }
 
 .at-controls-right {
   display: flex;
-  /* margin-left: auto; */
-  flex-wrap: nowrap; 
-  /* 要不要允许按钮折行？改为wrap? */
+  flex-wrap: nowrap;
   max-width: 100%;
+  box-sizing: border-box;
 }
 
 .at-controls>div {
@@ -96,6 +97,7 @@ function shouldShow(featureName) {
   justify-content: flex-start;
   align-content: center;
   align-items: center;
+  flex-shrink: 0; /* 防止压缩 */
 }
 
 .at-controls-center {
@@ -110,6 +112,7 @@ function shouldShow(featureName) {
   cursor: pointer;
   padding: 4px;
   margin: 0 3px;
+  box-sizing: border-box;
 }
 
 .at-controls .btn {

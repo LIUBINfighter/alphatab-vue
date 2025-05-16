@@ -218,13 +218,15 @@ function handleTrackSelected(trackFromEvent) {
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  min-width: 800px; /* 添加最小宽度 */
+  /* min-width: 800px; */ /* 移除最小宽度，避免在小屏幕上产生水平滚动条 */
+  box-sizing: border-box; /* 确保边框计入宽高 */
 }
 
 .at-content {
   position: relative;
   overflow: hidden;
   flex: 1 1 auto;
+  box-sizing: border-box; /* 确保所有子元素正确计算大小 */
 }
 
 .at-sidebar {
@@ -240,6 +242,7 @@ function handleTrackSelected(trackFromEvent) {
   border-right: 1px solid rgba(0, 0, 0, 0.12);
   background: #f7f7f7;
   transition: max-width 0.2s ease-in-out; /* Smooth transition for expand/collapse */
+  box-sizing: border-box;
 }
 
 .at-sidebar:hover {
@@ -251,18 +254,25 @@ function handleTrackSelected(trackFromEvent) {
   overflow-y: auto;
   position: absolute;
   top: 0;
-  left: 70px;
+  /* left: 70px; */ /* 移除固定左边距，适应没有sidebar的情况 */
+  left: 0; /* 改为从页面左侧开始 */
   right: 0;
   bottom: 0;
-  padding-right: 20px;
   scroll-behavior: smooth;
   scroll-padding-top: 30px;
+  box-sizing: border-box;
+}
+
+/* 当侧边栏存在时，视口需要偏移 */
+.at-sidebar + .at-viewport {
+  left: 70px; /* 只在侧边栏存在时应用这个偏移 */
 }
 
 .at-footer {
   flex: 0 0 auto;
   background: #436d9d;
   color: #fff;
+  box-sizing: border-box;
 }
 
 .at-overlay {
@@ -282,6 +292,7 @@ function handleTrackSelected(trackFromEvent) {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  box-sizing: border-box;
 }
 
 .at-overlay-content {
@@ -291,6 +302,7 @@ function handleTrackSelected(trackFromEvent) {
   box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.3);
   padding: 10px;
   border-radius: 4px; /* Optional: for rounded corners */
+  box-sizing: border-box;
 }
 
 /* 播放高亮样式 */
@@ -311,5 +323,10 @@ function handleTrackSelected(trackFromEvent) {
   fill: #0078ff;
   stroke: #0078ff;
   transition: fill 0.1s ease, stroke 0.1s ease;
+}
+
+/* 添加全局盒模型设置确保更一致的尺寸计算 */
+:deep(*) {
+  box-sizing: border-box;
 }
 </style>
