@@ -1,92 +1,106 @@
 <template>
-  <div class="score-list-modal-backdrop">
-    <div class="score-list-modal-content">
-      <h3>选择乐谱</h3>
-      <ul>
-        <li v-for="scoreItem in scores" :key="scoreItem.name" @click="selectScore(scoreItem)">
-          {{ scoreItem.name }}
-        </li>
-      </ul>
-      <button @click="closeList">关闭</button>
+  <div class="score-list-container">
+    <div class="score-list-header">
+      <button @click="switchToTexEditor" class="list-button" title="AlphaTex 编辑器">Tex 编辑器</button>
+      <span class="list-title">选择乐谱</span>
+      <button @click="close" class="close-button">&times;</button>
     </div>
+    <ul class="score-list">
+      <li v-for="score in scores" :key="score.path" @click="selectScore(score.path)" class="score-item">
+        {{ score.name }}
+      </li>
+    </ul>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({
-  scores: Array // [{ name: '乐谱1', path: 'url/to/score1.gpx' }, ...]
+defineProps({
+  scores: {
+    type: Array,
+    required: true
+  }
 });
 
-const emit = defineEmits(['score-selected', 'close']);
+const emit = defineEmits(['score-selected', 'close', 'navigate']);
 
-function selectScore(scoreItem) {
-  emit('score-selected', scoreItem.path);
+function selectScore(scorePath) {
+  emit('score-selected', scorePath);
 }
 
-function closeList() {
+function switchToTexEditor() {
+  emit('navigate', { view: 'texEditor' });
+}
+
+function close() {
   emit('close');
 }
 </script>
 
 <style scoped>
-.score-list-modal-backdrop {
+.score-list-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(5px);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1006; /* 确保在所有其他元素之上 */
+}
+
+.score-list-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  z-index: 1000; /* Ensure it's above SimpleDisplay's overlay */
+  background-color: #436d9d;
+  color: white;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
 }
 
-.score-list-modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  min-width: 300px;
-  text-align: center;
+.list-title {
+  font-weight: bold;
 }
 
-.score-list-modal-content h3 {
-  margin-top: 0;
+.close-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
 }
 
-.score-list-modal-content ul {
+.list-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+.list-button:hover {
+    background-color: #365a8a;
+}
+
+.score-list {
   list-style: none;
   padding: 0;
-  margin: 15px 0;
+  margin: 0;
 }
 
-.score-list-modal-content li {
-  padding: 8px 12px;
+.score-item {
+  padding: 10px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
 }
 
-.score-list-modal-content li:hover {
-  background-color: #f0f0f0;
-}
-
-.score-list-modal-content li:last-child {
-  border-bottom: none;
-}
-
-.score-list-modal-content button {
-  margin-top: 10px;
-  padding: 8px 16px;
-  background-color: #436d9d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.score-list-modal-content button:hover {
-  background-color: #365a8a;
+.score-item:hover {
+  background-color: #eee;
 }
 </style>

@@ -1,25 +1,25 @@
 <template>
   <div class="at-controls">
-    <ShortInfo class="priority-low" />
+    <ShortInfo class="priority-low" v-if="shouldShow('short-info')" />
     <div class="at-controls-right">
-      <TimePosition class="priority-high" />
-      <StopButton class="priority-low" />
-      <PlayPauseButton class="priority-high" />
-      <SpeedControl class="priority-low" />
-      <CountInButton class="priority-low" />
-      <MetronomeButton class="priority-high" />
-      <LoopButton class="priority-low" />
-      <PrintButton class="priority-low" />
-      <DownloadButton class="priority-low" />
-      <ZoomControl class="priority-low" />
-      <LayoutControl class="priority-low" />
-      <TrackControl class="priority-low" />
+      <TimePosition class="priority-high" v-if="shouldShow('time-position')" />
+      <StopButton class="priority-low" v-if="shouldShow('stop')" />
+      <PlayPauseButton class="priority-high" v-if="shouldShow('play-pause')" />
+      <SpeedControl class="priority-low" v-if="shouldShow('speed-control')" />
+      <CountInButton class="priority-low" v-if="shouldShow('count-in')" />
+      <MetronomeButton class="priority-high" v-if="shouldShow('metronome')" />
+      <LoopButton class="priority-low" v-if="shouldShow('loop')" />
+      <PrintButton class="priority-low" v-if="shouldShow('print')" />
+      <DownloadButton class="priority-low" v-if="shouldShow('download')" />
+      <ZoomControl class="priority-low" v-if="shouldShow('zoom')" />
+      <LayoutControl class="priority-low" v-if="shouldShow('layout')" />
+      <TrackControl class="priority-low" v-if="shouldShow('track-control')" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { inject } from 'vue'
+import { inject, computed } from 'vue'
 import ShortInfo from './controls/ShortInfo.vue'
 import TimePosition from './controls/TimePosition.vue'
 import CountInButton from './controls/CountInButton.vue'
@@ -34,8 +34,39 @@ import StopButton from './controls/StopButton.vue'
 import SpeedControl from './controls/SpeedControl.vue'
 import DownloadButton from './controls/DownloadButton.vue'
 
+const props = defineProps({
+  features: {
+    type: Array,
+    default: null // 如果为 null，则显示所有功能
+  }
+});
+
 // 确保 alphaTabApi 已被提供
 const api = inject('alphaTabApi')
+
+const featureMap = {
+  'short-info': ShortInfo,
+  'time-position': TimePosition,
+  'stop': StopButton,
+  'play-pause': PlayPauseButton,
+  'speed-control': SpeedControl,
+  'count-in': CountInButton,
+  'metronome': MetronomeButton,
+  'loop': LoopButton,
+  'print': PrintButton,
+  'download': DownloadButton,
+  'zoom': ZoomControl,
+  'layout': LayoutControl,
+  'track-control': TrackControl,
+};
+
+function shouldShow(featureName) {
+  if (!props.features) {
+    return true; // 如果未指定 features，则显示所有
+  }
+  return props.features.includes(featureName);
+}
+
 </script>
 
 <style scoped>

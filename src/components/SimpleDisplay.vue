@@ -18,7 +18,7 @@
       </div>
     </div>
     <div class="at-controls">
-      <ControlBar />
+      <ControlBar :features="controlBarFeatures" />
     </div>
   </div>
 </template>
@@ -30,7 +30,14 @@ import ControlBar from './ControlBar.vue'
 const props = defineProps({
   score: {
     type: [String, Object],
-    required: true
+    // required: true // 不再是必需的
+  },
+  tex: { // 新增：用于 AlphaTex 内容的 prop
+    type: String,
+  },
+  controlBarFeatures: { // 新增：用于控制 ControlBar 的 prop
+    type: Array,
+    default: null // null 表示显示所有默认控件
   }
 })
 
@@ -44,7 +51,7 @@ const currentActiveTrackIndices = ref(new Set())
 const alphaTabApi = inject('alphaTabApi')
 
 // 封装 AlphaTab 初始化和加载逻辑
-function initializeAlphaTab(scoreFileOrObject) {
+function initializeAlphaTab() { // 移除 scoreFileOrObject 参数，直接从 props 读取
   if (atMainRef.value && atOverlayRef.value) {
     // 如果已有 API 实例，先销毁
     if (alphaTabApi.value) {
@@ -52,24 +59,38 @@ function initializeAlphaTab(scoreFileOrObject) {
     }
 
     const settings = {
-      file: typeof scoreFileOrObject === 'string' ? scoreFileOrObject : undefined,
+      // file: 将根据 props.score 的类型进行条件设置
       player: {
         enablePlayer: true,
         soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
         enableCursor: true,
         enableHighlights: true,
         scrollMode: alphaTab.ScrollMode.Continuous,
-        scrollElement: document.querySelector('.at-viewport'),
+        scrollElement: document.querySelector('.at-viewport'), // 确保在 DOM 更新后选择
         scrollOffsetY: -30
       }
     };
+
+    if (!props.tex && typeof props.score === 'string') {
+      settings.file = props.score;
+    }
     
     alphaTabApi.value = new alphaTab.AlphaTabApi(atMainRef.value, settings);
     const api = alphaTabApi.value;
 
-    if (typeof scoreFileOrObject === 'object') {
-      api.load(scoreFileOrObject);
+    if (props.tex) {
+      // 如果提供了 tex 内容，则加载它
+      api.tex(props.tex).catch(e => {
+        console.error('Error loading tex on init:', e);
+        if (atOverlayRef.value) {
+          atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error loading AlphaTex.';
+        }
+      });
+    } else if (typeof props.score === 'object') {
+      // 如果 score 是一个对象，则加载它
+      api.load(props.score);
     }
+    // 如果 score 是一个字符串，它已在 settings.file 中设置，并将自动加载
 
     api.renderStarted.on(() => {
       if (atOverlayRef.value) {
@@ -95,7 +116,8 @@ function initializeAlphaTab(scoreFileOrObject) {
         allTracks.value = []; 
       } else {
         allTracks.value = score.tracks;
-        
+        // 更新歌曲标题和艺术家信息（如果元素存在）
+        // 这些元素可能在 TexEditorView 的简化版 ControlBar 中不存在
         const songTitleEl = document.querySelector('.at-song-title');
         const songArtistEl = document.querySelector('.at-song-artist');
         if (songTitleEl) songTitleEl.innerText = score.title;
@@ -108,12 +130,14 @@ function initializeAlphaTab(scoreFileOrObject) {
 }
 
 onMounted(() => {
-  initializeAlphaTab(props.score);
+  // 确保 .at-viewport 元素已挂载
+  // initializeAlphaTab 现在不接受参数，它会从 props 读取
+  initializeAlphaTab();
 })
 
 // 监听 score prop 的变化
-watch(() => props.score, (newScore) => {
-  if (alphaTabApi.value && newScore) {
+watch(() => props.score, (newScore, oldScore) => {
+  if (alphaTabApi.value && newScore && newScore !== oldScore && !props.tex) { // 仅当 score 变化且未使用 tex 时
     // 显示加载覆盖层
     if (atOverlayRef.value) {
         atOverlayRef.value.style.display = 'flex';
@@ -127,19 +151,32 @@ watch(() => props.score, (newScore) => {
     
     // 延迟一点以确保UI更新（加载提示）
     setTimeout(() => {
-        if (typeof newScore === 'string') {
-            initializeAlphaTab(newScore);
-        } else if (typeof newScore === 'object') {
-            // 如果 API 已经存在，并且我们确定 load 方法能正确处理，
-            // 可以避免完全销毁和重建。
-            // 但为了保证一致性和避免潜在的状态问题，重新初始化通常更安全。
-            initializeAlphaTab(newScore); 
-            // 或者，如果 alphaTabApi.value.load 可以处理好切换：
-            // alphaTabApi.value.load(newScore);
-        }
+        // initializeAlphaTab 会处理新的 props.score
+        initializeAlphaTab();
     }, 50); // 短暂延迟
   }
-}, { immediate: false }); // immediate: false 避免在初始挂载时重复加载
+}, { immediate: false });
+
+// 新增：监听 tex prop 的变化
+watch(() => props.tex, (newTex, oldTex) => {
+  if (alphaTabApi.value && typeof newTex === 'string' && newTex !== oldTex) {
+    if (atOverlayRef.value) {
+        atOverlayRef.value.style.display = 'flex';
+        atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Updating AlphaTex...';
+    }
+    alphaTabApi.value.tex(newTex)
+      .then(() => {
+        // AlphaTab 应该会自动触发 renderFinished 和 scoreLoaded
+        // 如果没有，可能需要手动调用 api.render() 或类似方法
+      })
+      .catch(e => {
+        console.error('Error updating tex:', e);
+        if (atOverlayRef.value) {
+            atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error updating AlphaTex.';
+        }
+      });
+  }
+}, { immediate: false });
 
 function handleTrackSelected(trackFromEvent) {
   if (alphaTabApi.value) {
