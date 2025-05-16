@@ -7,7 +7,7 @@
       <div class="display-pane">
         <SimpleDisplay 
           :tex="texContent" 
-          :key="texContent" 
+          :key="texVersion" 
           :controlBarFeatures="['play-pause', 'stop', 'download']" 
         />
       </div>
@@ -16,23 +16,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import TexEditor from './TexEditor.vue';
 import SimpleDisplay from './SimpleDisplay.vue';
 
 const texContent = ref(`\\title "AlphaTex Example"
 \\artist "Vue Component"
 \\tempo 120
-\\tuning E A D G B E
+\\tuning e4 b3 g3 d3 a2 e2
 \\instrument acousticguitarsteel
 
 .
 0.4 0.4 0.4 0.4
 1.4 1.4 1.4 1.4
-(3)5.3 (2)4.3 (0)3.3
-(3)5.2 (2)4.2 (0)3.2
-`); // 初始 AlphaTex 内容示例
+`); // 修正 AlphaTex 格式，使用正确的 tuning 语法
 
+// 添加版本控制，用于强制SimpleDisplay重新渲染
+const texVersion = ref(0);
+
+// 监听texContent变化，更新版本号以触发重新渲染
+watch(texContent, () => {
+  // 增加版本号，强制SimpleDisplay重新渲染
+  texVersion.value++;
+}, { immediate: false });
 </script>
 
 <style scoped>

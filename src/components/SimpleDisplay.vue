@@ -51,7 +51,7 @@ const currentActiveTrackIndices = ref(new Set())
 const alphaTabApi = inject('alphaTabApi')
 
 // 封装 AlphaTab 初始化和加载逻辑
-function initializeAlphaTab() { // 移除 scoreFileOrObject 参数，直接从 props 读取
+function initializeAlphaTab() {
   if (atMainRef.value && atOverlayRef.value) {
     // 如果已有 API 实例，先销毁
     if (alphaTabApi.value) {
@@ -80,12 +80,23 @@ function initializeAlphaTab() { // 移除 scoreFileOrObject 参数，直接从 p
 
     if (props.tex) {
       // 如果提供了 tex 内容，则加载它
-      api.tex(props.tex).catch(e => {
-        console.error('Error loading tex on init:', e);
+      try {
+        const texPromise = api.tex(props.tex);
+        // 检查 tex() 是否返回 Promise，有些版本可能不返回
+        if (texPromise && typeof texPromise.catch === 'function') {
+          texPromise.catch(e => {
+            console.error('Error loading tex on init:', e);
+            if (atOverlayRef.value) {
+              atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error loading AlphaTex.';
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Error during tex loading:', e);
         if (atOverlayRef.value) {
           atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error loading AlphaTex.';
         }
-      });
+      }
     } else if (typeof props.score === 'object') {
       // 如果 score 是一个对象，则加载它
       api.load(props.score);
@@ -164,17 +175,28 @@ watch(() => props.tex, (newTex, oldTex) => {
         atOverlayRef.value.style.display = 'flex';
         atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Updating AlphaTex...';
     }
-    alphaTabApi.value.tex(newTex)
-      .then(() => {
-        // AlphaTab 应该会自动触发 renderFinished 和 scoreLoaded
-        // 如果没有，可能需要手动调用 api.render() 或类似方法
-      })
-      .catch(e => {
-        console.error('Error updating tex:', e);
-        if (atOverlayRef.value) {
-            atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error updating AlphaTex.';
-        }
-      });
+    
+    try {
+      const texPromise = alphaTabApi.value.tex(newTex);
+      // 检查 tex() 是否返回 Promise
+      if (texPromise && typeof texPromise.then === 'function') {
+        texPromise
+          .then(() => {
+            // AlphaTab 应该会自动触发 renderFinished 和 scoreLoaded
+          })
+          .catch(e => {
+            console.error('Error updating tex:', e);
+            if (atOverlayRef.value) {
+                atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error updating AlphaTex.';
+            }
+          });
+      }
+    } catch (e) {
+      console.error('Error during tex update:', e);
+      if (atOverlayRef.value) {
+          atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error updating AlphaTex.';
+      }
+    }
   }
 }, { immediate: false });
 
