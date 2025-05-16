@@ -1,127 +1,322 @@
 <template>
-  <div class="tex-editor-view-wrapper">
-    <div class="tex-editor-view">
-      <div class="editor-pane">
-        <ToolBar 
-          @new-tex="handleNewTex"
-          @save-tex="handleSaveTex"
-          @load-tex="handleLoadTex"
+  <div class="tex-editor-container">
+    <ToolBar 
+      :currentFileName="currentFileName"
+      @new-tex="createNewFile"
+      @save-tex="saveCurrentFile"
+      @load-tex="showFileList"
+      @rename-tex="renameCurrentFile"
+      @load-template="showTemplates"
+    />
+    <div class="editor-content">
+      <TexEditor v-model="editorContent" />
+    </div>
+
+    <!-- 模态框: 保存文件 -->
+    <div v-if="showSaveDialog" class="modal-overlay">
+      <div class="modal-content">
+        <h3>保存文件</h3>
+        <input 
+          v-model="saveFileName" 
+          placeholder="输入文件名" 
+          @keyup.enter="confirmSave"
         />
-        <TexEditor v-model="texContent" class="tex-editor-component" />
+        <div class="modal-buttons">
+          <button @click="confirmSave">保存</button>
+          <button @click="cancelSave">取消</button>
+        </div>
       </div>
-      <div class="display-pane">
-        <SimpleDisplay 
-          :tex="texContent" 
-          :key="texVersion" 
-          :controlBarFeatures="['play-pause', 'stop', 'download']" 
-        />
+    </div>
+
+    <!-- 模态框: 加载文件列表 -->
+    <div v-if="showLoadDialog" class="modal-overlay">
+      <div class="modal-content">
+        <h3>加载文件</h3>
+        <div v-if="savedFiles.length === 0" class="empty-list">
+          没有保存的文件
+        </div>
+        <ul v-else class="file-list">
+          <li 
+            v-for="file in savedFiles" 
+            :key="file.id"
+            @click="loadFile(file.id)"
+          >
+            {{ file.name }}
+          </li>
+        </ul>
+        <div class="modal-buttons">
+          <button @click="closeLoadDialog">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模态框: 模板列表 -->
+    <div v-if="showTemplateDialog" class="modal-overlay">
+      <div class="modal-content">
+        <h3>选择模板</h3>
+        <ul class="file-list">
+          <li 
+            v-for="template in templates" 
+            :key="template.id"
+            @click="loadTemplate(template.id)"
+          >
+            {{ template.name }}
+          </li>
+        </ul>
+        <div class="modal-buttons">
+          <button @click="closeTemplateDialog">取消</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
-import TexEditor from './TexEditor.vue';
-import SimpleDisplay from './SimpleDisplay.vue';
-import ToolBar from './editor/ToolBar.vue'; // Import the ToolBar
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import ToolBar from './editor/ToolBar.vue';
+import TexEditor from './editor/TexEditor.vue';
 
-const STORAGE_KEY = 'alphaTexEditorContent';
+// 编辑器状态
+const editorContent = ref('');
+const currentFileName = ref('');
+const currentFileId = ref('');
+const showSaveDialog = ref(false);
+const showLoadDialog = ref(false);
+const showTemplateDialog = ref(false);
+const saveFileName = ref('');
+const savedFiles = ref([]);
 
-const texContent = ref(localStorage.getItem(STORAGE_KEY) || `\\title "AlphaTex Example"
-\\artist "Vue Component"
-\\tempo 120
-\\tuning e4 b3 g3 d3 a2 e2
-\\instrument acousticguitarsteel
+// 模板列表
+const templates = ref([
+  { id: 'simple', name: '简单示例', content: '\\title "简单示例"\n\\subtitle "AlphaTex"\n\\tempo 120\n.4 c d e f | g a b c5' },
+  { id: 'scales', name: '音阶练习', content: '\\title "音阶练习"\n\\subtitle "C大调"\n\\tempo 90\n.4 c d e f | g a b c5 | c5 b a g | f e d c' },
+  { id: 'chords', name: '和弦示例', content: '\\title "和弦示例"\n.2 c+e+g c+f+a c+e+g e+g+c5' }
+]);
 
-.
-0.4 0.4 0.4 0.4
-1.4 1.4 1.4 1.4
-`); // 修正 AlphaTex 格式，使用正确的 tuning 语法
+// 从localStorage中加载已保存文件列表
+const loadSavedFilesList = () => {
+  const fileKeys = Object.keys(localStorage).filter(key => key.startsWith('alphaTexFile:'));
+  savedFiles.value = fileKeys.map(key => {
+    return {
+      id: key,
+      name: key.replace('alphaTexFile:', '')
+    };
+  });
+};
 
-// 添加版本控制，用于强制SimpleDisplay重新渲染
-const texVersion = ref(0);
+// 创建新文件
+const createNewFile = () => {
+  editorContent.value = '';
+  currentFileName.value = '';
+  currentFileId.value = '';
+};
 
-// 监听texContent变化，更新版本号以触发重新渲染
-watch(texContent, () => {
-  // 增加版本号，强制SimpleDisplay重新渲染
-  texVersion.value++;
-}, { immediate: false });
-
-function handleNewTex() {
-  texContent.value = '';
-  // Optionally, clear localStorage or ask user
-  // localStorage.removeItem(STORAGE_KEY); 
-}
-
-function handleSaveTex() {
-  localStorage.setItem(STORAGE_KEY, texContent.value);
-  alert('Content saved to localStorage!'); // Simple feedback
-}
-
-function handleLoadTex() {
-  const loadedContent = localStorage.getItem(STORAGE_KEY);
-  if (loadedContent !== null) {
-    texContent.value = loadedContent;
-  } else {
-    alert('No saved content found in localStorage.'); // Simple feedback
+// 保存当前文件
+const saveCurrentFile = () => {
+  // 如果已有文件名，直接保存
+  if (currentFileName.value) {
+    const fileId = `alphaTexFile:${currentFileName.value}`;
+    localStorage.setItem(fileId, editorContent.value);
+    notifyTexFilesUpdated();
+    return;
   }
-}
+  
+  // 否则显示保存对话框
+  showSaveDialog.value = true;
+  saveFileName.value = '';
+};
+
+// 确认保存
+const confirmSave = () => {
+  if (!saveFileName.value.trim()) {
+    alert('请输入文件名');
+    return;
+  }
+  
+  const fileId = `alphaTexFile:${saveFileName.value}`;
+  localStorage.setItem(fileId, editorContent.value);
+  currentFileName.value = saveFileName.value;
+  currentFileId.value = fileId;
+  showSaveDialog.value = false;
+  notifyTexFilesUpdated();
+};
+
+const cancelSave = () => {
+  showSaveDialog.value = false;
+};
+
+// 显示文件列表
+const showFileList = () => {
+  loadSavedFilesList();
+  showLoadDialog.value = true;
+};
+
+// 加载文件
+const loadFile = (fileId) => {
+  const content = localStorage.getItem(fileId);
+  if (content) {
+    editorContent.value = content;
+    currentFileName.value = fileId.replace('alphaTexFile:', '');
+    currentFileId.value = fileId;
+  }
+  showLoadDialog.value = false;
+};
+
+// 关闭加载对话框
+const closeLoadDialog = () => {
+  showLoadDialog.value = false;
+};
+
+// 重命名当前文件
+const renameCurrentFile = () => {
+  if (!currentFileName.value) {
+    alert('请先保存文件');
+    return;
+  }
+  
+  const newName = prompt('请输入新的文件名', currentFileName.value);
+  if (!newName || newName === currentFileName.value) return;
+  
+  // 删除旧文件，保存为新文件
+  localStorage.removeItem(currentFileId.value);
+  const newFileId = `alphaTexFile:${newName}`;
+  localStorage.setItem(newFileId, editorContent.value);
+  
+  currentFileName.value = newName;
+  currentFileId.value = newFileId;
+  notifyTexFilesUpdated();
+};
+
+// 显示模板列表
+const showTemplates = () => {
+  showTemplateDialog.value = true;
+};
+
+// 加载模板
+const loadTemplate = (templateId) => {
+  const template = templates.value.find(t => t.id === templateId);
+  if (template) {
+    editorContent.value = template.content;
+    currentFileName.value = '';
+    currentFileId.value = '';
+  }
+  showTemplateDialog.value = false;
+};
+
+// 关闭模板对话框
+const closeTemplateDialog = () => {
+  showTemplateDialog.value = false;
+};
+
+// 通知文件列表已更新
+const notifyTexFilesUpdated = () => {
+  window.dispatchEvent(new CustomEvent('tex-files-updated'));
+};
+
+// 监听来自App.vue的事件
+const handleTexEditorAction = (event) => {
+  const { action, fileId } = event.detail;
+  
+  if (action === 'new') {
+    createNewFile();
+  } else if (action === 'load' && fileId) {
+    loadFile(fileId);
+  } else if (action === 'showTemplates') {
+    showTemplates();
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('tex-editor-action', handleTexEditorAction);
+  loadSavedFilesList();
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('tex-editor-action', handleTexEditorAction);
+});
 </script>
 
 <style scoped>
-.tex-editor-view-wrapper {
-  width: 100%;
-  height: 100%; /* Changed from 100vh to 100% to fill parent (.main-content) */
+.tex-editor-container {
   display: flex;
   flex-direction: column;
-  /* Ensure wrapper itself doesn't cause unexpected overflow if children are 100vh */
-  overflow: hidden; 
-}
-
-.tex-editor-view {
-  display: flex;
-  flex-grow: 1; 
-  overflow: hidden; 
-}
-
-.editor-pane {
-  width: 40%; 
-  height: 100%; /* Ensure editor-pane takes full height of its parent */
-  padding: 0; /* Remove padding, toolbar and editor will manage their own */
-  display: flex;
-  flex-direction: column; /* Stack ToolBar and TexEditor vertically */
-  box-sizing: border-box;
-  border-right: 1px solid #ccc;
-}
-
-.tex-editor-component {
-  flex-grow: 1; /* TexEditor takes remaining space in editor-pane */
-  /* TexEditor's internal textarea already has height: 100% relative to this component */
-  overflow: hidden; /* Prevent its own scrollbars if textarea is sized correctly */
-}
-
-.display-pane {
-  width: 60%; /* 显示区域占据60%宽度 */
   height: 100%;
+  overflow: hidden;
+}
+
+.editor-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+}
+
+.modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 16px;
   box-sizing: border-box;
 }
 
-/* 确保 SimpleDisplay 在 display-pane 中正确拉伸 */
-.display-pane :deep(.at-wrap) {
-  width: 100% !important;
-  height: 100% !important; /* 使 SimpleDisplay 填充 display-pane 高度 */
-  min-width: initial !important; /* 覆盖 SimpleDisplay 的 min-width */
-  border: none !important; /* 移除 SimpleDisplay 的边框（可选） */
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
 
-.display-pane :deep(.at-content) {
-  height: calc(100% - 40px); /* 假设 ControlBar 高度为 40px */
+.modal-buttons button {
+  padding: 6px 12px;
+  background-color: #436d9d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.display-pane :deep(.at-viewport) {
-   left: 0px !important; /* Tex 模式下，左边距为0 */
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.file-list li {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.file-list li:hover {
+  background-color: #f0f0f0;
+}
+
+.empty-list {
+  text-align: center;
+  padding: 16px;
+  color: #666;
 }
 </style>

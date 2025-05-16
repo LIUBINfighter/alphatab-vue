@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide, shallowRef, ref, computed } from 'vue';
+import { provide, shallowRef, ref, computed, onMounted } from 'vue';
 import SimpleDisplay from './components/SimpleDisplay.vue';
 import ScoreList from './components/ScoreList.vue';
 import TexEditorView from './components/TexEditorView.vue';
@@ -21,10 +21,28 @@ const availableScores = ref([
   { name: 'Canon Rock', path: 'https://www.alphatab.net/files/canon.gp' },
 ]);
 
+// 存储在localStorage中的AlphaTex文件列表
+const savedTexFiles = ref<Array<{ name: string, id: string }>>([]);
+
+// 在组件挂载时加载已保存的文件列表
+onMounted(() => {
+  loadSavedTexFiles();
+});
+
+// 从localStorage加载已保存的文件列表
+function loadSavedTexFiles() {
+  const fileKeys = Object.keys(localStorage).filter(key => key.startsWith('alphaTexFile:'));
+  savedTexFiles.value = fileKeys.map(key => {
+    const name = key.replace('alphaTexFile:', '');
+    return { name, type: 'texFile', id: key };
+  });
+}
+
 interface NavigationPayload {
   view?: 'score' | 'texEditor';
   path?: string;
   action?: string; // For actions like 'loadTexSampleAction'
+  texFileId?: string; // 用于加载特定的Tex文件
 }
 
 const scoreListProps = computed(() => {
@@ -41,11 +59,17 @@ const scoreListProps = computed(() => {
     return {
       title: '编辑器菜单',
       items: [
-        { name: '加载 Tex 示例 (占位)', type: 'action', id: 'loadTexSampleAction' }
+        { name: '新建文件', type: 'action', id: 'newTexFileAction' },
+        { name: '加载模板', type: 'action', id: 'loadTexTemplatesAction' },
+        ...savedTexFiles.value.map(file => ({
+          name: file.name,
+          type: 'texFile',
+          id: file.id
+        }))
       ],
       headerButtonConfig: {
         label: '返回播放器',
-        actionPayload: { view: 'score' } // Will use currentScore implicitly
+        actionPayload: { view: 'score' }
       }
     };
   }
@@ -59,10 +83,31 @@ function handleNavigation(payload: NavigationPayload) {
     }
   } else if (payload.action === 'loadTexSampleAction') {
     console.log('Action: Load Tex Sample triggered');
-    // Placeholder for future implementation, e.g., open a Tex sample selector
+  } else if (payload.action === 'newTexFileAction') {
+    currentView.value = 'texEditor';
+    // 通知TexEditorView创建新文件
+    window.dispatchEvent(new CustomEvent('tex-editor-action', { 
+      detail: { action: 'new' }
+    }));
+  } else if (payload.action === 'loadTexTemplatesAction') {
+    // 通知TexEditorView显示模板选择界面
+    window.dispatchEvent(new CustomEvent('tex-editor-action', { 
+      detail: { action: 'showTemplates' }
+    }));
+  } else if (payload.texFileId) {
+    currentView.value = 'texEditor';
+    // 通知TexEditorView加载特定文件
+    window.dispatchEvent(new CustomEvent('tex-editor-action', {
+      detail: { action: 'load', fileId: payload.texFileId }
+    }));
   }
   isScoreListVisible.value = false;
 }
+
+// 更新已保存的Tex文件列表
+window.addEventListener('tex-files-updated', () => {
+  loadSavedTexFiles();
+});
 
 function handleScoreSelected(selectedScorePath: string) {
   currentScore.value = selectedScorePath;
