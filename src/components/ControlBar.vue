@@ -75,7 +75,9 @@ function shouldShow(featureName) {
   display: flex;
   background: #436d9d;
   color: #fff;
-  min-width: min-content;
+  /* min-width: min-content; */
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   position: relative;
   z-index: 1010;  /* 确保控制栏在最上层 */
@@ -83,8 +85,10 @@ function shouldShow(featureName) {
 
 .at-controls-right {
   display: flex;
-  margin-left: auto;
-  flex-wrap: nowrap;
+  /* margin-left: auto; */
+  flex-wrap: nowrap; 
+  /* 要不要允许按钮折行？改为wrap? */
+  max-width: 100%;
 }
 
 .at-controls>div {
