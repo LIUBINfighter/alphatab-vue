@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { provide, shallowRef, ref } from 'vue';
+import { provide, shallowRef, ref, computed } from 'vue'; // Import computed
 import SimpleDisplay from './components/SimpleDisplay.vue';
 import ScoreList from './components/ScoreList.vue';
 import TexEditorView from './components/TexEditorView.vue';
@@ -21,16 +21,46 @@ const availableScores = ref([
 ]);
 
 interface NavigationPayload {
-  view: 'score' | 'texEditor';
+  view?: 'score' | 'texEditor';
   path?: string;
+  action?: string; // For actions like 'loadTexSampleAction'
 }
 
-function handleNavigation(payload: NavigationPayload) {
-  currentView.value = payload.view;
-  isScoreListVisible.value = false;
-  if (payload.view === 'score' && payload.path) {
-    currentScore.value = payload.path;
+const scoreListProps = computed(() => {
+  if (currentView.value === 'score') {
+    return {
+      title: '选择乐谱',
+      items: availableScores.value.map(s => ({ name: s.name, type: 'score', id: s.path })),
+      headerButtonConfig: {
+        label: 'Tex 编辑器',
+        actionPayload: { view: 'texEditor' }
+      }
+    };
+  } else { // currentView.value === 'texEditor'
+    return {
+      title: '编辑器菜单',
+      items: [
+        { name: '加载 Tex 示例 (占位)', type: 'action', id: 'loadTexSampleAction' }
+      ],
+      headerButtonConfig: {
+        label: '返回播放器',
+        actionPayload: { view: 'score' } // Will use currentScore implicitly
+      }
+    };
   }
+});
+
+function handleNavigation(payload: NavigationPayload) {
+  if (payload.view) {
+    currentView.value = payload.view;
+    if (payload.view === 'score' && payload.path) {
+      currentScore.value = payload.path;
+    }
+  } else if (payload.action === 'loadTexSampleAction') {
+    console.log('Action: Load Tex Sample triggered');
+    // Placeholder for future implementation, e.g., open a Tex sample selector
+  }
+  isScoreListVisible.value = false;
 }
 
 function handleScoreSelected(selectedScorePath: string) {
@@ -57,7 +87,9 @@ function closeScoreList() {
     <button @click="toggleScoreListVisibility" class="fab-open-score-list" title="选择乐谱">谱</button>
     <ScoreList
       v-if="isScoreListVisible"
-      :scores="availableScores"
+      :title="scoreListProps.title"
+      :listItems="scoreListProps.items"
+      :headerButtonConfig="scoreListProps.headerButtonConfig"
       @score-selected="handleScoreSelected"
       @close="closeScoreList"
       @navigate="handleNavigation"

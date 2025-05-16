@@ -1,34 +1,58 @@
 <template>
   <div class="score-list-container">
     <div class="score-list-header">
-      <button @click="switchToTexEditor" class="list-button" title="AlphaTex 编辑器">Tex 编辑器</button>
-      <span class="list-title">选择乐谱</span>
+      <button 
+        v-if="headerButtonConfig" 
+        @click="handleHeaderAction" 
+        class="list-button" 
+        :title="headerButtonConfig.label"
+      >
+        {{ headerButtonConfig.label }}
+      </button>
+      <span class="list-title">{{ title }}</span>
       <button @click="close" class="close-button">&times;</button>
     </div>
     <ul class="score-list">
-      <li v-for="score in scores" :key="score.path" @click="selectScore(score.path)" class="score-item">
-        {{ score.name }}
+      <li v-for="item in listItems" :key="item.id" @click="handleItemClick(item)" class="score-item">
+        {{ item.name }}
       </li>
     </ul>
   </div>
 </template>
 
 <script setup>
-defineProps({
-  scores: {
+import { defineProps, defineEmits } from 'vue';
+
+const props = defineProps({
+  title: {
+    type: String,
+    required: true,
+    default: '选择项目'
+  },
+  listItems: { // Renamed from scores
     type: Array,
     required: true
+  },
+  headerButtonConfig: { // New prop for the header button
+    type: Object, // { label: String, actionPayload: any }
+    default: null
   }
 });
 
 const emit = defineEmits(['score-selected', 'close', 'navigate']);
 
-function selectScore(scorePath) {
-  emit('score-selected', scorePath);
+function handleItemClick(item) {
+  if (item.type === 'score') {
+    emit('score-selected', item.id); // id is the score path
+  } else if (item.type === 'action') {
+    emit('navigate', { action: item.id, itemDetails: item }); // id is the action identifier
+  }
 }
 
-function switchToTexEditor() {
-  emit('navigate', { view: 'texEditor' });
+function handleHeaderAction() {
+  if (props.headerButtonConfig && props.headerButtonConfig.actionPayload) {
+    emit('navigate', props.headerButtonConfig.actionPayload);
+  }
 }
 
 function close() {
