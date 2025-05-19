@@ -1,34 +1,69 @@
 <template>
-  <textarea
-    :value="modelValue"
-    @input="emitUpdate($event.target.value)"
-    placeholder="Enter AlphaTex here..."
-    class="alphatex-textarea"
-  ></textarea>
+  <div ref="editorContainer" class="editor-container"></div>
 </template>
 
 <script setup>
-defineProps({
+import { onMounted, onBeforeUnmount, ref, watch } from 'vue';
+// 确保 'codemirror' 包 (v6+) 已正确安装并在 package.json 中声明
+import { EditorState } from '@codemirror/state'; // 从 @codemirror/state 导入
+import { EditorView } from '@codemirror/view';   // 从 @codemirror/view 导入
+import { basicSetup } from 'codemirror';        // basicSetup 通常可以从 codemirror 伞形包导入
+import { oneDark } from '@codemirror/theme-one-dark'; // 主题包通常分开导入
+
+const props = defineProps({
   modelValue: String
 });
 const emit = defineEmits(['update:modelValue']);
 
-function emitUpdate(value) {
-  emit('update:modelValue', value);
-}
+const editorContainer = ref(null);
+let editorView = null;
+
+onMounted(() => {
+  editorView = new EditorView({
+    state: EditorState.create({
+      doc: props.modelValue || '',
+      extensions: [
+        basicSetup,
+        oneDark,
+        EditorView.updateListener.of((v) => {
+          if (v.docChanged) {
+            const value = v.state.doc.toString();
+            emit('update:modelValue', value);
+          }
+        })
+      ]
+    }),
+    parent: editorContainer.value
+  });
+});
+
+onBeforeUnmount(() => {
+  if (editorView) editorView.destroy();
+});
+
+// 外部修改 modelValue 时同步到编辑器
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    const current = editorView?.state.doc.toString();
+    if (newValue !== current) {
+      editorView?.dispatch({
+        changes: {
+          from: 0,
+          to: current.length,
+          insert: newValue
+        }
+      });
+    }
+  }
+);
 </script>
 
 <style scoped>
-.alphatex-textarea { /* Changed selector for clarity */
+.editor-container {
   width: 100%;
-  height: 100%; /* Takes full height of its parent container */
-  font-family: monospace;
+  height: 100%;
   font-size: 14px;
-  border: none; /* Border is now on editor-pane or toolbar */
-  padding: 10px;
-  box-sizing: border-box;
-  resize: none;
-  /* Remove border if editor-pane or toolbar provides it */
-  /* border-top: 1px solid #ccc; /* Example: if toolbar is separate */
+  border: none;
 }
 </style>
