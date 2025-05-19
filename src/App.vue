@@ -11,6 +11,13 @@ provide('alphaTabApi', alphaTabApi);
 
 const initialScorePath = `${import.meta.env.BASE_URL}scores/吉他与孤独与蓝色星球.gpx`;
 
+// 为播放器视图的 SimpleDisplay 定义要显示的所有控件
+const playerControlFeatures = ref([
+  'short-info', 'time-position', 'stop', 'play-pause', 'speed-control', 
+  'count-in', 'metronome', 'loop', 'print', 'download', 
+  'zoom', 'layout', 'track-control'
+]);
+
 const currentView = ref<'score' | 'texEditor'>('score'); // 'score' 或 'texEditor'
 const currentScore = ref(initialScorePath); // 当前乐谱路径，仅用于 'score' 视图
 const isScoreListVisible = ref(false);
@@ -59,8 +66,8 @@ const scoreListProps = computed(() => {
     return {
       title: '编辑器菜单',
       items: [
-        { name: '新建文件', type: 'action', id: 'newTexFileAction' },
-        { name: '加载模板', type: 'action', id: 'loadTexTemplatesAction' },
+        // { name: '新建文件', type: 'action', id: 'newTexFileAction' },
+        // { name: '加载模板', type: 'action', id: 'loadTexTemplatesAction' },
         ...savedTexFiles.value.map(file => ({
           name: file.name,
           type: 'texFile',
@@ -141,10 +148,29 @@ function closeScoreList() {
     <main class="main-content">
       <transition name="fade" mode="out-in">
         <template v-if="currentView === 'score'">
-          <SimpleDisplay :score="currentScore" :key="currentScore" />
+          <SimpleDisplay 
+            :score="currentScore" 
+            :key="currentScore" 
+            :control-bar-features="playerControlFeatures" 
+          />
         </template>
         <template v-else-if="currentView === 'texEditor'">
           <TexEditorView />
+          <!-- 
+            说明: TexEditorView.vue 内部也使用 SimpleDisplay 组件。
+            要使其 ControlBar 显示默认控件外加 'zoom'，
+            需要在 TexEditorView.vue 文件中进行如下类似的修改：
+
+            在 TexEditorView.vue 的 <script setup> 中:
+            const editorControlFeatures = ref([
+              'stop', 'play-pause', 'speed-control', 'print', 'download', // 默认控件
+              'zoom' // 额外添加 zoom
+            ]);
+
+            然后在 TexEditorView.vue 的模板中，当使用 SimpleDisplay 时:
+            <SimpleDisplay :tex="alphaTexContent" :control-bar-features="editorControlFeatures" />
+            (具体 props 取决于 TexEditorView.vue 的实现)
+          -->
         </template>
       </transition>
     </main>

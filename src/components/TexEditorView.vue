@@ -13,7 +13,7 @@
         <TexEditor v-model="editorContent" />
       </div>
       <div class="preview-panel">
-        <SimpleDisplay :tex="editorContent" />
+        <SimpleDisplay :tex="editorContent" :control-bar-features="editorControlFeatures" />
       </div>
     </div>
 
@@ -81,6 +81,17 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import ToolBar from './editor/ToolBar.vue';
 import TexEditor from './editor/TexEditor.vue';
 import SimpleDisplay from './SimpleDisplay.vue';
+
+// 为编辑器视图的 SimpleDisplay 定义 ControlBar 功能
+const editorControlFeatures = ref([
+  'stop', 
+  'play-pause', 
+  'speed-control', 
+  'print', 
+  'download',
+  'zoom', // 添加 zoom 控件
+  'layout'
+]);
 
 // 编辑器状态
 const editorContent = ref('');
