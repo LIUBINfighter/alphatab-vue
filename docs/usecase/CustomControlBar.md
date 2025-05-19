@@ -2,25 +2,27 @@
 
 ## 基本用法
 
-默认情况下，SimpleDisplay会显示ControlBar的所有功能组件：
+默认情况下（即不传递 `controlBarFeatures` prop 或将其设置为 `null`），`SimpleDisplay` 的 `ControlBar` 会显示一组预定义的常用功能组件：**停止、播放/暂停、速度控制、打印、下载**。
 
 ```vue
 <template>
+  <!-- 将显示默认的五个控制按钮 -->
   <SimpleDisplay />
 </template>
 ```
 
 ## 自定义ControlBar显示
 
-通过`controlBarFeatures` prop可以控制显示哪些功能组件：
+通过向 `SimpleDisplay` 组件传递 `controlBarFeatures` prop (一个字符串数组)，可以精确控制 `ControlBar` 中显示哪些功能组件。
 
 ```vue
 <template>
   <SimpleDisplay 
-    :controlBarFeatures="['play-pause', 'time-position', 'speed-control']" 
+    :controlBarFeatures="['play-pause', 'metronome', 'zoom']" 
   />
 </template>
 ```
+上述示例将只显示播放/暂停按钮、节拍器按钮和缩放控件。
 
 ### 可用features选项
 
@@ -49,13 +51,16 @@
 ```vue
 <template>
   <div>
-    <!-- 只显示播放控制和时间位置 -->
+    <!-- 只显示播放控制、节拍器和缩放 -->
     <SimpleDisplay 
-      :controlBarFeatures="['play-pause', 'time-position']"
+      :controlBarFeatures="['play-pause', 'metronome', 'zoom']"
     />
     
-    <!-- 显示所有控制组件 (等同于不传或传null) -->
+    <!-- 显示默认的五个控制组件 (等同于不传 controlBarFeatures) -->
     <SimpleDisplay :controlBarFeatures="null" />
+
+    <!-- 不显示任何通过 v-if="shouldShow(...)" 控制的组件 -->
+    <SimpleDisplay :controlBarFeatures="[]" />
   </div>
 </template>
 
@@ -66,13 +71,9 @@ import SimpleDisplay from '@/components/SimpleDisplay.vue'
 
 ## 注意事项
 
-1. `controlBarFeatures`接受数组或null值：
-   - 数组：只显示数组中指定的组件
-   - null：显示所有可用组件
-   - 空数组：不显示任何控制组件
-
-2. 组件名称需严格匹配，大小写敏感
-
-3. 如果传入不存在的组件名称，该组件将被忽略
-
-4. 组件显示顺序与数组中的顺序一致
+1. `controlBarFeatures` prop 接受一个数组或 `null` 值：
+   - 数组：精确指定要显示的组件。如果数组为空 `[]`，则不显示任何由 `features` prop 控制的组件。
+   - `null` (或不传递该 prop)：`ControlBar` 将显示其预设的默认控件（停止、播放/暂停、速度控制、打印、下载）。
+2. 组件名称（数组中的字符串）需严格匹配 "可用features选项" 表格中的 `'shouldShow() 参数'` 列，它们是大小写敏感的。
+3. 如果在 `controlBarFeatures` 数组中传入了列表中不存在的组件名称，该无效名称将被忽略，对应的组件不会显示。
+4. `ControlBar` 中组件的实际显示顺序由其在模板中的定义顺序决定，`controlBarFeatures` 数组仅用于决定是否显示，不影响顺序。
