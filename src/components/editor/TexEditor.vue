@@ -26,7 +26,7 @@ onMounted(() => {
       extensions: [
         basicSetup,
         oneDark, // 添加暗色主题
-        javascript(), // 添加 JavaScript 语言高亮
+        javascript({ jsx: true }), // 添加 JavaScript (及 JSX) 语言高亮
         EditorView.lineWrapping, // 添加自动换行
         EditorView.contentAttributes.of({ style: "padding-bottom: 50vh;" }), // 允许滚动过最后一行
         EditorView.updateListener.of((v) => {
