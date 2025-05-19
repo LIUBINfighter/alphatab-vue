@@ -2,7 +2,7 @@
   <div class="at-controls">
     <ShortInfo class="priority-low" v-if="shouldShow('short-info')" />
     <div class="at-controls-right">
-      <!-- <TimePosition class="priority-high" v-if="shouldShow('time-position')" /> -->
+      <TimePosition class="priority-high" v-if="shouldShow('time-position')" />
       <StopButton class="priority-low" v-if="shouldShow('stop')" />
       <PlayPauseButton class="priority-high" v-if="shouldShow('play-pause')" />
       <SpeedControl class="priority-low" v-if="shouldShow('speed-control')" />
@@ -37,12 +37,16 @@ import DownloadButton from './controls/DownloadButton.vue'
 const props = defineProps({
   features: {
     type: Array,
-    default: null // 如果为 null，则显示所有功能
+    // 如果为 null，则显示 'stop', 'play-pause', 'speed-control', 'print', 'download' 这五个默认控件。
+    // 如果传入一个数组，则该数组决定显示哪些控件。
+    default: null 
   }
 });
 
 // 确保 alphaTabApi 已被提供
 const api = inject('alphaTabApi')
+
+const defaultFeatureSet = ['stop', 'play-pause', 'speed-control', 'print', 'download'];
 
 const featureMap = {
   'short-info': ShortInfo,
@@ -61,9 +65,11 @@ const featureMap = {
 };
 
 function shouldShow(featureName) {
-  if (!props.features) {
-    return true; // 如果未指定 features，则显示所有
+  if (props.features === null) {
+    // 如果父组件未提供 features 数组，则使用默认的控件集
+    return defaultFeatureSet.includes(featureName);
   }
+  // 如果父组件提供了 features 数组（包括空数组），则根据该数组判断
   return props.features.includes(featureName);
 }
 

@@ -37,7 +37,9 @@ const props = defineProps({
   },
   controlBarFeatures: { // 新增：用于控制 ControlBar 的 prop
     type: Array,
-    default: null // null 表示显示所有默认控件
+    // 如果为 null，ControlBar 将显示其默认的五个控件。
+    // 如果传入一个数组，则该数组决定 ControlBar 显示哪些控件。
+    default: null 
   }
 })
 
