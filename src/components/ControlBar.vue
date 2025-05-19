@@ -2,7 +2,7 @@
   <div class="at-controls">
     <ShortInfo class="priority-low" v-if="shouldShow('short-info')" />
     <div class="at-controls-right">
-      <TimePosition class="priority-high" v-if="shouldShow('time-position')" />
+      <!-- <TimePosition class="priority-high" v-if="shouldShow('time-position')" /> -->
       <StopButton class="priority-low" v-if="shouldShow('stop')" />
       <PlayPauseButton class="priority-high" v-if="shouldShow('play-pause')" />
       <SpeedControl class="priority-low" v-if="shouldShow('speed-control')" />
