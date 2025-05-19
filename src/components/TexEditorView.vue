@@ -9,7 +9,12 @@
       @load-template="showTemplates"
     />
     <div class="editor-content">
-      <TexEditor v-model="editorContent" />
+      <div class="editor-panel">
+        <TexEditor v-model="editorContent" />
+      </div>
+      <div class="preview-panel">
+        <SimpleDisplay :tex="editorContent" />
+      </div>
     </div>
 
     <!-- 模态框: 保存文件 -->
@@ -75,6 +80,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import ToolBar from './editor/ToolBar.vue';
 import TexEditor from './editor/TexEditor.vue';
+import SimpleDisplay from './SimpleDisplay.vue';
 
 // 编辑器状态
 const editorContent = ref('');
@@ -246,7 +252,19 @@ onBeforeUnmount(() => {
 
 .editor-content {
   flex: 1;
+  display: flex;
   overflow: hidden;
+}
+
+.editor-panel {
+  flex: 1;
+  overflow: auto;
+  border-right: 1px solid #ccc;
+}
+
+.preview-panel {
+  flex: 1;
+  overflow: auto;
 }
 
 .modal-overlay {
