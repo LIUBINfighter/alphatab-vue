@@ -8,7 +8,8 @@ import { onMounted, onBeforeUnmount, ref, watch } from 'vue';
 import { EditorState } from '@codemirror/state'; // 从 @codemirror/state 导入
 import { EditorView } from '@codemirror/view';   // 从 @codemirror/view 导入
 import { basicSetup } from 'codemirror';        // basicSetup 通常可以从 codemirror 伞形包导入
-import { oneDark } from '@codemirror/theme-one-dark'; // 主题包通常分开导入
+import { oneDark } from '@codemirror/theme-one-dark'; // 重新导入暗色主题
+import { javascript } from '@codemirror/lang-javascript'; // 导入 JavaScript 语言包
 
 const props = defineProps({
   modelValue: String
@@ -24,7 +25,9 @@ onMounted(() => {
       doc: props.modelValue || '',
       extensions: [
         basicSetup,
-        oneDark,
+        oneDark, // 添加暗色主题
+        javascript(), // 添加 JavaScript 语言高亮
+        EditorView.lineWrapping, // 添加自动换行
         EditorView.updateListener.of((v) => {
           if (v.docChanged) {
             const value = v.state.doc.toString();
@@ -65,5 +68,10 @@ watch(
   height: 100%;
   font-size: 14px;
   border: none;
+}
+
+/* 为 CodeMirror 编辑器内容设置等宽字体 */
+.editor-container :deep(.cm-editor) {
+  font-family: monospace;
 }
 </style>
