@@ -2,7 +2,13 @@
 
 ## 开发计划
 
-`SimpleDisplay.vue`添加自定义组件的选项，通过传入props决定呈现哪些组件
+`SimpleDisplay.vue` `ControlBar.vue`
+- 添加自定义组件的选项，通过传入props决定呈现哪些组件
+- 优化显示逻辑
+- 移动端适配
+
+`TexEditorView.vue` `TexEditor.vue`
+- 代码编辑器Feature
 
 ## 胡乱写的
 
