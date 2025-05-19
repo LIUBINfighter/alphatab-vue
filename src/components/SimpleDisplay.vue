@@ -78,6 +78,21 @@ function initializeAlphaTab() {
     alphaTabApi.value = new alphaTab.AlphaTabApi(atMainRef.value, settings);
     const api = alphaTabApi.value;
 
+    // 关键：添加 AlphaTex 错误处理程序
+    api.error.on((error) => {
+      console.error('AlphaTex Processing Error:', error);
+      if (atOverlayRef.value) {
+        atOverlayRef.value.style.display = 'flex';
+        let errorMessageText = 'AlphaTex Error: An unexpected issue occurred.';
+        if (error && error.message) {
+          errorMessageText = `AlphaTex Error: ${error.message}`;
+        } else if (typeof error === 'string') { // 不太常见，但可能
+          errorMessageText = `AlphaTex Error: ${error}`;
+        }
+        atOverlayRef.value.querySelector('.at-overlay-content').innerText = errorMessageText;
+      }
+    });
+
     if (props.tex) {
       // 如果提供了 tex 内容，则加载它
       try {
@@ -85,16 +100,26 @@ function initializeAlphaTab() {
         // 检查 tex() 是否返回 Promise，有些版本可能不返回
         if (texPromise && typeof texPromise.catch === 'function') {
           texPromise.catch(e => {
-            console.error('Error loading tex on init:', e);
+            console.error('Error in tex loading promise (init):', e);
+            // api.error.on 应该提供具体细节。
+            // 这是备用方案，以防 api.error.on 未触发或发生非 AlphaTex 错误。
             if (atOverlayRef.value) {
-              atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error loading AlphaTex.';
+              const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+              // 避免覆盖来自 api.error.on 的更具体的错误
+              if (!overlayContent.innerText.startsWith('AlphaTex Error:')) {
+                  overlayContent.innerText = 'Failed to process AlphaTex: Error during loading.';
+              }
+              atOverlayRef.value.style.display = 'flex';
             }
           });
         }
-      } catch (e) {
-        console.error('Error during tex loading:', e);
+      } catch (e) { // api.tex() 调用期间的同步错误
+        console.error('Synchronous error during initial tex processing:', e);
         if (atOverlayRef.value) {
-          atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error loading AlphaTex.';
+          // 如果是 AlphaTex 解析错误，这可能会被 api.error.on 覆盖
+          // 但作为备用方案是好的。
+          atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error initializing AlphaTex (sync).';
+          atOverlayRef.value.style.display = 'flex';
         }
       }
     } else if (typeof props.score === 'object') {
@@ -122,7 +147,12 @@ function initializeAlphaTab() {
     api.scoreLoaded.on(score => {
       if (!score) {
         if (atOverlayRef.value) {
-          atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error loading score.';
+          const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+          // 如果 api.error.on 尚未显示特定的 AlphaTex 错误
+          if (!overlayContent.innerText.startsWith('AlphaTex Error:')) {
+            overlayContent.innerText = 'Error: Score data could not be loaded.';
+          }
+          atOverlayRef.value.style.display = 'flex'; // 确保覆盖层可见
         }
         allTracks.value = []; 
       } else {
@@ -185,16 +215,23 @@ watch(() => props.tex, (newTex, oldTex) => {
             // AlphaTab 应该会自动触发 renderFinished 和 scoreLoaded
           })
           .catch(e => {
-            console.error('Error updating tex:', e);
+            console.error('Error in tex update promise:', e);
+            // api.error.on 应该提供具体细节。
+            // 这是备用方案。
             if (atOverlayRef.value) {
-                atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error updating AlphaTex.';
+              const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+              if (!overlayContent.innerText.startsWith('AlphaTex Error:')) {
+                  overlayContent.innerText = 'Failed to process AlphaTex: Error during update.';
+              }
+              atOverlayRef.value.style.display = 'flex';
             }
           });
       }
-    } catch (e) {
-      console.error('Error during tex update:', e);
+    } catch (e) { // api.tex() 调用期间的同步错误
+      console.error('Synchronous error during tex update processing:', e);
       if (atOverlayRef.value) {
-          atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error updating AlphaTex.';
+          atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error initiating AlphaTex update (sync).';
+          atOverlayRef.value.style.display = 'flex';
       }
     }
   }
