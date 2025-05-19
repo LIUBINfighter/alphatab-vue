@@ -8,10 +8,10 @@
       <SpeedControl class="priority-low" v-if="shouldShow('speed-control')" />
       <CountInButton class="priority-low" v-if="shouldShow('count-in')" />
       <MetronomeButton class="priority-high" v-if="shouldShow('metronome')" />
-      <!-- <LoopButton class="priority-low" v-if="shouldShow('loop')" /> -->
-      <!-- <PrintButton class="priority-low" v-if="shouldShow('print')" /> -->
-      <!-- <DownloadButton class="priority-low" v-if="shouldShow('download')" /> -->
-      <!-- <ZoomControl class="priority-low" v-if="shouldShow('zoom')" /> -->
+      <LoopButton class="priority-low" v-if="shouldShow('loop')" />
+      <PrintButton class="priority-low" v-if="shouldShow('print')" />
+      <DownloadButton class="priority-low" v-if="shouldShow('download')" />
+      <ZoomControl class="priority-low" v-if="shouldShow('zoom')" />
       <LayoutControl class="priority-low" v-if="shouldShow('layout')" />
       <TrackControl class="priority-low" v-if="shouldShow('track-control')" />
     </div>

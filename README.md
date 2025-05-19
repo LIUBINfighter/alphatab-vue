@@ -1,4 +1,11 @@
 
+
+## 开发计划
+
+`SimpleDisplay.vue`添加自定义组件的选项，通过传入props决定呈现哪些组件
+
+## 胡乱写的
+
 alphaTab
 
 Vue 3
