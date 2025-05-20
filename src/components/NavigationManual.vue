@@ -73,9 +73,4 @@ function switchToTexEditor() {
   background-color: #365a8a;
 }
 
-/* 移除旧的单个按钮样式，如果不再需要 */
-/*
-.fab-open-score-list { ... }
-.fab-open-tex-editor { ... } 
-*/
 </style>

@@ -13,6 +13,7 @@
       <DownloadButton class="priority-low" v-if="shouldShow('download')" />
       <ZoomControl class="priority-low" v-if="shouldShow('zoom')" />
       <LayoutControl class="priority-low" v-if="shouldShow('layout')" />
+      <StyleControl class="priority-low" v-if="shouldShow('style-control')" />
       <TrackControl class="priority-low" v-if="shouldShow('track-control')" />
     </div>
   </div>
@@ -33,6 +34,7 @@ import PlayPauseButton from './controls/PlayPauseButton.vue'
 import StopButton from './controls/StopButton.vue'
 import SpeedControl from './controls/SpeedControl.vue'
 import DownloadButton from './controls/DownloadButton.vue'
+import StyleControl from './controls/StyleControl.vue' // 导入样式控制组件
 
 const props = defineProps({
   features: {
@@ -46,6 +48,7 @@ const props = defineProps({
 // 确保 alphaTabApi 已被提供
 const api = inject('alphaTabApi')
 
+// 更新默认控件集，添加样式控制
 const defaultFeatureSet = ['stop', 'play-pause', 'speed-control', 'print', 'download'];
 
 const featureMap = {
@@ -61,6 +64,7 @@ const featureMap = {
   'download': DownloadButton,
   'zoom': ZoomControl,
   'layout': LayoutControl,
+  'style-control': StyleControl, // 添加样式控制到特性映射
   'track-control': TrackControl,
 };
 

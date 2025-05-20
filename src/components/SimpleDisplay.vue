@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, toRaw, inject, watch } from 'vue' // 导入 watch
+import { onMounted, ref, toRaw, inject, watch, provide } from 'vue' // 添加 provide
 import ControlBar from './ControlBar.vue'
 
 const props = defineProps({
@@ -51,6 +51,11 @@ const currentActiveTrackIndices = ref(new Set())
 
 // 获取注入的 API 引用
 const alphaTabApi = inject('alphaTabApi')
+
+// 添加样式状态和控制
+const customStyleEnabled = ref(false); // 默认不启用自定义样式
+provide('customStyleEnabled', customStyleEnabled); // 提供给 StyleControl 组件使用
+provide('toggleCustomStyle', toggleCustomStyle); // 提供切换方法
 
 // 封装 AlphaTab 初始化和加载逻辑
 function initializeAlphaTab() {
@@ -167,6 +172,10 @@ function initializeAlphaTab() {
         if (songArtistEl) songArtistEl.innerText = score.artist;
       }
     });
+
+    // 注入自定义样式（如果启用）
+    injectAlphaTabStyle();
+    
   } else {
     console.error('AlphaTab main container or overlay element not found');
   }
@@ -238,6 +247,178 @@ watch(() => props.tex, (newTex, oldTex) => {
     }
   }
 }, { immediate: false });
+
+// 切换自定义样式
+function toggleCustomStyle() {
+  customStyleEnabled.value = !customStyleEnabled.value;
+  
+  // 移除现有样式（如果存在）
+  const existingStyle = document.getElementById('alphatab-custom-style');
+  if (existingStyle) {
+    document.head.removeChild(existingStyle);
+  }
+  
+  // 如果启用了自定义样式，重新注入
+  if (customStyleEnabled.value) {
+    injectAlphaTabStyle();
+  }
+  
+  // 关键修复：在样式改变后触发 AlphaTab 重新渲染
+  if (alphaTabApi.value) {
+    // 显示加载覆盖层
+    if (atOverlayRef.value) {
+      atOverlayRef.value.style.display = 'flex';
+      atOverlayRef.value.querySelector('.at-overlay-content').innerText = '应用样式中...';
+    }
+    
+    // 使用 setTimeout 确保样式处理优先，然后再执行重新渲染
+    setTimeout(() => {
+      try {
+        // 触发重新渲染 - 关键步骤
+        alphaTabApi.value.render();
+      } catch (e) {
+        console.error('Error during re-render after style change:', e);
+      }
+    }, 50);
+  }
+}
+
+// 修改自定义样式注入函数，创建更有特色的主题
+function injectAlphaTabStyle() {
+  // 如果自定义样式未启用，直接返回
+  if (!customStyleEnabled.value) return;
+
+  const styleId = 'alphatab-custom-style';
+  if (document.getElementById(styleId)) return; // 避免重复注入
+
+  const style = document.createElement('style');
+  style.id = styleId;
+  style.innerHTML = `
+    /* 自定义主题 - 深蓝紫色调 */
+    
+    /* 全局背景色 */
+    .at-main {
+      background-color: #f8f4ff !important;
+    }
+    
+    /* 音符颜色 */
+    .at-main .at-notehead,
+    .at-main svg .at-notehead,
+    .at-main g[data-name="notehead"] * {
+      fill: #6a0dad !important; /* 紫色音符 */
+      stroke: #4a0080 !important;
+      stroke-width: 0.3px !important;
+    }
+    
+    /* 加强音符边缘，增加可读性 */
+    .at-main .at-note * {
+      stroke-width: 0.4px !important;
+    }
+
+    /* 小节线颜色和风格 */
+    .at-main .at-bar,
+    .at-main svg .at-bar,
+    .at-main g[data-name="bar"] * {
+      stroke: #3c4e7a !important; /* 深蓝色小节线 */
+      stroke-width: 2px !important; /* 加粗小节线 */
+      stroke-dasharray: 0 !important; /* 实线 */
+    }
+    
+    /* 小节尾部双线样式 */
+    .at-main .at-bar[data-bar-type="double"],
+    .at-main svg .at-bar[data-bar-type="double"],
+    .at-main g[data-bar-type="double"] * {
+      stroke: #1e2840 !important; /* 更深的蓝色 */
+      stroke-width: 2.5px !important; /* 稍微再粗一点 */
+    }
+
+    /* 播放光标颜色 */
+    .at-main .at-cursor,
+    .at-main svg .at-cursor,
+    .at-main g[data-name="cursor"] * {
+      stroke: #e74c3c !important; /* 红色光标 */
+      stroke-width: 3px !important; /* 更粗的光标 */
+      filter: drop-shadow(0 0 2px rgba(231, 76, 60, 0.7)) !important; /* 添加光晕效果 */
+    }
+
+    /* 播放高亮区域样式 */
+    .at-main .at-highlight,
+    .at-main svg .at-highlight,
+    .at-main g[data-name="highlight"] * {
+      fill: rgba(106, 13, 173, 0.15) !important; /* 透明紫色背景 */
+      stroke: #6a0dad !important; /* 紫色边框 */
+      stroke-width: 1px !important;
+    }
+    
+    /* 五线谱线条颜色 */
+    .at-main .at-staff-line,
+    .at-main svg .at-staff-line,
+    .at-main g[data-name="staff"] line {
+      stroke: #1e2840 !important; /* 深蓝色线条 */
+      stroke-width: 1px !important; /* 稍粗的线条 */
+    }
+    
+    /* 符干颜色 */
+    .at-main .at-stem,
+    .at-main svg .at-stem,
+    .at-main g[data-name="stem"] * {
+      stroke: #6a0dad !important; /* 紫色符干 */
+      stroke-width: 1.5px !important;
+    }
+    
+    /* 连音线和延音线 */
+    .at-main .at-tie, 
+    .at-main .at-slur,
+    .at-main svg .at-tie,
+    .at-main svg .at-slur {
+      stroke: #3c4e7a !important; /* 蓝色连音线 */
+      stroke-width: 1.5px !important;
+      fill: none !important;
+    }
+    
+    /* 歌词和文本 */
+    .at-main .at-lyrics *,
+    .at-main .at-annotation * {
+      fill: #6a0dad !important; /* 紫色文本 */
+      font-weight: bold !important;
+    }
+    
+    /* 标题和备注等 */
+    .at-main .at-text * {
+      fill: #3c4e7a !important; /* 蓝色文本 */
+      font-weight: bold !important;
+    }
+    
+    /* 节拍器记号 */
+    .at-main .at-beat-text * {
+      fill: #6a0dad !important;
+      font-weight: bold !important;
+    }
+    
+    /* 修改光标高亮样式 */
+    .at-cursor-bar {
+      background-color: rgba(106, 13, 173, 0.1) !important; 
+      border-left: 2px solid #6a0dad !important;
+      box-shadow: 0 0 8px rgba(106, 13, 173, 0.3) !important;
+    }
+    
+    /* 吉他谱线 */
+    .at-main .at-string-line,
+    .at-main svg .at-string-line,
+    .at-main g[data-name="tab"] line {
+      stroke: #3c4e7a !important; /* 蓝色吉他谱线 */
+      stroke-width: 1px !important;
+    }
+    
+    /* 吉他谱品格数字 */
+    .at-main .at-tab-note text,
+    .at-main g[data-name="tab-note"] text {
+      fill: #6a0dad !important; /* 紫色品格数字 */
+      font-weight: bold !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 function handleTrackSelected(trackFromEvent) {
   if (alphaTabApi.value) {
