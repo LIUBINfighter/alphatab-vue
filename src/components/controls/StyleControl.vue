@@ -1,6 +1,6 @@
 <template>
   <div class="style-control control-group">
-    <div class="btn" :class="{'active': customStyleEnabled}" @click="toggleStyle" :title="customStyleEnabled ? '切换为默认样式' : '切换为紫色主题'">
+    <div class="btn" :class="{'active': customStyleEnabled}" @click="toggleStyle" :title="customStyleEnabled ? '恢复默认样式' : '切换到深色主题'">
       <!-- 使用 lucide 组件代替内联 SVG -->
       <Sun v-if="!customStyleEnabled" class="icon" />
       <Moon v-else class="icon" />
