@@ -294,19 +294,19 @@ function injectAlphaTabStyle() {
   const style = document.createElement('style');
   style.id = styleId;
   style.innerHTML = `
-    /* 自定义主题 - 深蓝紫色调 */
+    /* 自定义深色主题 */
     
     /* 全局背景色 */
     .at-main {
-      background-color: #f8f4ff !important;
+      background-color: #121212 !important; /* 深黑色背景 */
     }
     
-    /* 音符颜色 */
+    /* 音符颜色 - 更亮 */
     .at-main .at-notehead,
     .at-main svg .at-notehead,
     .at-main g[data-name="notehead"] * {
-      fill: #6a0dad !important; /* 紫色音符 */
-      stroke: #4a0080 !important;
+      fill: #80d8ff !important; /* 更亮的蓝色音符 */
+      stroke: #40c4ff !important;
       stroke-width: 0.3px !important;
     }
     
@@ -319,34 +319,34 @@ function injectAlphaTabStyle() {
     .at-main .at-bar,
     .at-main svg .at-bar,
     .at-main g[data-name="bar"] * {
-      stroke: #3c4e7a !important; /* 深蓝色小节线 */
-      stroke-width: 2px !important; /* 加粗小节线 */
-      stroke-dasharray: 0 !important; /* 实线 */
+      stroke: #bdbdbd !important; /* 更亮的灰色小节线 */
+      stroke-width: 2px !important;
+      stroke-dasharray: 0 !important;
     }
     
     /* 小节尾部双线样式 */
     .at-main .at-bar[data-bar-type="double"],
     .at-main svg .at-bar[data-bar-type="double"],
     .at-main g[data-bar-type="double"] * {
-      stroke: #1e2840 !important; /* 更深的蓝色 */
-      stroke-width: 2.5px !important; /* 稍微再粗一点 */
+      stroke: #ffffff !important; /* 白色 */
+      stroke-width: 2.5px !important;
     }
 
     /* 播放光标颜色 */
     .at-main .at-cursor,
     .at-main svg .at-cursor,
     .at-main g[data-name="cursor"] * {
-      stroke: #e74c3c !important; /* 红色光标 */
-      stroke-width: 3px !important; /* 更粗的光标 */
-      filter: drop-shadow(0 0 2px rgba(231, 76, 60, 0.7)) !important; /* 添加光晕效果 */
+      stroke: #69f0ae !important; /* 更亮的绿色光标 */
+      stroke-width: 3px !important;
+      filter: drop-shadow(0 0 3px rgba(105, 240, 174, 0.8)) !important;
     }
 
     /* 播放高亮区域样式 */
     .at-main .at-highlight,
     .at-main svg .at-highlight,
     .at-main g[data-name="highlight"] * {
-      fill: rgba(106, 13, 173, 0.15) !important; /* 透明紫色背景 */
-      stroke: #6a0dad !important; /* 紫色边框 */
+      fill: rgba(105, 240, 174, 0.2) !important; /* 稍微更亮的透明绿色背景 */
+      stroke: #69f0ae !important; /* 亮绿色边框 */
       stroke-width: 1px !important;
     }
     
@@ -354,15 +354,15 @@ function injectAlphaTabStyle() {
     .at-main .at-staff-line,
     .at-main svg .at-staff-line,
     .at-main g[data-name="staff"] line {
-      stroke: #1e2840 !important; /* 深蓝色线条 */
-      stroke-width: 1px !important; /* 稍粗的线条 */
+      stroke: #bdbdbd !important; /* 更亮的灰色线条 */
+      stroke-width: 1px !important;
     }
     
-    /* 符干颜色 */
+    /* 符干颜色 - 更亮 */
     .at-main .at-stem,
     .at-main svg .at-stem,
     .at-main g[data-name="stem"] * {
-      stroke: #6a0dad !important; /* 紫色符干 */
+      stroke: #80d8ff !important; /* 更亮的蓝色符干 */
       stroke-width: 1.5px !important;
     }
     
@@ -371,51 +371,86 @@ function injectAlphaTabStyle() {
     .at-main .at-slur,
     .at-main svg .at-tie,
     .at-main svg .at-slur {
-      stroke: #3c4e7a !important; /* 蓝色连音线 */
+      stroke: #e0e0e0 !important; /* 更亮的灰色连音线 */
       stroke-width: 1.5px !important;
       fill: none !important;
     }
     
-    /* 歌词和文本 */
+    /* 歌词和文本 - 改为白色 */
     .at-main .at-lyrics *,
     .at-main .at-annotation * {
-      fill: #6a0dad !important; /* 紫色文本 */
+      fill: #ffffff !important; /* 纯白色文本 */
       font-weight: bold !important;
     }
     
-    /* 标题和备注等 */
+    /* 标题和备注等 - 改为白色 */
     .at-main .at-text * {
-      fill: #3c4e7a !important; /* 蓝色文本 */
+      fill: #ffffff !important; /* 纯白色文本 */
       font-weight: bold !important;
     }
     
-    /* 节拍器记号 */
+    /* 节拍器记号 - 改为白色 */
     .at-main .at-beat-text * {
-      fill: #6a0dad !important;
+      fill: #ffffff !important; /* 纯白色 */
       font-weight: bold !important;
     }
     
     /* 修改光标高亮样式 */
     .at-cursor-bar {
-      background-color: rgba(106, 13, 173, 0.1) !important; 
-      border-left: 2px solid #6a0dad !important;
-      box-shadow: 0 0 8px rgba(106, 13, 173, 0.3) !important;
+      background-color: rgba(105, 240, 174, 0.15) !important; /* 透明绿色 */
+      border-left: 2px solid #69f0ae !important; /* 亮绿色边框 */
+      box-shadow: 0 0 10px rgba(105, 240, 174, 0.4) !important; /* 更明显的绿色光晕 */
     }
     
     /* 吉他谱线 */
     .at-main .at-string-line,
     .at-main svg .at-string-line,
     .at-main g[data-name="tab"] line {
-      stroke: #3c4e7a !important; /* 蓝色吉他谱线 */
+      stroke: #bdbdbd !important; /* 更亮的灰色吉他谱线 */
       stroke-width: 1px !important;
     }
     
-    /* 吉他谱品格数字 */
+    /* 吉他谱品格数字 - 改为更亮的色彩 */
     .at-main .at-tab-note text,
     .at-main g[data-name="tab-note"] text {
-      fill: #6a0dad !important; /* 紫色品格数字 */
+      fill: #ffffff !important; /* 纯白色品格数字 */
       font-weight: bold !important;
     }
+      /* 🎵 品格数字（吉他谱） */
+.at-main .at-tab-note text,
+.at-main g[data-name="tab-note"] text {
+  fill: #f0f0f0 !important; /* 亮灰色字体 */
+  font-weight: bold !important;
+  font-size: 13px !important;
+  text-shadow: 0 0 2px #000; /* 提升可读性 */
+}
+
+/* 🎼 标题、作者、注释文本 */
+.at-main .at-text *,
+.at-main .at-annotation *,
+.at-main g[data-name="text"] text,
+.at-main g[data-name="annotation"] text {
+  fill: #e0e0e0 !important;
+  font-weight: bold !important;
+  font-size: 14px !important;
+}
+
+/* 🎤 歌词 */
+.at-main .at-lyrics *,
+.at-main g[data-name="lyrics"] text {
+  fill: #ffcc80 !important; /* 暖橙色歌词 */
+  font-weight: bold !important;
+  font-size: 13px !important;
+}
+
+/* 🎶 节拍器文本、动态标记（如 mf、ff） */
+.at-main .at-beat-text *,
+.at-main g[data-name="dynamic"] text {
+  fill: #f48fb1 !important; /* 粉红色动态符号 */
+  font-weight: bold !important;
+  font-size: 12px !important;
+}
+
   `;
   document.head.appendChild(style);
 }
