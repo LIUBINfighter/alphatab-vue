@@ -1,20 +1,16 @@
 <template>
   <div class="style-control control-group">
-    <div class="btn" :class="{'active': customStyleEnabled}" @click="toggleStyle" title="切换自定义样式">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
-        <!-- 替换为调色板图标 -->
-        <circle cx="13.5" cy="6.5" r="2.5"></circle>
-        <circle cx="17.5" cy="10.5" r="2.5"></circle>
-        <circle cx="9.5" cy="10.5" r="2.5"></circle>
-        <circle cx="13.5" cy="14.5" r="2.5"></circle>
-        <path d="M12 22v-7.5"></path>
-      </svg>
+    <div class="btn" :class="{'active': customStyleEnabled}" @click="toggleStyle" :title="customStyleEnabled ? '切换为默认样式' : '切换为紫色主题'">
+      <!-- 使用 lucide 组件代替内联 SVG -->
+      <Sun v-if="!customStyleEnabled" class="icon" />
+      <Moon v-else class="icon" />
     </div>
   </div>
 </template>
 
 <script setup>
 import { inject } from 'vue';
+import { Sun, Moon } from 'lucide-vue-next'; // 导入 Lucide 图标组件
 
 // 注入自定义样式状态和切换方法
 const customStyleEnabled = inject('customStyleEnabled');
