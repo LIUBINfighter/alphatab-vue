@@ -323,8 +323,18 @@ function applyDarkThemeViaApi() {
     staffLineColor: "#bdbdbd",
     barSeparatorColor: "#bdbdbd",
     
-    // 高亮颜色
-    selectionColor: "rgba(105, 240, 174, 0.2)"
+    // 新增: 补充休止符和连音线颜色
+    restColor: "#FFFFFF", // 休止符颜色
+    slurColor: "#E0E0E0", // 连音线颜色（浅灰色）
+    tieColor: "#E0E0E0",  // 延音线颜色（浅灰色）
+    
+    // 新增: 特殊音符标记颜色
+    tabGhostNoteColor: "#FF9E80", // 哑音符号（淡橙色）
+    effectFontColor: "#B3E5FC",   // 效果文本颜色（淡蓝色）
+    
+    // 高亮和选中颜色
+    selectionColor: "rgba(105, 240, 174, 0.2)", // 选中区域背景色
+    selectionBorderColor: "#69F0AE", // 新增: 选中区域边框色
   };
   
   // 应用更新的设置
@@ -339,6 +349,20 @@ function applyDarkThemeViaApi() {
         alphaTab.model.ScoreSubElement.MainGlyph, 
         alphaTab.model.Color.fromJson("#FFFFFF")
       );
+      
+      // 新增: 尝试设置更多的子元素颜色
+      if (alphaTab.model.ScoreSubElement.Rest) {
+        api.score.style.colors.set(
+          alphaTab.model.ScoreSubElement.Rest,
+          alphaTab.model.Color.fromJson("#FFFFFF")
+        );
+      }
+      if (alphaTab.model.ScoreSubElement.BarNumber) {
+        api.score.style.colors.set(
+          alphaTab.model.ScoreSubElement.BarNumber,
+          alphaTab.model.Color.fromJson("#FFFFFF")
+        );
+      }
     } catch (e) {
       console.warn('高级样式API不可用或版本不匹配:', e);
     }
@@ -390,13 +414,67 @@ function injectAlphaTabStyle() {
       stroke: #40c4ff !important;
     }
     
-    /* 文本元素颜色 */
+    /* 休止符颜色 - 确保在黑色背景上可见 */
+    .at-main .at-rest, .at-main svg .at-rest,
+    .at-main g[data-name="rest"] *, 
+    .at-main .at-multirest, .at-main svg .at-multirest,
+    .at-main g[data-name="multirest"] * {
+      fill: #FFFFFF !important;
+      stroke: #E0E0E0 !important;
+      visibility: visible !important;
+    }
+    
+    /* 连音线和延音线 - 增强对比度 */
+    .at-main .at-tie, .at-main .at-slur,
+    .at-main svg .at-tie, .at-main svg .at-slur,
+    .at-main path[data-name="tie"], .at-main path[data-name="slur"] {
+      stroke: #E0E0E0 !important;
+      stroke-width: 1.5px !important;
+      fill: none !important;
+      visibility: visible !important;
+    }
+    
+    /* 哑音符号（X）- 使用淡橙色突出显示 */
+    .at-main .at-dead-note, .at-main svg .at-dead-note,
+    .at-main g[data-name="dead-note"] *, .at-main text.at-dead-note {
+      fill: #FF9E80 !important;
+      font-weight: bold !important;
+    }
+    
+    /* 括号音符 - 降低不透明度区分开来 */
+    .at-main .at-note[data-note-type="grace"], .at-main .at-parenthesis,
+    .at-main g[data-name="grace-note"] *, .at-main g[data-name="parenthesis"] * {
+      fill-opacity: 0.7 !important;
+      stroke-opacity: 0.7 !important;
+    }
+    
+    /* 小节号 - 增强可见性 */
+    .at-main .at-bar-number, .at-main svg .at-bar-number,
+    .at-main g[data-name="bar-number"] text {
+      fill: #FFFFFF !important;
+      font-weight: bold !important;
+      font-size: 12px !important;
+      stroke: none !important;
+    }
+    
+    /* 高亮小节 - 添加边框增强边界感 */
+    .at-main .at-selection, .at-main svg .at-selection,
+    .at-main g[data-name="selection"] rect {
+      fill: rgba(105, 240, 174, 0.2) !important;
+      stroke: #69F0AE !important;
+      stroke-width: 1px !important;
+      stroke-dasharray: none !important;
+    }
+    
+    /* 确保所有文本元素可见 */
     .at-main text,
     .at-main svg text,
     .at-main g[data-name] text {
-      fill: #ffffff !important;
+      fill: #FFFFFF !important;
+      visibility: visible !important;
     }
     
+    /* 文本元素差异化处理 */
     /* 歌词特殊颜色 */
     .at-main .at-lyrics *,
     .at-main g[data-name="lyrics"] text {
@@ -415,10 +493,17 @@ function injectAlphaTabStyle() {
       stroke: #bdbdbd !important;
     }
     
-    /* 确保所有文本可见 */
-    .at-main svg text {
-      fill: #ffffff !important;
-      visibility: visible !important;
+    /* 播放光标和突出显示的当前小节 */
+    .at-cursor-bar {
+      background-color: rgba(105, 240, 174, 0.15) !important;
+      border-left: 2px solid #69F0AE !important;
+      box-shadow: 0 0 10px rgba(105, 240, 174, 0.4) !important;
+    }
+    
+    /* 确保光标拍子线可见 */
+    .at-cursor-beat {
+      background-color: #69F0AE !important;
+      box-shadow: 0 0 4px rgba(105, 240, 174, 0.8) !important;
     }
   `;
   document.head.appendChild(style);
