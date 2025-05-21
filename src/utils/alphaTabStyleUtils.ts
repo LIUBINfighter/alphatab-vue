@@ -216,6 +216,7 @@ export function resetToDefaultTheme(api: any) {
 }
 
 // import { DARK_THEME_CSS } from './darkTheme';
+// 目前只有默认/暗色样式二元切换，所以通过注释切换导入进行测试
 import { DARK_THEME_CSS } from './customTheme';
 
 export function injectAlphaTabStyle(customStyleEnabled: boolean) {
