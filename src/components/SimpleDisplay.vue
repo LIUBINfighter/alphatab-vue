@@ -280,31 +280,40 @@ function toggleCustomStyle() {
       if(overlayContent) overlayContent.innerText = '应用样式中...';
     }
     
-    if (customStyleEnabled.value) {
-      // 只有启用自定义样式时才应用深色主题
-      applyDarkThemeViaApi(alphaTabApi.value);
-      injectAlphaTabStyle(customStyleEnabled.value);
-    } else {
-      // 否则恢复默认样式
-      resetToDefaultTheme(alphaTabApi.value);
-    }
-    
-    // 使用 setTimeout 确保样式处理优先，然后再执行重新渲染
-    setTimeout(() => {
-      try {
-        // 触发重新渲染 - 关键步骤
-        alphaTabApi.value.render();
-      } catch (e) {
-        console.error('Error during re-render after style change:', e);
-      } finally {
-        // 渲染完成后隐藏loading
-        if (atOverlayRef.value) {
-          setTimeout(() => {
-            if (atOverlayRef.value) atOverlayRef.value.style.display = 'none';
-          }, 100); // 短暂延迟确保渲染完成
-        }
+    try {
+      if (customStyleEnabled.value) {
+        // 只有启用自定义样式时才应用深色主题
+        applyDarkThemeViaApi(alphaTabApi.value);
+        injectAlphaTabStyle(customStyleEnabled.value);
+      } else {
+        // 否则恢复默认样式
+        resetToDefaultTheme(alphaTabApi.value);
       }
-    }, 50);
+      
+      // 使用 setTimeout 确保样式处理优先，然后再执行重新渲染
+      setTimeout(() => {
+        try {
+          // 触发重新渲染 - 关键步骤
+          // 注意：applyDarkThemeViaApi 内部已调用过 render，这里作为额外保障
+          alphaTabApi.value.render();
+        } catch (e) {
+          console.error('Error during re-render after style change:', e);
+        } finally {
+          // 渲染完成后隐藏loading
+          if (atOverlayRef.value) {
+            setTimeout(() => {
+              if (atOverlayRef.value) atOverlayRef.value.style.display = 'none';
+            }, 100); // 短暂延迟确保渲染完成
+          }
+        }
+      }, 50);
+    } catch (e) {
+      console.error('应用样式时发生错误:', e);
+      // 出错时也要隐藏覆盖层
+      if (atOverlayRef.value) {
+        atOverlayRef.value.style.display = 'none';
+      }
+    }
   }
 }
 
