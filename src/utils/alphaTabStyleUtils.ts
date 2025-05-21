@@ -215,7 +215,8 @@ export function resetToDefaultTheme(api: any) {
   }
 }
 
-import { DARK_THEME_CSS } from './darkTheme';
+// import { DARK_THEME_CSS } from './darkTheme';
+import { DARK_THEME_CSS } from './customTheme';
 
 export function injectAlphaTabStyle(customStyleEnabled: boolean) {
   // 如果自定义样式未启用，直接返回
