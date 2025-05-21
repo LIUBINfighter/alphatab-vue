@@ -43,9 +43,11 @@ export function applyDarkThemeViaApi(api: any) {
     // 记录初始状态，帮助调试
     console.log("应用深色主题 - 初始resources:", {...api.settings.display.resources});
     
-    // 更新API的资源配置 - 使用更安全的方式
-    const defaultResources = api.settings.display.resources || {};
-    const darkThemeResources = {
+    // 获取现有资源配置
+    const currentResources = api.settings.display.resources || {};
+    
+    // 创建深色主题颜色配置
+    const darkThemeColors = {
       // 配置深色主题颜色
       mainGlyphColor: "#FFFFFF",
       secondaryGlyphColor: "rgba(255,255,255,0.60)",
@@ -79,26 +81,26 @@ export function applyDarkThemeViaApi(api: any) {
     };
     
     // 检查所有颜色格式
-    Object.entries(darkThemeResources).forEach(([key, value]) => {
+    Object.entries(darkThemeColors).forEach(([key, value]) => {
       if (typeof value === 'string' && !isValidColorFormat(value as string)) {
         console.warn(`颜色格式可能有问题: ${key} = ${value}`);
       }
     });
     
-    // 直接替换而不是合并，避免可能的格式冲突
-    api.settings.display.resources = darkThemeResources;
+    // 不替换整个对象，而是只更新颜色属性
+    // 保留原始对象中的字体和其他配置
+    for (const [key, value] of Object.entries(darkThemeColors)) {
+      currentResources[key] = value;
+    }
     
     // 记录最终设置的资源
-    console.log("应用深色主题 - 最终resources:", {...api.settings.display.resources});
+    console.log("应用深色主题 - 最终resources:", {...currentResources});
     
     try {
       // 应用更新的设置
       api.updateSettings();
     } catch (e) {
-      console.error("应用资源设置时出错:", e);
-      // 尝试恢复到默认资源
-      api.settings.display.resources = defaultResources;
-      api.updateSettings();
+      console.error("应用资源设置时出错:", e, "完整资源对象:", {...currentResources});
       return; // 如果基本设置都失败，不要继续执行高级样式设置
     }
   } catch (e) {
@@ -141,9 +143,6 @@ export function applyDarkThemeViaApi(api: any) {
           );
         }
         
-        // 简化符干、符尾、符杠的设置 - 暂时注释掉这部分复杂逻辑
-        // 如果基本样式能正常工作，后续可以逐步添加回来
-        
         // 应用样式变更
         try {
           api.render();
@@ -162,12 +161,36 @@ export function applyDarkThemeViaApi(api: any) {
 export function resetToDefaultTheme(api: any) {
   if (!api) return;
   
-  // 不再尝试创建新实例，直接使用一个空对象作为默认资源
-  const defaultResources = {};
-  
   try {
-    // 重置为默认资源
-    api.settings.display.resources = defaultResources;
+    // 不要尝试重置为空对象，而是使用内置的重置机制
+    api.settings.core.fontFamily = 'Arial';  // 重置为默认字体
+    
+    // 重置所有我们可能更改过的资源颜色
+    const defaultColors = {
+      mainGlyphColor: "#000000",
+      secondaryGlyphColor: "rgba(0,0,0,0.60)",
+      backgroundColor: "#FFFFFF",
+      barNumberColor: "#000000",
+      tabNoteColor: "#000000",
+      scoreInfoColor: "#000000",
+      titleColor: "#000000",
+      subTitleColor: "#000000",
+      wordsColor: "#000000",
+      copyrightColor: "#000000",
+      staffLineColor: "#000000",
+      barSeparatorColor: "#000000",
+      restColor: "#000000",
+      slurColor: "#000000",
+      tieColor: "#000000",
+    };
+    
+    // 更新资源颜色
+    for (const [key, value] of Object.entries(defaultColors)) {
+      if (api.settings.display.resources[key] !== undefined) {
+        api.settings.display.resources[key] = value;
+      }
+    }
+    
     api.updateSettings();
   } catch (e) {
     console.error("重置到默认主题时出错:", e);
@@ -176,7 +199,7 @@ export function resetToDefaultTheme(api: any) {
   // 如果存在高级样式对象，也尝试清除它
   if (api.score && api.score.style) {
     try {
-      api.score.style = null; // 或新建一个空的样式对象
+      api.score.style = null; // 清除样式对象
       api.render();
     } catch (e) {
       console.error("重置高级样式时出错:", e);
