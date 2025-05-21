@@ -7,6 +7,23 @@ export const DARK_THEME_CSS = `
   .at-main { background-color: #121212 !important; }
 
   /* ========== 音符相关元素 ========== */
+
+  /* 新增：针对直接渲染为 <path> 的符干 (Stems) */
+  /* 这些是那些 stroke="#000000" 且 style 属性中包含 "fill: none" 的 path 元素 */
+  .at-main svg.at-surface-svg > path[stroke="#000000"][style*="fill: none"] {
+    stroke: #FFFFFF !important; /* 将黑色符干的描边改为白色 */
+  }
+  /* 可选：如果 style 属性精确匹配 "fill: none" */
+  .at-main svg.at-surface-svg > path[stroke="#000000"][style="fill: none"] {
+    stroke: #FFFFFF !important;
+  }
+
+  /* 新增：针对直接渲染为 <path> 的符杠 (Beams) */
+  /* 这些是那些 style 属性精确为 "stroke: none" 的 path 元素 */
+  /* 它们默认填充为黑色，这里我们将其填充改为白色 */
+  .at-main svg.at-surface-svg > path[style="stroke: none"] {
+    fill: #FFFFFF !important;
+  }
   /* 普通音符 */
   .at-main .at-notehead, .at-main svg .at-notehead, 
   .at-main g[data-name="notehead"] *, 
