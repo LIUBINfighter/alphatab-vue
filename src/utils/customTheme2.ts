@@ -1,5 +1,16 @@
-/* customTheme.ts */
+/* customTheme2.ts */
 // 统一使用16进制
+// customTheme2.ts
+// 第三个自定义主题
+// 第一个相对完整的版本
+// 改造依据： https://deepwiki.com/search/css-export-const-darkthemecss_fcf0abed-bb96-41b7-9644-f557c99cc792
+
+// 深色背景 #121212
+// 音符主色调是明亮的蓝色系（ #80d8ff, #40c4ff）
+// 音符主色调未被应用，被api方法覆写
+// 交互元素是生动的绿色系（ #69F0AE）。
+// 注意增加了覆写 ControlBar.vue 中组件原有样式的样式
+// 使得工具栏也会变为背景黑色（ #121212）和交互绿色（ #69F0AE）
 
 export const DARK_THEME_CSS = `
 /* ========== 主容器背景 ========== */  
@@ -23,6 +34,20 @@ export const DARK_THEME_CSS = `
 .at-main svg.at-surface-svg > rect[fill="#000000"],  
 .at-main svg.at-surface-svg > rect[style*="fill: #000000"] {  
   fill: #FFFFFF !important;  
+}
+
+/* 小节线 - 更新 */
+.at-main svg.at-surface-svg > rect[fill="#222211"],  
+.at-main svg.at-surface-svg > rect[style*="fill: #222211"],  
+.at-main g[data-name="bar"] rect {  
+  fill: #FFFFFF !important;  
+}
+
+/* 小节线 - 线条部分 */
+.at-main .at-bar, .at-main svg .at-bar,   
+.at-main g[data-name="bar"] line {   
+  stroke: #bdbdbd !important;  
+  stroke-width: 1.5px !important;  
 }  
   
 /* 普通音符 */  
@@ -46,6 +71,16 @@ export const DARK_THEME_CSS = `
   
 /* 连音线/延音线 */    
 .at-main path[data-name="tie"], .at-main path[data-name="slur"] {     
+  stroke: #E0E0E0 !important;     
+  stroke-width: 1.5px !important;     
+  fill: none !important;     
+}
+
+/* 连音线/延音线 - 更新 */    
+.at-main path[data-name="tie"],   
+.at-main path[data-name="slur"],  
+.at-main g[data-name="tie"] path,  
+.at-main g[data-name="slur"] path {     
   stroke: #E0E0E0 !important;     
   stroke-width: 1.5px !important;     
   fill: none !important;     
@@ -164,7 +199,7 @@ export const DARK_THEME_CSS = `
 .at-cursor-beat {   
   background-color: #69F0AE !important;   
   box-shadow: 0 0 4px rgba(105, 240, 174, 0.8) !important;   
-  width: 3px !important;  
+  width: 5px !important; /* 增加宽度从3px到5px */  
 }  
   
 /* 高亮 - 播放中的元素 */  
