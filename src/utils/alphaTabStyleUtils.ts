@@ -1,3 +1,4 @@
+// alphaTabStyleUtils.ts
 // 声明 alphaTab 全局变量，或者如果 AlphaTab 提供类型定义，请导入它们
 declare const alphaTab: any;
 
@@ -39,6 +40,9 @@ function createSafeColor(api: any, colorStr: string): any {
 export function applyDarkThemeViaApi(api: any) {
   if (!api) return;
   
+  console.log("=== 深色主题设置开始 ===");
+  console.log("使用 AlphaTab API 进行主题设置");
+  
   try {
     // 记录初始状态，帮助调试
     console.log("应用深色主题 - 初始resources:", {...api.settings.display.resources});
@@ -50,7 +54,7 @@ export function applyDarkThemeViaApi(api: any) {
     const darkThemeColors = {
       // 配置深色主题颜色
       mainGlyphColor: "#FFFFFF",
-      secondaryGlyphColor: "rgba(255,255,255,0.60)",
+      secondaryGlyphColor: "#dee2e6",
       backgroundColor: "#121212",
       
       // 文本颜色
@@ -76,7 +80,7 @@ export function applyDarkThemeViaApi(api: any) {
       effectFontColor: "#B3E5FC",
       
       // 高亮和选中颜色
-      selectionColor: "rgba(105, 240, 174, 0.2)",
+      selectionColor: "#dee2e6",
       selectionBorderColor: "#69F0AE",
     };
     
@@ -99,17 +103,19 @@ export function applyDarkThemeViaApi(api: any) {
     try {
       // 应用更新的设置
       api.updateSettings();
+      console.log("✓ API 基础样式设置成功");
     } catch (e) {
-      console.error("应用资源设置时出错:", e, "完整资源对象:", {...currentResources});
-      return; // 如果基本设置都失败，不要继续执行高级样式设置
+      console.error("✗ API 基础样式设置失败:", e);
+      return;
     }
   } catch (e) {
-    console.error("设置深色主题资源时出错:", e);
-    return; // 如果出错，不继续执行后面的高级样式设置
+    console.error("✗ 设置深色主题资源时出错:", e);
+    return;
   }
   
   // 对于AlphaTab 1.5.0+，尝试使用更强大的样式系统
   if (api.score && typeof api.model !== 'undefined') {
+    console.log("正在尝试使用高级样式 API...");
     try {
       console.log("开始设置高级样式...");
       
@@ -156,6 +162,8 @@ export function applyDarkThemeViaApi(api: any) {
       console.warn('高级样式API不可用或版本不匹配:', e);
     }
   }
+  
+  console.log("=== 深色主题设置完成 ===");
 }
 
 export function resetToDefaultTheme(api: any) {
@@ -168,7 +176,7 @@ export function resetToDefaultTheme(api: any) {
     // 重置所有我们可能更改过的资源颜色
     const defaultColors = {
       mainGlyphColor: "#000000",
-      secondaryGlyphColor: "rgba(0,0,0,0.60)",
+      secondaryGlyphColor: "#dee2e6",
       backgroundColor: "#FFFFFF",
       barNumberColor: "#000000",
       tabNoteColor: "#000000",
@@ -207,32 +215,32 @@ export function resetToDefaultTheme(api: any) {
   }
 }
 
+import { DARK_THEME_CSS } from './darkTheme';
+
 export function injectAlphaTabStyle(customStyleEnabled: boolean) {
   // 如果自定义样式未启用，直接返回
-  if (!customStyleEnabled) return;
+  if (!customStyleEnabled) {
+    console.log("CSS 回退样式已禁用");
+    return;
+  }
 
+  console.log("正在应用 CSS 回退样式...");
+  
   const styleId = 'alphatab-custom-style';
   // 确保在浏览器环境中执行
-  if (typeof document === 'undefined' || document.getElementById(styleId)) return; 
+  if (typeof document === 'undefined') {
+    console.log("✗ 未检测到浏览器环境，CSS 回退样式未应用");
+    return;
+  }
+  
+  if (document.getElementById(styleId)) {
+    console.log("CSS 回退样式已存在，跳过注入");
+    return;
+  }
 
   const style = document.createElement('style');
   style.id = styleId;
-  style.innerHTML = `
-    /* 自定义深色主题 - 作为API配置的补充备份 */
-    .at-main { background-color: #121212 !important; }
-    .at-main .at-notehead, .at-main svg .at-notehead, .at-main g[data-name="notehead"] *, .at-main .at-stem, .at-main svg .at-stem, .at-main g[data-name="stem"] * { fill: #80d8ff !important; stroke: #40c4ff !important; }
-    .at-main .at-rest, .at-main svg .at-rest, .at-main g[data-name="rest"] *, .at-main .at-multirest, .at-main svg .at-multirest, .at-main g[data-name="multirest"] * { fill: #FFFFFF !important; stroke: #E0E0E0 !important; visibility: visible !important; }
-    .at-main .at-tie, .at-main .at-slur, .at-main svg .at-tie, .at-main svg .at-slur, .at-main path[data-name="tie"], .at-main path[data-name="slur"] { stroke: #E0E0E0 !important; stroke-width: 1.5px !important; fill: none !important; visibility: visible !important; }
-    .at-main .at-dead-note, .at-main svg .at-dead-note, .at-main g[data-name="dead-note"] *, .at-main text.at-dead-note { fill: #FF9E80 !important; font-weight: bold !important; }
-    .at-main .at-note[data-note-type="grace"], .at-main .at-parenthesis, .at-main g[data-name="grace-note"] *, .at-main g[data-name="parenthesis"] * { fill-opacity: 0.7 !important; stroke-opacity: 0.7 !important; }
-    .at-main .at-bar-number, .at-main svg .at-bar-number, .at-main g[data-name="bar-number"] text { fill: #FFFFFF !important; font-weight: bold !important; font-size: 12px !important; stroke: none !important; }
-    .at-main .at-selection, .at-main svg .at-selection, .at-main g[data-name="selection"] rect { fill: rgba(105, 240, 174, 0.2) !important; stroke: #69F0AE !important; stroke-width: 1px !important; stroke-dasharray: none !important; }
-    .at-main text, .at-main svg text, .at-main g[data-name] text { fill: #FFFFFF !important; visibility: visible !important; }
-    .at-main .at-lyrics *, .at-main g[data-name="lyrics"] text { fill: #ffcc80 !important; }
-    .at-main g[data-name="dynamic"] text { fill: #f48fb1 !important; }
-    .at-main .at-staff-line, .at-main .at-bar, .at-main g[data-name="staff"] line, .at-main g[data-name="bar"] * { stroke: #bdbdbd !important; }
-    .at-cursor-bar { background-color: rgba(105, 240, 174, 0.15) !important; border-left: 2px solid #69F0AE !important; box-shadow: 0 0 10px rgba(105, 240, 174, 0.4) !important; }
-    .at-cursor-beat { background-color: #69F0AE !important; box-shadow: 0 0 4px rgba(105, 240, 174, 0.8) !important; }
-  `;
+  style.innerHTML = DARK_THEME_CSS;
   document.head.appendChild(style);
+  console.log("✓ CSS 回退样式已成功注入");
 }

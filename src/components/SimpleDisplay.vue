@@ -1,3 +1,4 @@
+<!-- SimpleDisplay.vue -->
 <template>
   <div class="at-wrap">
     <div class="at-overlay" ref="atOverlayRef" style="display: none;">
