@@ -178,29 +178,21 @@ function closeScoreList() {
 </template>
 
 <style scoped>
-/* :global(html, body) {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow-x: hidden;
-  box-sizing: border-box;
-} */
-
+/* --- App.vue 组件的局部样式 --- */
 #app-container {
+  /* margin: 0px; */ /* #app-container 通常不需要设置 margin，因为它应该是 body 的直接子元素 */
   width: 100%;
-  height: 97vh;
-  /* height: 100%; */
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-sizing: border-box;
+  overflow: hidden; /* #app-container 自身的 overflow 控制 */
+  /* box-sizing: border-box; 已通过 :global(*) 继承 */
 }
 
 .main-content {
   flex-grow: 1;
-  overflow: hidden; /* Changed from overflow-y: auto to prevent scrolling */
-  position: relative; 
+  overflow: hidden;
+  position: relative;
 }
 
 /* 过渡动画样式 */
