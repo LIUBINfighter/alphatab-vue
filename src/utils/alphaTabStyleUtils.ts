@@ -54,7 +54,7 @@ export function applyDarkThemeViaApi(api: any) {
     const darkThemeColors = {
       // 配置深色主题颜色
       mainGlyphColor: "#FFFFFF",
-      secondaryGlyphColor: "#dee2e6",
+      secondaryGlyphColor: "#FFFFFF",
       backgroundColor: "#121212",
       
       // 文本颜色
@@ -80,7 +80,7 @@ export function applyDarkThemeViaApi(api: any) {
       effectFontColor: "#B3E5FC",
       
       // 高亮和选中颜色
-      selectionColor: "#dee2e6",
+      selectionColor: "#FFFFFF",
       selectionBorderColor: "#69F0AE",
     };
     
@@ -176,7 +176,7 @@ export function resetToDefaultTheme(api: any) {
     // 重置所有我们可能更改过的资源颜色
     const defaultColors = {
       mainGlyphColor: "#000000",
-      secondaryGlyphColor: "#dee2e6",
+      secondaryGlyphColor: "#FFFFFF",
       backgroundColor: "#FFFFFF",
       barNumberColor: "#000000",
       tabNoteColor: "#000000",

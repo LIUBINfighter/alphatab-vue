@@ -24,6 +24,12 @@ export const DARK_THEME_CSS = `
   .at-main svg.at-surface-svg > path[style="stroke: none"] {
     fill: #FFFFFF !important;
   }
+
+  // 针对小节线，诶诶似乎不起作用
+  .at-main svg.at-surface-svg > rect[fill="#222211"] {
+  fill: #FFFFFF !important; /* 改为纯白色 */
+  }
+
   /* 普通音符 */
   .at-main .at-notehead, .at-main svg .at-notehead, 
   .at-main g[data-name="notehead"] *, 
@@ -43,14 +49,11 @@ export const DARK_THEME_CSS = `
     visibility: visible !important; 
   }
 
-  /* 连音线 */
-  .at-main .at-tie, .at-main .at-slur, 
-  .at-main svg .at-tie, .at-main svg .at-slur, 
-  .at-main path[data-name="tie"], .at-main path[data-name="slur"] { 
-    stroke: #E0E0E0 !important; 
-    stroke-width: 1.5px !important; 
-    fill: none !important; 
-    visibility: visible !important; 
+  /* 连音线/延音线 */  
+  .at-main path[data-name="tie"], .at-main path[data-name="slur"] {   
+    stroke: #E0E0E0 !important;   
+    stroke-width: 1.5px !important;   
+    fill: none !important;   
   }
 
   /* 无效音符 */
@@ -109,7 +112,7 @@ export const DARK_THEME_CSS = `
   /* 选择区域 */
   .at-main .at-selection, .at-main svg .at-selection, 
   .at-main g[data-name="selection"] rect { 
-    fill: rgba(105, 240, 174, 0.2) !important; 
+    fill: #FFFFFF !important; 
     stroke: #69F0AE !important; 
     stroke-width: 1px !important; 
     stroke-dasharray: none !important; 
