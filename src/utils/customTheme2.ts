@@ -191,7 +191,7 @@ export const DARK_THEME_CSS = `
 /* 光标 - 小节 */  
 .at-cursor-bar {   
   background-color: rgba(105, 240, 174, 0.15) !important;   
-  border-left: 2px solid #69F0AE !important;   
+  border-left: 4px solid #69F0AE !important;   
   box-shadow: 0 0 10px rgba(105, 240, 174, 0.4) !important;   
 }  
   

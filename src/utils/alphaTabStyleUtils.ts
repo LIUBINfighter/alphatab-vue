@@ -215,10 +215,10 @@ export function resetToDefaultTheme(api: any) {
   }
 }
 
-// import { DARK_THEME_CSS } from './darkTheme';
+import { DARK_THEME_CSS } from './darkTheme';
 // 目前只有默认/暗色样式二元切换，所以通过注释切换导入进行测试
 // import { DARK_THEME_CSS } from './customTheme';
-import { DARK_THEME_CSS } from './customTheme2';
+// import { DARK_THEME_CSS } from './customTheme2';
 
 export function injectAlphaTabStyle(customStyleEnabled: boolean) {
   // 如果自定义样式未启用，直接返回
