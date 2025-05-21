@@ -26,6 +26,7 @@
 <script setup>
 import { onMounted, ref, toRaw, inject, watch, provide } from 'vue' // 添加 provide
 import ControlBar from './ControlBar.vue'
+import { applyDarkThemeViaApi, resetToDefaultTheme, injectAlphaTabStyle } from '../utils/alphaTabStyleUtils';
 
 const props = defineProps({
   score: {
@@ -73,7 +74,7 @@ function initializeAlphaTab() {
         enableCursor: true,
         enableHighlights: true,
         scrollMode: alphaTab.ScrollMode.Continuous,
-        scrollElement: document.querySelector('.at-viewport'), // 确保在 DOM 更新后选择
+        scrollElement: typeof document !== 'undefined' ? document.querySelector('.at-viewport') : null, // 确保在 DOM 更新后选择
         scrollOffsetY: -30
       }
       // 移除初始化时的深色主题设置，使用默认样式
@@ -114,7 +115,7 @@ function initializeAlphaTab() {
             if (atOverlayRef.value) {
               const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
               // 避免覆盖来自 api.error.on 的更具体的错误
-              if (!overlayContent.innerText.startsWith('AlphaTex Error:')) {
+              if (overlayContent && !overlayContent.innerText.startsWith('AlphaTex Error:')) {
                   overlayContent.innerText = 'Failed to process AlphaTex: Error during loading.';
               }
               atOverlayRef.value.style.display = 'flex';
@@ -126,7 +127,8 @@ function initializeAlphaTab() {
         if (atOverlayRef.value) {
           // 如果是 AlphaTex 解析错误，这可能会被 api.error.on 覆盖
           // 但作为备用方案是好的。
-          atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error initializing AlphaTex (sync).';
+          const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+          if(overlayContent) overlayContent.innerText = 'Error initializing AlphaTex (sync).';
           atOverlayRef.value.style.display = 'flex';
         }
       }
@@ -139,7 +141,8 @@ function initializeAlphaTab() {
     api.renderStarted.on(() => {
       if (atOverlayRef.value) {
         atOverlayRef.value.style.display = 'flex';
-        atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Music sheet is loading';
+        const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+        if(overlayContent) overlayContent.innerText = 'Music sheet is loading';
       }
       const activeIndices = new Set();
       api.tracks.forEach(t => activeIndices.add(t.index));
@@ -157,7 +160,7 @@ function initializeAlphaTab() {
         if (atOverlayRef.value) {
           const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
           // 如果 api.error.on 尚未显示特定的 AlphaTex 错误
-          if (!overlayContent.innerText.startsWith('AlphaTex Error:')) {
+          if (overlayContent && !overlayContent.innerText.startsWith('AlphaTex Error:')) {
             overlayContent.innerText = 'Error: Score data could not be loaded.';
           }
           atOverlayRef.value.style.display = 'flex'; // 确保覆盖层可见
@@ -167,17 +170,19 @@ function initializeAlphaTab() {
         allTracks.value = score.tracks;
         // 更新歌曲标题和艺术家信息（如果元素存在）
         // 这些元素可能在 TexEditorView 的简化版 ControlBar 中不存在
-        const songTitleEl = document.querySelector('.at-song-title');
-        const songArtistEl = document.querySelector('.at-song-artist');
-        if (songTitleEl) songTitleEl.innerText = score.title;
-        if (songArtistEl) songArtistEl.innerText = score.artist;
+        if(typeof document !== 'undefined') {
+            const songTitleEl = document.querySelector('.at-song-title');
+            const songArtistEl = document.querySelector('.at-song-artist');
+            if (songTitleEl) songTitleEl.innerText = score.title;
+            if (songArtistEl) songArtistEl.innerText = score.artist;
+        }
       }
     });
 
     // 不在初始化时注入自定义样式，而是根据状态决定
     if (customStyleEnabled.value) {
-      applyDarkThemeViaApi();
-      injectAlphaTabStyle();
+      applyDarkThemeViaApi(alphaTabApi.value);
+      injectAlphaTabStyle(customStyleEnabled.value);
     }
     
   } else {
@@ -197,7 +202,8 @@ watch(() => props.score, (newScore, oldScore) => {
     // 显示加载覆盖层
     if (atOverlayRef.value) {
         atOverlayRef.value.style.display = 'flex';
-        atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Switching score...';
+        const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+        if(overlayContent) overlayContent.innerText = 'Switching score...';
     }
     // 重新初始化或加载新的乐谱
     // 简单起见，我们重新初始化。如果需要更平滑的过渡，可以考虑仅调用 api.load(newScore)
@@ -218,7 +224,8 @@ watch(() => props.tex, (newTex, oldTex) => {
   if (alphaTabApi.value && typeof newTex === 'string' && newTex !== oldTex) {
     if (atOverlayRef.value) {
         atOverlayRef.value.style.display = 'flex';
-        atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Updating AlphaTex...';
+        const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+        if(overlayContent) overlayContent.innerText = 'Updating AlphaTex...';
     }
     
     try {
@@ -235,7 +242,7 @@ watch(() => props.tex, (newTex, oldTex) => {
             // 这是备用方案。
             if (atOverlayRef.value) {
               const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
-              if (!overlayContent.innerText.startsWith('AlphaTex Error:')) {
+              if (overlayContent && !overlayContent.innerText.startsWith('AlphaTex Error:')) {
                   overlayContent.innerText = 'Failed to process AlphaTex: Error during update.';
               }
               atOverlayRef.value.style.display = 'flex';
@@ -245,7 +252,8 @@ watch(() => props.tex, (newTex, oldTex) => {
     } catch (e) { // api.tex() 调用期间的同步错误
       console.error('Synchronous error during tex update processing:', e);
       if (atOverlayRef.value) {
-          atOverlayRef.value.querySelector('.at-overlay-content').innerText = 'Error initiating AlphaTex update (sync).';
+          const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+          if(overlayContent) overlayContent.innerText = 'Error initiating AlphaTex update (sync).';
           atOverlayRef.value.style.display = 'flex';
       }
     }
@@ -257,25 +265,28 @@ function toggleCustomStyle() {
   customStyleEnabled.value = !customStyleEnabled.value;
   
   // 移除现有样式（如果存在）
-  const existingStyle = document.getElementById('alphatab-custom-style');
-  if (existingStyle) {
-    document.head.removeChild(existingStyle);
+  if (typeof document !== 'undefined') {
+    const existingStyle = document.getElementById('alphatab-custom-style');
+    if (existingStyle) {
+      document.head.removeChild(existingStyle);
+    }
   }
   
   if (alphaTabApi.value) {
     // 显示加载覆盖层
     if (atOverlayRef.value) {
       atOverlayRef.value.style.display = 'flex';
-      atOverlayRef.value.querySelector('.at-overlay-content').innerText = '应用样式中...';
+      const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+      if(overlayContent) overlayContent.innerText = '应用样式中...';
     }
     
     if (customStyleEnabled.value) {
       // 只有启用自定义样式时才应用深色主题
-      applyDarkThemeViaApi();
-      injectAlphaTabStyle();
+      applyDarkThemeViaApi(alphaTabApi.value);
+      injectAlphaTabStyle(customStyleEnabled.value);
     } else {
       // 否则恢复默认样式
-      resetToDefaultTheme();
+      resetToDefaultTheme(alphaTabApi.value);
     }
     
     // 使用 setTimeout 确保样式处理优先，然后再执行重新渲染
@@ -289,7 +300,7 @@ function toggleCustomStyle() {
         // 渲染完成后隐藏loading
         if (atOverlayRef.value) {
           setTimeout(() => {
-            atOverlayRef.value.style.display = 'none';
+            if (atOverlayRef.value) atOverlayRef.value.style.display = 'none';
           }, 100); // 短暂延迟确保渲染完成
         }
       }
@@ -297,217 +308,10 @@ function toggleCustomStyle() {
   }
 }
 
-// 新增: 通过API配置深色主题（官方推荐方式）
-function applyDarkThemeViaApi() {
-  if (!alphaTabApi.value) return;
-  
-  // 更新API的资源配置
-  const api = alphaTabApi.value;
-  api.settings.display.resources = {
-    ...api.settings.display.resources,
-    // 配置深色主题颜色
-    mainGlyphColor: "#FFFFFF",
-    secondaryGlyphColor: "rgba(255,255,255,0.60)",
-    backgroundColor: "#121212",
-    
-    // 文本颜色
-    barNumberColor: "#FFFFFF",
-    tabNoteColor: "#80d8ff",
-    scoreInfoColor: "#FFFFFF",
-    titleColor: "#FFFFFF",
-    subTitleColor: "#e0e0e0",
-    wordsColor: "#ffcc80",
-    copyrightColor: "#BBBBBB",
-    
-    // 线条颜色
-    staffLineColor: "#bdbdbd",
-    barSeparatorColor: "#bdbdbd",
-    
-    // 新增: 补充休止符和连音线颜色
-    restColor: "#FFFFFF", // 休止符颜色
-    slurColor: "#E0E0E0", // 连音线颜色（浅灰色）
-    tieColor: "#E0E0E0",  // 延音线颜色（浅灰色）
-    
-    // 新增: 特殊音符标记颜色
-    tabGhostNoteColor: "#FF9E80", // 哑音符号（淡橙色）
-    effectFontColor: "#B3E5FC",   // 效果文本颜色（淡蓝色）
-    
-    // 高亮和选中颜色
-    selectionColor: "rgba(105, 240, 174, 0.2)", // 选中区域背景色
-    selectionBorderColor: "#69F0AE", // 新增: 选中区域边框色
-  };
-  
-  // 应用更新的设置
-  api.updateSettings();
-  
-  // 对于AlphaTab 1.5.0+，还可以使用更强大的样式系统
-  if (api.score && typeof api.score.style !== 'undefined') {
-    try {
-      // 创建样式对象并配置颜色
-      api.score.style = new alphaTab.model.ScoreStyle();
-      api.score.style.colors.set(
-        alphaTab.model.ScoreSubElement.MainGlyph, 
-        alphaTab.model.Color.fromJson("#FFFFFF")
-      );
-      
-      // 新增: 尝试设置更多的子元素颜色
-      if (alphaTab.model.ScoreSubElement.Rest) {
-        api.score.style.colors.set(
-          alphaTab.model.ScoreSubElement.Rest,
-          alphaTab.model.Color.fromJson("#FFFFFF")
-        );
-      }
-      if (alphaTab.model.ScoreSubElement.BarNumber) {
-        api.score.style.colors.set(
-          alphaTab.model.ScoreSubElement.BarNumber,
-          alphaTab.model.Color.fromJson("#FFFFFF")
-        );
-      }
-    } catch (e) {
-      console.warn('高级样式API不可用或版本不匹配:', e);
-    }
-  }
-}
-
-// 新增: 重置为默认主题
-function resetToDefaultTheme() {
-  if (!alphaTabApi.value) return;
-  
-  // 重置为默认颜色设置
-  const api = alphaTabApi.value;
-  // 创建一个新的AlphaTab实例，获取默认设置
-  const defaultSettings = new alphaTab.AlphaTabApi(document.createElement('div')).settings;
-  
-  // 复制默认资源设置
-  api.settings.display.resources = {
-    ...defaultSettings.display.resources
-  };
-  
-  // 应用设置
-  api.updateSettings();
-}
-
-// 修改自定义样式注入函数，作为备用方案
-function injectAlphaTabStyle() {
-  // 如果自定义样式未启用，直接返回
-  if (!customStyleEnabled.value) return;
-
-  const styleId = 'alphatab-custom-style';
-  if (document.getElementById(styleId)) return; // 避免重复注入
-
-  const style = document.createElement('style');
-  style.id = styleId;
-  style.innerHTML = `
-    /* 自定义深色主题 - 作为API配置的补充备份 */
-    
-    /* 全局背景色 */
-    .at-main {
-      background-color: #121212 !important;
-    }
-    
-    /* 音符和谱表元素颜色 */
-    .at-main .at-notehead, .at-main svg .at-notehead,
-    .at-main g[data-name="notehead"] *, 
-    .at-main .at-stem, .at-main svg .at-stem,
-    .at-main g[data-name="stem"] * {
-      fill: #80d8ff !important;
-      stroke: #40c4ff !important;
-    }
-    
-    /* 休止符颜色 - 确保在黑色背景上可见 */
-    .at-main .at-rest, .at-main svg .at-rest,
-    .at-main g[data-name="rest"] *, 
-    .at-main .at-multirest, .at-main svg .at-multirest,
-    .at-main g[data-name="multirest"] * {
-      fill: #FFFFFF !important;
-      stroke: #E0E0E0 !important;
-      visibility: visible !important;
-    }
-    
-    /* 连音线和延音线 - 增强对比度 */
-    .at-main .at-tie, .at-main .at-slur,
-    .at-main svg .at-tie, .at-main svg .at-slur,
-    .at-main path[data-name="tie"], .at-main path[data-name="slur"] {
-      stroke: #E0E0E0 !important;
-      stroke-width: 1.5px !important;
-      fill: none !important;
-      visibility: visible !important;
-    }
-    
-    /* 哑音符号（X）- 使用淡橙色突出显示 */
-    .at-main .at-dead-note, .at-main svg .at-dead-note,
-    .at-main g[data-name="dead-note"] *, .at-main text.at-dead-note {
-      fill: #FF9E80 !important;
-      font-weight: bold !important;
-    }
-    
-    /* 括号音符 - 降低不透明度区分开来 */
-    .at-main .at-note[data-note-type="grace"], .at-main .at-parenthesis,
-    .at-main g[data-name="grace-note"] *, .at-main g[data-name="parenthesis"] * {
-      fill-opacity: 0.7 !important;
-      stroke-opacity: 0.7 !important;
-    }
-    
-    /* 小节号 - 增强可见性 */
-    .at-main .at-bar-number, .at-main svg .at-bar-number,
-    .at-main g[data-name="bar-number"] text {
-      fill: #FFFFFF !important;
-      font-weight: bold !important;
-      font-size: 12px !important;
-      stroke: none !important;
-    }
-    
-    /* 高亮小节 - 添加边框增强边界感 */
-    .at-main .at-selection, .at-main svg .at-selection,
-    .at-main g[data-name="selection"] rect {
-      fill: rgba(105, 240, 174, 0.2) !important;
-      stroke: #69F0AE !important;
-      stroke-width: 1px !important;
-      stroke-dasharray: none !important;
-    }
-    
-    /* 确保所有文本元素可见 */
-    .at-main text,
-    .at-main svg text,
-    .at-main g[data-name] text {
-      fill: #FFFFFF !important;
-      visibility: visible !important;
-    }
-    
-    /* 文本元素差异化处理 */
-    /* 歌词特殊颜色 */
-    .at-main .at-lyrics *,
-    .at-main g[data-name="lyrics"] text {
-      fill: #ffcc80 !important;
-    }
-    
-    /* 动态标记特殊颜色 */
-    .at-main g[data-name="dynamic"] text {
-      fill: #f48fb1 !important;
-    }
-    
-    /* 基础线条颜色 */
-    .at-main .at-staff-line, .at-main .at-bar,
-    .at-main g[data-name="staff"] line,
-    .at-main g[data-name="bar"] * {
-      stroke: #bdbdbd !important;
-    }
-    
-    /* 播放光标和突出显示的当前小节 */
-    .at-cursor-bar {
-      background-color: rgba(105, 240, 174, 0.15) !important;
-      border-left: 2px solid #69F0AE !important;
-      box-shadow: 0 0 10px rgba(105, 240, 174, 0.4) !important;
-    }
-    
-    /* 确保光标拍子线可见 */
-    .at-cursor-beat {
-      background-color: #69F0AE !important;
-      box-shadow: 0 0 4px rgba(105, 240, 174, 0.8) !important;
-    }
-  `;
-  document.head.appendChild(style);
-}
+// 以下函数已被移至 src/utils/alphaTabStyleUtils.ts
+// function applyDarkThemeViaApi() { ... }
+// function resetToDefaultTheme() { ... }
+// function injectAlphaTabStyle() { ... }
 
 function handleTrackSelected(trackFromEvent) {
   if (alphaTabApi.value) {
