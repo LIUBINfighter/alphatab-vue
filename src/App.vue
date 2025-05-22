@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { provide, shallowRef, ref, computed, onMounted } from 'vue';
+import { applyTheme, type ThemeName } from './utils/alphaTabStyleUtils';
 import SimpleDisplay from './components/SimpleDisplay.vue';
 import ScoreList from './components/ScoreList.vue';
 import TexEditorView from './components/TexEditorView.vue';
 import GlobalHeader from './components/layout/GlobalHeader.vue'; // Import GlobalHeader
-import { applyTheme } from './utils/alphaTabStyleUtils';
 
 // 使用 shallowRef 避免大型对象的深度响应性
 const alphaTabApi = shallowRef(null);
@@ -134,16 +134,16 @@ function closeScoreList() {
 
 // 在脚本部分设置样式状态
 // 设置提供给组件的样式状态
-const currentTheme = ref('default');
+const currentTheme = ref<ThemeName>('default');
 
 // 提供样式状态
 provide('currentTheme', currentTheme);
 
-// 提供切换主题的方法
-provide('changeTheme', (themeName) => {
+// 提供切换主题的方法，使用明确的类型
+provide('changeTheme', (themeName: ThemeName) => {
   currentTheme.value = themeName;
-  // 应用主题 (如果有api实例可传入，但这里可能没有)
-  applyTheme(themeName);
+  // 因为这里没有 api 实例，传入 undefined 作为第二个参数
+  applyTheme(themeName, undefined);
 });
 
 // 移除 handleRequestScoreList 函数

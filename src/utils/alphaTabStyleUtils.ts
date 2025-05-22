@@ -220,23 +220,25 @@ import { DARK_THEME_CSS as DarkDefaultTheme } from './themes/DarkDefault';
 import { DARK_THEME_CSS as DeepOceanTheme } from './themes/DeepOcean';
 import { DARK_THEME_CSS as VibrantNightTheme } from './themes/VibrantNight';
 
-// 主题映射对象
-const THEMES = {
-  default: null, // 默认主题不需要CSS
+// 添加主题类型
+export type ThemeName = 'default' | 'dark' | 'ocean' | 'vibrant';
+
+// 使用类型定义更新 THEMES 常量
+const THEMES: Record<ThemeName, string | null> = {
+  default: null,
   dark: DarkDefaultTheme,
   ocean: DeepOceanTheme,
   vibrant: VibrantNightTheme
 };
 
-// 当前激活的主题
-let activeTheme = 'default';
+let activeTheme: ThemeName = 'default';
 
 /**
  * 应用选择的主题
- * @param themeName 主题名称：'default', 'dark', 'ocean', 'vibrant'
- * @param api AlphaTab API 实例（可选）
+ * @param themeName 主题名称
+ * @param api AlphaTab API 实例
  */
-export function applyTheme(themeName, api) {
+export function applyTheme(themeName: ThemeName, api?: any): void {
   console.log(`正在切换主题为: ${themeName}`);
   
   // 确保主题名有效
@@ -280,7 +282,7 @@ export function applyTheme(themeName, api) {
 /**
  * 注入指定的CSS样式
  */
-function injectStyleCSS(css) {
+function injectStyleCSS(css: string): void {
   if (!css || typeof document === 'undefined') return;
   
   const styleId = 'alphatab-custom-style';
@@ -310,7 +312,7 @@ function removeInjectedStyle() {
 }
 
 // 保留向后兼容性的函数
-export function injectAlphaTabStyle(customStyleEnabled) {
+export function injectAlphaTabStyle(customStyleEnabled: boolean): void {
   if (customStyleEnabled && activeTheme === 'default') {
     // 默认应用暗色主题
     applyTheme('dark', null);
