@@ -90,7 +90,8 @@ const editorControlFeatures = ref([
   'print', 
   'download',
   'zoom', // 添加 zoom 控件
-  'style-control',
+  // 'style-control',
+  'dark-theme',
   'layout'
 ]);
 

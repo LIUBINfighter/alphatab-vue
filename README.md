@@ -47,8 +47,6 @@ r.4 |
 
 ## 项目目标
 
-### 基础功能
-
 1. 复现 [alphaTab 官方文档教程](https://www.alphatab.net/docs/tutorial-web/introduction)内容：
    - 基本音轨控制及切换。
    - 控制栏按钮。
@@ -60,12 +58,12 @@ r.4 |
    - 更改缩放级别。
    - 更改乐谱布局。
 
-### 高级功能
-
 2. 使用 [deepwiki](https://deepwiki.com/CoderLine/alphaTabWebsite) 和示范仓库，结合以下功能扩展：
    - 自定义功能：[各类自定义](https://www.alphatab.net/docs/guides/coloring)。
    - 使用 [API](https://www.alphatab.net/docs/reference/settings/) 进行功能开发。
    - 高亮显示当前小节。
    - 实现曲谱自动滚动。
 
+3. 自定义主题
 
+4. Alphatex 编辑器

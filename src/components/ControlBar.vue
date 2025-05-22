@@ -13,7 +13,8 @@
       <DownloadButton class="priority-low" v-if="shouldShow('download')" />
       <ZoomControl class="priority-low" v-if="shouldShow('zoom')" />
       <LayoutControl class="priority-low" v-if="shouldShow('layout')" />
-      <StyleControl class="priority-low" v-if="shouldShow('style-control')" />
+      <DarkTheme class="priority-low" v-if="shouldShow('dark-theme')" />
+      <!-- <StyleControl class = "priority-low" v-if="shouldShow('style-control')"> -->
       <TrackControl class="priority-low" v-if="shouldShow('track-control')" />
     </div>
   </div>
@@ -34,7 +35,8 @@ import PlayPauseButton from './controls/PlayPauseButton.vue'
 import StopButton from './controls/StopButton.vue'
 import SpeedControl from './controls/SpeedControl.vue'
 import DownloadButton from './controls/DownloadButton.vue'
-import StyleControl from './controls/StyleControl.vue' // 导入样式控制组件
+import DarkTheme from './controls/DarkTheme.vue' // 导入样式控制组件
+import StyleControl from './controls/StyleControl.vue'
 
 const props = defineProps({
   features: {
@@ -64,6 +66,7 @@ const featureMap = {
   'download': DownloadButton,
   'zoom': ZoomControl,
   'layout': LayoutControl,
+  'dark-theme': DarkTheme,
   'style-control': StyleControl, // 添加样式控制到特性映射
   'track-control': TrackControl,
 };

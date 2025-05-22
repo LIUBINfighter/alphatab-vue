@@ -56,7 +56,7 @@ const alphaTabApi = inject('alphaTabApi')
 
 // 添加样式状态和控制
 const customStyleEnabled = ref(false); // 默认不启用自定义样式
-provide('customStyleEnabled', customStyleEnabled); // 提供给 StyleControl 组件使用
+provide('customStyleEnabled', customStyleEnabled); // 提供给 DarkTheme 组件使用
 provide('toggleCustomStyle', toggleCustomStyle); // 提供切换方法
 
 // 封装 AlphaTab 初始化和加载逻辑
