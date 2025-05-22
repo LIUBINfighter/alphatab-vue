@@ -4,7 +4,9 @@
 
 - **框架**: Vue 3
 - **语言**: TypeScript
-- **核心库**: Alphatab.js Codemirror.js
+- **核心库**:
+  - Alphatab.js (渲染 数据模型)
+  - Codemirror.js (编辑器)
 - **构建工具**: Vite
 - **Runtime**: Bun
 - **图标库**: [lucide](https://lucide.dev/)  
@@ -65,5 +67,13 @@ r.4 |
    - 实现曲谱自动滚动。
 
 3. 自定义主题
+   - 当前主题
+      - 默认蓝白主题
+      - DarkDefault
+      - DeepOcean
+      - VibrantNight
+   - 问题清单
+     - 注意光标和当前小节的样式没有修改
+     - 验音线和扫弦标记没有适配
 
 4. Alphatex 编辑器
