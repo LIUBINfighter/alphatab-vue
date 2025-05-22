@@ -53,6 +53,15 @@
           />
         </div>
       </div>
+      <!-- 在音轨列表后添加说明 -->
+      <div class="track-controls-help">
+        <p>按钮说明：</p>
+        <ul>
+          <li><Eye class="help-icon" /> 控制音轨显示/隐藏</li>
+          <li><Volume2 class="help-icon" /> 控制音轨静音/取消静音</li>
+          <li><Headphones class="help-icon" /> 设置音轨独奏模式</li>
+        </ul>
+      </div>
     </div>
   </div>
 </template>
@@ -472,5 +481,35 @@ onMounted(() => {
   border-radius: 50%;
   background: #436d9d;
   cursor: pointer;
+}
+
+.track-controls-help {
+  margin-top: 8px;
+  padding: 8px;
+  font-size: 12px;
+  color: #666;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.track-controls-help p {
+  margin: 0 0 4px 0;
+}
+
+.track-controls-help ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.track-controls-help li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0;
+}
+
+.help-icon {
+  width: 14px;
+  height: 14px;
 }
 </style>
