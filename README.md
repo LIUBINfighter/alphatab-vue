@@ -77,3 +77,21 @@ r.4 |
      - 验音线和扫弦标记没有适配
 
 4. Alphatex 编辑器
+
+## SOP
+
+### 如何添加曲谱
+
+- 接受 `gp` `gpx` `gp5` 等曲谱
+- 暂时不接受`midi`（待开发）
+- 曲谱文件放在  `public\scores`
+- 在 `src\assets\availableScores.ts` 中编辑曲谱
+
+```ts
+  { name: '<-- 这里填写你想要看见的名称 -->', path: `${import.meta.env.BASE_URL}scores/<--这里填写完整的文件名称.gp5-->` },
+```
+
+如果是在线资源，直接填写url就行，文件中以Cannon为示例。
+
+### 如何自定义主题
+

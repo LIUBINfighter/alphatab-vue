@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { provide, shallowRef, ref, computed, onMounted } from 'vue';
 import { applyTheme, type ThemeName } from './utils/alphaTabStyleUtils';
+import { availableScores } from './assets/availableScores';
 import SimpleDisplay from './components/SimpleDisplay.vue';
 import ScoreList from './components/ScoreList.vue';
 import TexEditorView from './components/TexEditorView.vue';
@@ -22,13 +23,6 @@ const playerControlFeatures = ref([
 const currentView = ref<'score' | 'texEditor'>('score'); // 'score' 或 'texEditor'
 const currentScore = ref(initialScorePath); // 当前乐谱路径，仅用于 'score' 视图
 const isScoreListVisible = ref(false);
-
-const availableScores = ref([
-  { name: '吉他与孤独与蓝色星球', path: `${import.meta.env.BASE_URL}scores/吉他与孤独与蓝色星球.gpx` },
-  { name: '东方妖妖梦 - 幽雅に咲かせ、墨染の桜 ～ Border of Life (Drop D)', path: `${import.meta.env.BASE_URL}scores/东方妖妖梦 - 幽雅に咲かせ、墨染の桜　～ Border of Life(Drop D).gp5` },
-  // { name: '[因幡輝哉]廃獄ララバイ',path: `${import.meta.env.BASE_URL}score/[因幡輝哉]廃獄ララバイ.mid`},
-  { name: 'Canon Rock', path: 'https://www.alphatab.net/files/canon.gp' },
-]);
 
 // 存储在localStorage中的AlphaTex文件列表
 const savedTexFiles = ref<Array<{ name: string, id: string }>>([]);
