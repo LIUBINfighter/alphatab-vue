@@ -265,55 +265,45 @@ watch(() => props.tex, (newTex, oldTex) => {
 function toggleCustomStyle() {
   customStyleEnabled.value = !customStyleEnabled.value;
   
-  // 移除现有样式（如果存在）
-  if (typeof document !== 'undefined') {
-    const existingStyle = document.getElementById('alphatab-custom-style');
-    if (existingStyle) {
-      document.head.removeChild(existingStyle);
-    }
+  // 显示加载覆盖层
+  if (atOverlayRef.value) {
+    atOverlayRef.value.style.display = 'flex';
+    const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
+    if(overlayContent) overlayContent.innerText = '应用样式中...';
   }
   
-  if (alphaTabApi.value) {
-    // 显示加载覆盖层
-    if (atOverlayRef.value) {
-      atOverlayRef.value.style.display = 'flex';
-      const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
-      if(overlayContent) overlayContent.innerText = '应用样式中...';
+  try {
+    if (customStyleEnabled.value) {
+      // 使用applyTheme代替直接调用API和注入函数
+      applyTheme('dark', alphaTabApi.value);
+    } else {
+      // 使用applyTheme统一实现样式恢复
+      applyTheme('default', alphaTabApi.value);
     }
     
-    try {
-      if (customStyleEnabled.value) {
-        // 只有启用自定义样式时才应用深色主题
-        applyDarkThemeViaApi(alphaTabApi.value);
-        injectAlphaTabStyle(customStyleEnabled.value);
-      } else {
-        // 否则恢复默认样式
-        resetToDefaultTheme(alphaTabApi.value);
-      }
-      
-      // 使用 setTimeout 确保样式处理优先，然后再执行重新渲染
-      setTimeout(() => {
-        try {
-          // 触发重新渲染 - 关键步骤
-          // 注意：applyDarkThemeViaApi 内部已调用过 render，这里作为额外保障
+    // 使用 setTimeout 确保样式处理优先，然后再执行重新渲染
+    setTimeout(() => {
+      try {
+        // 触发重新渲染 - 关键步骤
+        if (alphaTabApi.value) {
           alphaTabApi.value.render();
-        } catch (e) {
-          console.error('Error during re-render after style change:', e);
-        } finally {
-          // 渲染完成后隐藏loading
-          if (atOverlayRef.value) {
-            setTimeout(() => {
-              if (atOverlayRef.value) atOverlayRef.value.style.display = 'none';
-            }, 100); // 短暂延迟确保渲染完成
-          }
         }
-      }, 50);
-    } catch (e) {
-      console.error('应用样式时发生错误:', e);
-      // 出错时也要隐藏覆盖层
-      if (atOverlayRef.value) {
-        atOverlayRef.value.style.display = 'none';
+      } catch (e) {
+        console.error('Error during re-render after style change:', e);
+      } finally {
+        // 渲染完成后隐藏loading
+        if (atOverlayRef.value) {
+          setTimeout(() => {
+            if (atOverlayRef.value) atOverlayRef.value.style.display = 'none';
+          }, 100); // 短暂延迟确保渲染完成
+        }
       }
+    }, 50);
+  } catch (e) {
+    console.error('应用样式时发生错误:', e);
+    // 出错时也要隐藏覆盖层
+    if (atOverlayRef.value) {
+      atOverlayRef.value.style.display = 'none';
     }
   }
 }
