@@ -15,7 +15,7 @@
       <LayoutControl class="priority-low" v-if="shouldShow('layout')" />
       <DarkTheme class="priority-low" v-if="shouldShow('dark-theme')" />
       <StyleControl class="priority-low" v-if="shouldShow('style-control')" />
-      <TrackControl class="priority-low" v-if="shouldShow('track-control')" />
+      <SingleTrack class="priority-low" v-if="shouldShow('single-track-control')" />
     </div>
   </div>
 </template>
@@ -30,7 +30,7 @@ import LoopButton from './controls/LoopButton.vue'
 import PrintButton from './controls/PrintButton.vue'
 import ZoomControl from './controls/ZoomControl.vue'
 import LayoutControl from './controls/LayoutControl.vue'
-import TrackControl from './controls/TrackControl.vue'
+import SingleTrack from './controls/SingleTrack.vue'
 import PlayPauseButton from './controls/PlayPauseButton.vue'
 import StopButton from './controls/StopButton.vue'
 import SpeedControl from './controls/SpeedControl.vue'
@@ -68,7 +68,7 @@ const featureMap = {
   'layout': LayoutControl,
   'dark-theme': DarkTheme,
   'style-control': StyleControl, // 添加样式控制到特性映射
-  'track-control': TrackControl,
+  'single-track-control': SingleTrack,
 };
 
 function shouldShow(featureName) {

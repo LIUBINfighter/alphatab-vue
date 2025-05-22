@@ -17,7 +17,7 @@ const initialScorePath = `${import.meta.env.BASE_URL}scores/吉他与孤独与�
 const playerControlFeatures = ref([
   'short-info', 'time-position', 'stop', 'play-pause', 'speed-control', 
   'count-in', 'metronome', 'loop', 'print', 'download', 
-  'zoom', 'layout', 'style-control', 'dark-theme','track-control'
+  'zoom', 'layout', 'style-control', 'dark-theme','single-track-control'
 ]);
 
 const currentView = ref<'score' | 'texEditor'>('score'); // 'score' 或 'texEditor'

@@ -82,7 +82,7 @@ const onTrackStateChanged = () => {
 }
 
 onMounted(() => {
-  console.log('TrackControl mounted, API available:', !!alphaTabApi.value)
+  console.log('SingleTrack mounted, API available:', !!alphaTabApi.value)
   
   // 设置观察者监听 alphaTabApi 的变化，以防它是异步加载的
   watch(() => alphaTabApi.value, (api) => {
@@ -122,7 +122,7 @@ onUnmounted(() => {
       alphaTabApi.value.renderStarted.off(listeners.renderStarted)
     }
   }
-  console.log('TrackControl unmounted, listeners cleaned up')
+  console.log('SingleTrack unmounted, listeners cleaned up')
 })
 </script>
 
