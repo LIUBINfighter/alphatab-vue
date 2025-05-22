@@ -12,7 +12,15 @@
 - **图标库**: [lucide](https://lucide.dev/)  
   安装命令: `bun add lucide-vue-next`
 
----
+## 参考文档
+
+- [Repo](https://github.com/CoderLine/alphaTab)
+- [Deepwiki](https://deepwiki.com/CoderLine/alphaTab)
+
+- [Website Docs](https://www.alphatab.net/docs/introduction/)
+- [Website Github Repo](https://github.com/CoderLine/alphaTabWebsite)
+- [Website Deepwiki](https://deepwiki.com/CoderLine/alphaTabWebsite)
+
 
 ## 开发计划
 
