@@ -1,0 +1,60 @@
+/* scrollbar.css */
+
+/* --- WebKit (Chrome, Safari, new Edge) Scrollbar Styles --- */
+
+/* Target the entire scrollbar */
+::-webkit-scrollbar {
+  width: 10px; /* 设置垂直滚动条的宽度 */
+  height: 10px; /* 设置水平滚动条的高度 */
+  background-color: #f0f0f0; /* 滚动条背景色（轨道颜色），可选 */
+}
+
+/* Target the draggable scrolling handle (thumb) */
+::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1; /* 滑块的颜色 */
+  border-radius: 5px;      /* 滑块的圆角 */
+  border: 2px solid #f0f0f0; /* 在滑块周围创建类似 padding 的效果，颜色与轨道背景色一致 */
+  background-clip: content-box; /* 确保边框不会被背景色覆盖 */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #a8a8a8; /* 鼠标悬停时滑块的颜色 */
+}
+
+/* Target the track (the area the thumb moves along) */
+::-webkit-scrollbar-track {
+  background: #f0f0f0;    /* 轨道的背景色 */
+  border-radius: 5px;   /* 轨道的圆角 */
+  /* box-shadow: inset 0 0 5px grey; 可选：为轨道添加内部阴影 */
+}
+
+/* Target the corner where vertical and horizontal scrollbars meet */
+::-webkit-scrollbar-corner {
+  background: #f0f0f0; /* 滚动条交角处的背景色 */
+}
+
+/* Optional: Style the buttons (up/down or left/right arrows) */
+/* Usually, these are not visible by default in modern browsers or are hard to style consistently */
+/*
+::-webkit-scrollbar-button {
+  display: none; // Or style them if you wish
+}
+*/
+
+
+/* --- Firefox Scrollbar Styles --- */
+
+/* Apply to the html element for global effect, or specific scrollable elements */
+html {
+  scrollbar-width: thin;          /* "auto" | "thin" | "none" */
+  scrollbar-color: #c1c1c1 #f0f0f0; /* thumb-color track-color */
+}
+
+/* You can also target specific elements if needed */
+/*
+.your-scrollable-element {
+  scrollbar-width: thin;
+  scrollbar-color: #a8a8a8 #f0f0f0;
+}
+*/
