@@ -2,20 +2,33 @@
   <header class="global-header">
     <div class="header-content">
       <span class="app-title">AlphaTab Vue Editor</span>
-      <button @click="toggleMenu" class="menu-button" title="Open Menu">
-        Menu
-      </button>
+      <div class="header-buttons">
+        <button @click="openLink('https://github.com/LIUBINfighter/alphatab-vue')" class="menu-button" title="GitHub Repository">
+          <Github class="icon" />
+        </button>
+        <button @click="openLink('https://www.alphatab.net/')" class="menu-button" title="AlphaTab Official Website">
+          <ExternalLink class="icon" />
+        </button>
+        <button @click="toggleMenu" class="menu-button" title="Open Menu">
+          Menu
+        </button>
+      </div>
     </div>
   </header>
 </template>
 
 <script setup>
 import { defineEmits } from 'vue';
+import { Github, ExternalLink } from 'lucide-vue-next';
 
 const emit = defineEmits(['toggle-menu']);
 
 function toggleMenu() {
   emit('toggle-menu');
+}
+
+function openLink(url) {
+  window.open(url, '_blank');
 }
 </script>
 
@@ -38,6 +51,16 @@ function toggleMenu() {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
 }
 
 .app-title {

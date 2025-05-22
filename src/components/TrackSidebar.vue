@@ -11,17 +11,14 @@
         class="track-item"
         :class="{ 'active': isTrackActive(track.index) }"
       >
-        <div class="track-header" @click="toggleTrackSelection(track)">
+        <div class="track-header">
           <div class="track-name">{{ track.name }}</div>
-          <div class="track-checkbox">
-            <input 
-              type="checkbox" 
-              :checked="isTrackActive(track.index)"
-              @click.stop="toggleTrackSelection(track)"
-            />
-          </div>
         </div>
         <div class="track-controls">
+          <div class="control-button" @click="toggleTrackSelection(track)" :class="{ active: isTrackActive(track.index) }">
+            <Eye v-if="isTrackActive(track.index)" class="control-icon" />
+            <EyeOff v-else class="control-icon" />
+          </div>
           <div class="control-button" @click="toggleMute(track)" :class="{ active: isTrackMuted(track.index) }">
             <Volume2 v-if="!isTrackMuted(track.index)" class="control-icon" />
             <VolumeX v-else class="control-icon" />
@@ -46,7 +43,7 @@
 
 <script setup>
 import { ref, computed, inject, onMounted, watch } from 'vue';
-import { Music, Volume2, VolumeX, Headphones } from 'lucide-vue-next';
+import { Music, Volume2, VolumeX, Headphones, Eye, EyeOff } from 'lucide-vue-next';
 
 const props = defineProps({
   selectedTrackIndex: {
@@ -291,7 +288,6 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
   margin-bottom: 8px;
 }
 
@@ -301,10 +297,6 @@ onMounted(() => {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 14px;
-}
-
-.track-checkbox {
-  flex: 0 0 auto;
 }
 
 .track-controls {
