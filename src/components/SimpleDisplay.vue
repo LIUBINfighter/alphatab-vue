@@ -263,9 +263,9 @@ watch(() => props.tex, (newTex, oldTex) => {
 
 // 切换自定义样式
 function toggleCustomStyle() {
+  const hasStyleControl = document.querySelector('.style-selector') !== null;
   customStyleEnabled.value = !customStyleEnabled.value;
   
-  // 显示加载覆盖层
   if (atOverlayRef.value) {
     atOverlayRef.value.style.display = 'flex';
     const overlayContent = atOverlayRef.value.querySelector('.at-overlay-content');
@@ -273,35 +273,33 @@ function toggleCustomStyle() {
   }
   
   try {
-    if (customStyleEnabled.value) {
-      // 使用applyTheme代替直接调用API和注入函数
-      applyTheme('dark', alphaTabApi.value);
-    } else {
-      // 使用applyTheme统一实现样式恢复
-      applyTheme('default', alphaTabApi.value);
+    // 如果没有StyleControl，只在默认和暗色主题之间切换
+    if (!hasStyleControl) {
+      if (customStyleEnabled.value) {
+        applyTheme('dark', alphaTabApi.value);
+      } else {
+        applyTheme('default', alphaTabApi.value);
+      }
     }
+    // 如果有StyleControl，保持原有逻辑不变
     
-    // 使用 setTimeout 确保样式处理优先，然后再执行重新渲染
     setTimeout(() => {
       try {
-        // 触发重新渲染 - 关键步骤
         if (alphaTabApi.value) {
           alphaTabApi.value.render();
         }
       } catch (e) {
         console.error('Error during re-render after style change:', e);
       } finally {
-        // 渲染完成后隐藏loading
         if (atOverlayRef.value) {
           setTimeout(() => {
             if (atOverlayRef.value) atOverlayRef.value.style.display = 'none';
-          }, 100); // 短暂延迟确保渲染完成
+          }, 100);
         }
       }
     }, 50);
   } catch (e) {
     console.error('应用样式时发生错误:', e);
-    // 出错时也要隐藏覆盖层
     if (atOverlayRef.value) {
       atOverlayRef.value.style.display = 'none';
     }
