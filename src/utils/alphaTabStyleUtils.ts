@@ -215,35 +215,107 @@ export function resetToDefaultTheme(api: any) {
   }
 }
 
-import { DARK_THEME_CSS } from './themes/DarkDefault.ts';
-// 目前只有默认/暗色样式二元切换，所以通过注释切换导入进行测试
-// import { DARK_THEME_CSS } from './themes/DeepOcean.ts';
-// import { DARK_THEME_CSS } from './themes/VibrantNight.ts';
+// 导入所有可用主题
+import { DARK_THEME_CSS as DarkDefaultTheme } from './themes/DarkDefault';
+import { DARK_THEME_CSS as DeepOceanTheme } from './themes/DeepOcean';
+import { DARK_THEME_CSS as VibrantNightTheme } from './themes/VibrantNight';
 
-export function injectAlphaTabStyle(customStyleEnabled: boolean) {
-  // 如果自定义样式未启用，直接返回
-  if (!customStyleEnabled) {
-    console.log("CSS 回退样式已禁用");
+// 主题映射对象
+const THEMES = {
+  default: null, // 默认主题不需要CSS
+  dark: DarkDefaultTheme,
+  ocean: DeepOceanTheme,
+  vibrant: VibrantNightTheme
+};
+
+// 当前激活的主题
+let activeTheme = 'default';
+
+/**
+ * 应用选择的主题
+ * @param themeName 主题名称：'default', 'dark', 'ocean', 'vibrant'
+ * @param api AlphaTab API 实例（可选）
+ */
+export function applyTheme(themeName, api) {
+  console.log(`正在切换主题为: ${themeName}`);
+  
+  // 确保主题名有效
+  if (!Object.keys(THEMES).includes(themeName)) {
+    console.error(`未知主题: ${themeName}`);
     return;
   }
+  
+  // 移除之前的主题样式
+  removeInjectedStyle();
+  
+  // 如果是默认主题，重置为API默认
+  if (themeName === 'default') {
+    if (api) {
+      resetToDefaultTheme(api);
+    }
+    activeTheme = 'default';
+    return;
+  }
+  
+  // 应用API样式（如果提供了API实例）
+  if (api) {
+    if (themeName === 'dark') {
+      applyDarkThemeViaApi(api);
+    } else {
+      // 对于其他主题，我们仍使用API基础样式，但CSS会覆盖细节
+      applyDarkThemeViaApi(api);
+    }
+  }
+  
+  // 注入CSS样式
+  const themeCSS = THEMES[themeName];
+  if (themeCSS) {
+    injectStyleCSS(themeCSS);
+  }
+  
+  // 更新当前主题
+  activeTheme = themeName;
+}
 
-  console.log("正在应用 CSS 回退样式...");
+/**
+ * 注入指定的CSS样式
+ */
+function injectStyleCSS(css) {
+  if (!css || typeof document === 'undefined') return;
   
   const styleId = 'alphatab-custom-style';
-  // 确保在浏览器环境中执行
-  if (typeof document === 'undefined') {
-    console.log("✗ 未检测到浏览器环境，CSS 回退样式未应用");
-    return;
-  }
   
-  if (document.getElementById(styleId)) {
-    console.log("CSS 回退样式已存在，跳过注入");
-    return;
-  }
-
+  // 如果样式已存在，先移除
+  removeInjectedStyle();
+  
   const style = document.createElement('style');
   style.id = styleId;
-  style.innerHTML = DARK_THEME_CSS;
+  style.innerHTML = css;
   document.head.appendChild(style);
-  console.log("✓ CSS 回退样式已成功注入");
+  console.log("✓ 主题样式已成功注入");
+}
+
+/**
+ * 移除已注入的样式
+ */
+function removeInjectedStyle() {
+  if (typeof document === 'undefined') return;
+  
+  const styleId = 'alphatab-custom-style';
+  const existingStyle = document.getElementById(styleId);
+  if (existingStyle) {
+    existingStyle.remove();
+    console.log("已移除之前的主题样式");
+  }
+}
+
+// 保留向后兼容性的函数
+export function injectAlphaTabStyle(customStyleEnabled) {
+  if (customStyleEnabled && activeTheme === 'default') {
+    // 默认应用暗色主题
+    applyTheme('dark', null);
+  } else if (!customStyleEnabled && activeTheme !== 'default') {
+    // 移除自定义主题
+    applyTheme('default', null);
+  }
 }

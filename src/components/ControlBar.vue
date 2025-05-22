@@ -14,7 +14,7 @@
       <ZoomControl class="priority-low" v-if="shouldShow('zoom')" />
       <LayoutControl class="priority-low" v-if="shouldShow('layout')" />
       <DarkTheme class="priority-low" v-if="shouldShow('dark-theme')" />
-      <!-- <StyleControl class = "priority-low" v-if="shouldShow('style-control')"> -->
+      <StyleControl class="priority-low" v-if="shouldShow('style-control')" />
       <TrackControl class="priority-low" v-if="shouldShow('track-control')" />
     </div>
   </div>

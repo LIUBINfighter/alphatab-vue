@@ -1,6 +1,15 @@
 <template>
   <div class="style-control">
-    <!-- 添加组件的模板内容 -->
+    <select 
+      class="style-selector" 
+      v-model="selectedTheme" 
+      @change="onThemeChange"
+      :disabled="disabled">
+      <option value="default">默认</option>
+      <option value="dark">暗色默认</option>
+      <option value="ocean">深海蓝</option>
+      <option value="vibrant">炫彩夜晚</option>
+    </select>
   </div>
 </template>
 
@@ -8,22 +17,45 @@
 export default {
   name: 'StyleControl',
   props: {
-    // 定义组件的 props
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    alphaTabApi: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {
-      // 定义组件的内部数据
+      selectedTheme: 'default'
     };
   },
   methods: {
-    // 定义组件的方法
+    onThemeChange() {
+      this.$emit('theme-changed', this.selectedTheme);
+    }
   },
 };
 </script>
 
 <style scoped>
-/* 添加组件的样式 */
 .style-control {
-  /* 样式规则 */
+  display: inline-block;
+  margin: 0 10px;
+}
+
+.style-selector {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+.style-selector:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
 }
 </style>
