@@ -6,7 +6,7 @@
       v-model="selectedTrackIndex"
       @change="selectTrack"
     >
-      <!-- <option value="-1">所有音轨</option> -->
+      <option value="-1">所有音轨</option>
       <option v-for="track in tracks" :key="track.index" :value="track.index">
         {{ track.name }}
       </option>
@@ -15,8 +15,10 @@
 </template>
 
 <script setup>
-import { ref, inject, onMounted, onUnmounted, watch } from 'vue'
+import { ref, inject, onMounted, onUnmounted, watch, defineEmits } from 'vue'
 import { Music } from 'lucide-vue-next'
+
+const emit = defineEmits(['track-selected'])
 
 const alphaTabApi = inject('alphaTabApi')
 const tracks = ref([])
@@ -44,12 +46,18 @@ const selectTrack = () => {
         console.warn('音轨数量不匹配，可能没有全部渲染')
       }
     }, 100)
+
+    // 发出选择所有音轨的事件，用于和 TrackSidebar 联动
+    emit('track-selected', { index: -1 })
   } else {
     // Render only selected track
     const track = alphaTabApi.value.score.tracks.find(t => t.index === selectedTrackIndex.value)
     if (track) {
       console.log('正在渲染单个音轨:', track.name)
       alphaTabApi.value.renderTracks([track])
+      
+      // 发出选择单个音轨的事件，用于和 TrackSidebar 联动
+      emit('track-selected', track)
     }
   }
 }

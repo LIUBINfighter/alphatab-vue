@@ -7,14 +7,12 @@
       </div>
     </div>
     <div class="at-content">
-      <!-- <div class="at-sidebar">
-        <TrackSelector
-          :tracks="allTracks"
-          :active-track-indices="currentActiveTrackIndices"
-          @track-selected="handleTrackSelected"
-        />
-      </div> -->
-      <div class="at-viewport">
+      <TrackSidebar 
+        v-if="showTrackSidebar"
+        :selected-track-index="selectedTrackIndex"
+        @track-selected="handleTrackSidebarSelection"
+      />
+      <div class="at-viewport" :class="{'has-sidebar': showTrackSidebar}">
         <div class="at-main" ref="atMainRef"></div>
       </div>
     </div>
@@ -27,6 +25,7 @@
 <script setup>
 import { onMounted, ref, toRaw, inject, watch, provide } from 'vue' // 添加 provide
 import ControlBar from './ControlBar.vue'
+import TrackSidebar from './TrackSidebar.vue'
 import { applyDarkThemeViaApi, resetToDefaultTheme, injectAlphaTabStyle } from '../utils/alphaTabStyleUtils';
 
 const props = defineProps({
@@ -42,6 +41,10 @@ const props = defineProps({
     // 如果为 null，ControlBar 将显示其默认的五个控件。
     // 如果传入一个数组，则该数组决定 ControlBar 显示哪些控件。
     default: null 
+  },
+  showTrackSidebar: { // 新增：控制是否显示音轨侧边栏
+    type: Boolean,
+    default: true
   }
 })
 
@@ -50,6 +53,7 @@ const atMainRef = ref(null)
 const atOverlayRef = ref(null)
 const allTracks = ref([]) 
 const currentActiveTrackIndices = ref(new Set())
+const selectedTrackIndex = ref(-1) // 当前选中的音轨索引，用于与 SingleTrack 联动
 
 // 获取注入的 API 引用
 const alphaTabApi = inject('alphaTabApi')
@@ -306,16 +310,19 @@ function toggleCustomStyle() {
   }
 }
 
-// 以下函数已被移至 src/utils/alphaTabStyleUtils.ts
-// function applyDarkThemeViaApi() { ... }
-// function resetToDefaultTheme() { ... }
-// function injectAlphaTabStyle() { ... }
-
 function handleTrackSelected(trackFromEvent) {
   if (alphaTabApi.value) {
     const rawTrack = toRaw(trackFromEvent);
     alphaTabApi.value.renderTracks([rawTrack]);
+    
+    // 更新选中的音轨索引，用于 TrackSidebar 联动
+    selectedTrackIndex.value = rawTrack.index;
   }
+}
+
+// 新增：处理 TrackSidebar 中的音轨选择
+function handleTrackSidebarSelection(trackIndex) {
+  selectedTrackIndex.value = trackIndex;
 }
 </script>
 
@@ -365,18 +372,18 @@ function handleTrackSelected(trackFromEvent) {
   overflow-y: auto;
   position: absolute;
   top: 0;
-  /* left: 70px; */ /* 移除固定左边距，适应没有sidebar的情况 */
-  left: 0; /* 改为从页面左侧开始 */
+  left: 0; /* 默认从左侧开始 */
   right: 0;
   bottom: 0;
   scroll-behavior: smooth;
   scroll-padding-top: 30px;
   box-sizing: border-box;
+  transition: left 0.3s ease; /* 添加过渡效果 */
 }
 
 /* 当侧边栏存在时，视口需要偏移 */
-.at-sidebar + .at-viewport {
-  left: 70px; /* 只在侧边栏存在时应用这个偏移 */
+.at-viewport.has-sidebar {
+  left: 45px; /* 未展开状态的侧边栏宽度 */
 }
 
 .at-footer {
