@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'AlphaTab Vue 文档',
   description: 'AlphaTab Vue组件库文档',
-  base: '/docs/',
+  base: '/alphatab-vue/docs/',
   themeConfig: {
     nav: [
       { text: '指南', link: '/custom-style/first-step' },
