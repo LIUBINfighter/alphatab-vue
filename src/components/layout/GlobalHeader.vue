@@ -9,7 +9,7 @@
         <button @click="openLink('https://www.alphatab.net/')" class="menu-button" title="AlphaTab Official Website">
           <ExternalLink class="icon" />
         </button>
-        <button @click="openLink('/docs/')" class="menu-button" title="Documentation">
+        <button @click="openLink('/alphatab-vue/docs/')" class="menu-button" title="Documentation">
           <BookOpen class="icon" />
         </button>
         <button @click="toggleMenu" class="menu-button" title="Open Menu">

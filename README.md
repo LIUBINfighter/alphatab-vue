@@ -90,6 +90,14 @@ r.4 |
 
 5. 在线文档
 
+`GlobalHeader.vue`
+
+```vue
+<button @click="openLink('/alphatab-vue/docs/')" class="menu-button" title="Documentation">
+    <BookOpen class="icon" />
+</button>
+```
+
 ## SOP
 
 SOP 类型任务逐步通过调整Prompt和参数，使用cline或者roo code进行自动化。
