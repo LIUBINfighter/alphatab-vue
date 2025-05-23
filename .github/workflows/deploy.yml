@@ -31,8 +31,14 @@ jobs:
           node-version: '18'
           cache: 'npm'
 
-      - name: Install main app dependencies
-        run: npm install
+      # - name: Install main app dependencies
+        # run: npm install
+
+      - name: Clean and install dependencies
+        run: |
+          rm -rf node_modules
+          # Optionally, if package-lock.json is suspected to be an issue: rm -f package-lock.json
+          npm install
 
       - name: Build main Vue app
         run: npm run build # 主应用构建
