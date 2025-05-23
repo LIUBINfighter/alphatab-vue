@@ -102,74 +102,143 @@ graph LR
 无
 
 #### Events
+
 - click: 切换倒计时状态
 
 ### LayoutControl
+
 布局控制组件
 
 #### Props
+
 - value: 当前布局模式
 - options: 可选布局模式数组
 
 #### Events
+
 - input: 布局模式变更事件
 
 ### ZoomControl
+
 缩放控制组件
 
 #### Props
+
 - value: 当前缩放比例
 - min: 最小缩放比例
 - max: 最大缩放比例
 - step: 缩放步长
 
 #### Events
+
 - input: 缩放比例变更事件
 
 ### PrintButton
+
 打印按钮
 
 #### Props
+
 无
 
 #### Events
+
 - click: 触发打印操作
 
 ### LoopButton
+
 循环播放按钮
 
 #### Props
+
 - active: 是否激活循环
 
 #### Events
+
 - click: 切换循环状态
 
 ### PlayPauseButton
+
 播放/暂停切换按钮
 
+#### Props
+
+无
+
+#### Events
+
+- click: 触发播放/暂停切换
+
 #### 状态
+
 - playerState: 
   - 0: 停止状态
   - 1: 播放中
   - 2: 暂停中
+- isDisabled: 按钮禁用状态(当未加载乐谱时自动禁用)
+
+#### 依赖注入
+
+- alphaTabApi: 通过inject获取的AlphaTab API实例
 
 #### 功能
+
 - 点击切换播放/暂停状态
 - 自动根据播放器状态更新图标
+- 监听以下事件:
+  - playerStateChanged: 更新播放状态
+  - scoreLoaded: 更新禁用状态
 - 乐谱未加载时自动禁用
 
+#### 生命周期
+
+- onMounted: 初始化事件监听
+- onUnmounted: 清理事件监听
+
 #### 使用示例
+
 ```vue
 <PlayPauseButton />
 ```
 
 ### StopButton
+
 停止播放按钮
 
+#### Props
+
+无
+
+#### Events
+
+- click: 触发停止播放
+
+#### 状态
+
+- isDisabled: 按钮禁用状态(当未加载乐谱时自动禁用)
+
+#### 依赖注入
+
+- alphaTabApi: 通过inject获取的AlphaTab API实例
+
 #### 功能
+
 - 点击停止当前播放
+- 监听以下事件:
+  - scoreLoaded: 更新禁用状态
 - 乐谱未加载时自动禁用
 
+#### 生命周期
+
+- onMounted: 初始化事件监听
+- onUnmounted: 清理事件监听
+
+#### 样式
+
+- 禁用状态显示为半透明且不可点击
+
 #### 使用示例
+
 ```vue
 <StopButton />
+```
