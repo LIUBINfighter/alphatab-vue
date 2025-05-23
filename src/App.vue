@@ -3,7 +3,7 @@ import { provide, shallowRef, ref, computed, onMounted } from 'vue';
 import { applyTheme, type ThemeName } from './utils/alphaTabStyleUtils';
 import { availableScores } from './assets/availableScores';
 import SimpleDisplay from './components/SimpleDisplay.vue';
-import ScoreList from './components/ScoreList.vue';
+import ScoreList from './components/manual/ScoreList.vue';
 import TexEditorView from './components/TexEditorView.vue';
 import GlobalHeader from './components/layout/GlobalHeader.vue'; // Import GlobalHeader
 
