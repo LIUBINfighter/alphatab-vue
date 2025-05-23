@@ -4,7 +4,7 @@ layout: home
 hero:
   name: "AlphaTab Vue "
   text: "组件库文档"
-  tagline: 探索 AlphaTab Vue 组件库的强大功能，轻松将乐谱渲染和交互带入您的 Vue 应用。
+  tagline: 探索 AlphaTab Vue 组件库的强大功能，轻松将乐谱渲染和交互带入您的 Vue 应用。(这个库的文档都是在开发的时候随记的，可能逻辑不是很顺畅，以后我会进行整理)
   actions:
     - theme: brand # 主题色按钮
       text: 指南 →
