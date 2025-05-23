@@ -1,3 +1,15 @@
+20250523
+
+这个问题之前出现过，之后部署vitepress的时候ai把workflow改回去了所以又报错
+
+核心是：
+
+```bash
+Cannot find module @rollup/rollup-linux-x64-gnu. npm has a bug related to optional dependencies (https://github.com/npm/cli/issues/4828). Please try `npm i` again after removing both package-lock.json and node_modules directory.
+```
+
+github action 完整报错：
+
 ```bash
 Run npm run build
 
