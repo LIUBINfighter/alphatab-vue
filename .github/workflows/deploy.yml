@@ -1,31 +1,84 @@
-name: Deploy to GitHub Pages
+# .github/workflows/deploy.yml
+name: Deploy Vue App and VitePress Docs to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main # Or your default branch
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      REPO_NAME: ${{ github.event.repository.name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install main app dependencies
+        run: npm install
+
+      - name: Build main Vue app
+        run: npm run build # 主应用构建
+        env:
+          NODE_ENV: production
+
+      - name: Build VitePress docs
+        run: npm run docs:build # 文档构建
+        env:
+          NODE_ENV: production
+
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v4
+
+      - name: Prepare deployment artifact
+        run: |
+          ARTIFACT_DIR="./gh-pages-artifact"
+          mkdir -p "$ARTIFACT_DIR/docs"
+          
+          echo "Copying main app from ./dist to $ARTIFACT_DIR/"
+          cp -r dist/* "$ARTIFACT_DIR/"
+          
+          echo "Copying docs app from ./docs/.vitepress/dist to $ARTIFACT_DIR/docs/"
+          cp -r docs/.vitepress/dist/* "$ARTIFACT_DIR/docs/"
+          
+          touch "$ARTIFACT_DIR/.nojekyll"
+          
+          echo "Contents of $ARTIFACT_DIR:"
+          ls -R "$ARTIFACT_DIR"
+
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./gh-pages-artifact
+
   deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Install dependencies
-        run: npm install
-      
-      - name: Build main app
-        run: npm run build
-      
-      - name: Build docs
-        run: |
-          cd docs
-          npm install
-          npm run docs:build
-          mv .vitepress/dist ../../dist/docs
-      
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          keep_files: true
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
