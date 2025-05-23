@@ -13,12 +13,10 @@ provide('alphaTabApi', alphaTabApi);
 
 const initialScorePath = `${import.meta.env.BASE_URL}scores/吉他与孤独与蓝色星球.gpx`;
 
+
+import { playerControlFeatures } from "./components/playerControlFeatures" 
 // 为播放器视图的 SimpleDisplay 定义要显示的所有控件
-const playerControlFeatures = ref([
-  'short-info', 'time-position', 'stop', 'play-pause', 'speed-control', 
-  'count-in', 'metronome', 'loop', 'print', 'download', 
-  'zoom', 'layout', 'style-control', 'dark-theme','single-track-control'
-]);
+
 
 const currentView = ref<'score' | 'texEditor'>('score'); // 'score' 或 'texEditor'
 const currentScore = ref(initialScorePath); // 当前乐谱路径，仅用于 'score' 视图
