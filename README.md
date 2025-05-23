@@ -21,7 +21,6 @@
 - [Website Github Repo](https://github.com/CoderLine/alphaTabWebsite)
 - [Website Deepwiki](https://deepwiki.com/CoderLine/alphaTabWebsite)
 
-
 ## 开发计划
 
 ### Working Set
@@ -90,13 +89,22 @@ r.4 |
 
 5. 在线文档
 
-`GlobalHeader.vue`
+入口组件位置： `GlobalHeader.vue`
 
 ```vue
 <button @click="openLink('/alphatab-vue/docs/')" class="menu-button" title="Documentation">
     <BookOpen class="icon" />
 </button>
 ```
+
+注意命令
+
+```bash
+bun run dev
+bun run docs:dev
+```
+
+会开在不同的端口，此时跳转按钮失效，需要手动打开文档链接。
 
 ## SOP
 
