@@ -1,16 +1,10 @@
 ---
-# 表示使用 VitePress 的首页布局
 layout: home
 
-# Hero 部分配置
 hero:
-  # 主标题，来源于你的 config.js 中的 title
   name: "AlphaTab Vue "
-  # 副标题或标语，来源于你的 config.js 中的 description
   text: "组件库文档"
-  # 更具吸引力的标语
   tagline: 探索 AlphaTab Vue 组件库的强大功能，轻松将乐谱渲染和交互带入您的 Vue 应用。
-  # 行动按钮
   actions:
     - theme: brand # 主题色按钮
       text: 指南 →
