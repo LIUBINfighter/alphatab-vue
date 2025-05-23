@@ -3,6 +3,8 @@
 
 github action 报错,初步认为是没有本地构建解决报错导致的
 
+一些文档中出现了未闭合的html标签，用 `` 框住就行。
+
 ```bash
 $ vitepress build docs
 
