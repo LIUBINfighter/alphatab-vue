@@ -96,7 +96,17 @@ SOP 类型任务逐步通过调整Prompt和参数，使用cline或者roo code进
 
 ### 挂载新的组件
 
+[COMPONENTS.md](docs\wiki\COMPONENTS.md)
+
+#### 控制类型组件
+
+控制类型组件是SimpleDisplay或者ControlBar的子组件。
+
 ### 更新组件介绍文档
+
+[COMPONENTS.md](docs\wiki\COMPONENTS.md)
+
+需要为 roo code 提供prompt
 
 ### 添加曲谱
 
