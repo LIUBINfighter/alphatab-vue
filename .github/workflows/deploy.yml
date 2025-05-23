@@ -2,38 +2,30 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      NODE_OPTIONS: --openssl-legacy-provider
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-          
-      - name: Clean Dependencies
-        run: |
-          rm -rf node_modules
-          rm -f package-lock.json
-          
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
-        
-      - name: Build
+      
+      - name: Build main app
         run: npm run build
-        
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      
+      - name: Build docs
+        run: |
+          cd docs
+          npm install
+          npm run docs:build
+          mv .vitepress/dist ../../dist/docs
+      
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          folder: dist
-          branch: gh-pages
-          token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          keep_files: true
