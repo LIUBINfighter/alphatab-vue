@@ -102,11 +102,19 @@ SOP 类型任务逐步通过调整Prompt和参数，使用cline或者roo code进
 
 控制类型组件是SimpleDisplay或者ControlBar的子组件。
 
+在  `src\components\controls` 下新建一个vue组件书写完成后，需要在 `src\components\playerControlFeatures.ts` 下添加控制器组件常量的代码。
+
+对于组件的介绍，可以参考 `docs\usecase\CustomControlBar.md` [CustomControlBar](docs\usecase\CustomControlBar.md)
+
+测试时首页的播放器控件为测试组件，在 `App.vue` 挂载所有组件用于测试，其中决定 `ControlBar.vue` 挂载什么组件
+
 ### 更新组件介绍文档
 
 [COMPONENTS.md](docs\wiki\COMPONENTS.md)
 
-需要为 roo code 提供prompt
+需要为 roo code 提供 prompt
+
+<!-- ### QuickDocs组件 -->
 
 ### 添加曲谱
 
@@ -124,9 +132,26 @@ SOP 类型任务逐步通过调整Prompt和参数，使用cline或者roo code进
 `prompt for roo code`
 
 ```prompt
-把 @/public/scores 中的曲谱（使用命令行或者其他方式获取曲谱名称） 添加到 @/src/assets/availableScores.ts 中
+把 @/public/scores 中的曲谱（使用命令行或者其他方式获取曲谱名称） 添加到 @/src/assets/availableScores.ts 中。
 ```
 
+最后，挂载曲谱列表
+```vue
+<template>
+  <div id="app-container">
+      <ScoreList
+      v-if="isScoreListVisible"
+      :title="scoreListProps.title"
+      :listItems="scoreListProps.items"
+      :headerButtonConfig="scoreListProps.headerButtonConfig"
+      @score-selected="handleScoreSelected"
+      @close="closeScoreList"
+      @navigate="handleNavigation"
+    />
+  </div>  
+</template>
+
+```
 
 ### 自定义主题
 
