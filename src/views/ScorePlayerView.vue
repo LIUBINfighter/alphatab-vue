@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { inject, ref } from 'vue';
 import SimpleDisplay from '../components/SimpleDisplay.vue';
-import { playerControlFeatures } from '../components/playerControlFeatures';
+import { playerControlFeatures } from '../config/playerControlFeatures';
 
 // 使用可选链和默认值来处理注入
 const currentScore = inject('currentScoreRef', ref(''));

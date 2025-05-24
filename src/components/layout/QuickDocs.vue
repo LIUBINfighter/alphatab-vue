@@ -17,7 +17,7 @@
 import { computed, onMounted, onUnmounted } from 'vue'
 import { X } from 'lucide-vue-next'
 import { marked } from 'marked'
-import { QUICK_DOCS_CONTENT } from './quickDocs'
+import { QUICK_DOCS_CONTENT } from '../../config/quickDocs'
 
 const emit = defineEmits<{
   close: []

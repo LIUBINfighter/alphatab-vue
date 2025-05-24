@@ -17,7 +17,7 @@ provide('alphaTabApi', alphaTabApi);
 const initialScorePath = `${import.meta.env.BASE_URL}scores/吉他与孤独与蓝色星球.gpx`;
 
 
-import { playerControlFeatures } from "./components/playerControlFeatures" 
+import { playerControlFeatures } from "./config/playerControlFeatures" 
 // 为播放器视图的 SimpleDisplay 定义要显示的所有控件
 
 
