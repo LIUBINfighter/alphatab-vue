@@ -113,26 +113,30 @@ jobs:
 ## 4. 项目结构调整
 
 1. 新增目录结构：
-   ```
+
+```
    docs/
    ├── .vitepress/
    │   ├── config.mts
    │   └── theme/
    ├── public/
    └── (现有文档目录)
-   ```
+```
 
 2. 主应用vite配置调整：
-   ```typescript
+
+```typescript
    // vite.config.ts
    base: process.env.NODE_ENV === 'production' ? '/' : '/'
-   ```
+```
 
 3. package.json新增脚本：
-   ```json
+
+```json
    {
      "scripts": {
        "docs:dev": "vitepress dev docs",
        "docs:build": "vitepress build docs"
      }
    }
+```
