@@ -1,3 +1,4 @@
+<!-- TexEditorView.vue -->
 <template>
   <div class="tex-editor-container">
     <ToolBar 

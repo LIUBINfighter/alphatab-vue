@@ -1,3 +1,4 @@
+<!-- GlobalHeader.vue -->
 <template>
   <header class="global-header">
     <div class="header-content">
