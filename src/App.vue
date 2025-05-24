@@ -5,18 +5,17 @@ import { useRoute, useRouter } from 'vue-router';
 import { availableScores } from './config/availableScores';
 import ScoreList from './components/layout/ScoreList.vue';
 import GlobalHeader from './components/layout/GlobalHeader.vue';
-import { playerControlFeatures } from "./config/playerControlFeatures";
 
 // Import stores
 import { useUIStore } from './stores/ui';
 import { useTexFilesStore } from './stores/texFiles';
-import { useThemeStore } from './stores/theme';
+// import { useThemeStore } from './stores/theme';
 
 const router = useRouter();
 const route = useRoute();
 const uiStore = useUIStore();
 const texFilesStore = useTexFilesStore();
-const themeStore = useThemeStore();
+// const themeStore = useThemeStore();
 
 const alphaTabApi = shallowRef(null);
 provide('alphaTabApi', alphaTabApi);
