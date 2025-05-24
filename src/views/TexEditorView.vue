@@ -3,15 +3,17 @@
   <div class="tex-editor-container">
     <ToolBar 
       :currentFileName="currentFileName"
+      :initialFontSize="fontSize"
       @new-tex="createNewFile"
       @save-tex="saveCurrentFile"
       @load-tex="showFileList"
       @rename-tex="renameCurrentFile"
       @load-template="showTemplates"
+      @update-font-size="updateFontSize"
     />
     <div class="editor-content">
       <div class="editor-panel">
-        <TexEditor v-model="editorContent" />
+        <TexEditor v-model="editorContent" :fontSize="fontSize" />
       </div>
       <div class="preview-panel">
         <SimpleDisplay :tex="editorContent" :control-bar-features="editorControlFeatures" />
@@ -93,6 +95,8 @@ const showLoadDialog = ref(false);
 const showTemplateDialog = ref(false);
 const saveFileName = ref('');
 const savedFiles = ref([]);
+// 添加字体大小控制
+const fontSize = ref(14);
 
 // 模板列表
 const templates = ref([
@@ -100,6 +104,13 @@ const templates = ref([
   { id: 'scales', name: '音阶练习', content: '\\title "音阶练习"\n\\subtitle "C大调"\n\\tempo 90\n.4 c d e f | g a b c5 | c5 b a g | f e d c' },
   { id: 'chords', name: '和弦示例', content: '\\title "和弦示例"\n.2 c+e+g c+f+a c+e+g e+g+c5' }
 ]);
+
+// 字体大小更新处理函数
+const updateFontSize = (size) => {
+  fontSize.value = size;
+  // 可选：将字体大小保存到本地存储，以便在下次加载时恢复
+  localStorage.setItem('alphaTexEditorFontSize', size.toString());
+};
 
 // 从localStorage中加载已保存文件列表
 const loadSavedFilesList = () => {
@@ -237,6 +248,12 @@ const handleTexEditorAction = (event) => {
 onMounted(() => {
   window.addEventListener('tex-editor-action', handleTexEditorAction);
   loadSavedFilesList();
+  
+  // 尝试从本地存储加载保存的字体大小
+  const savedFontSize = localStorage.getItem('alphaTexEditorFontSize');
+  if (savedFontSize) {
+    fontSize.value = parseInt(savedFontSize, 10) || 14;
+  }
 });
 
 onBeforeUnmount(() => {

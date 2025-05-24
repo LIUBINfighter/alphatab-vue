@@ -6,6 +6,21 @@
     <button @click="handleLoad" title="Load">Load</button>
     <button @click="handleRename" title="Rename">Rename</button>
     <button @click="handleTemplate" title="Templates">Templates</button>
+    
+    <!-- 添加字体大小控制组件 -->
+    <div class="font-size-control">
+      <button @click="decreaseFontSize" title="Decrease Font Size">-</button>
+      <input 
+        type="number" 
+        v-model="fontSize" 
+        @change="updateFontSize" 
+        min="8" 
+        max="36" 
+        class="font-size-input"
+      />
+      <button @click="increaseFontSize" title="Increase Font Size">+</button>
+    </div>
+    
     <!-- 当前文件名显示 -->
     <div class="current-file">
       {{ currentFileName || 'Untitled' }}
@@ -14,22 +29,28 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
 const props = defineProps({
   currentFileName: {
     type: String,
     default: ''
+  },
+  initialFontSize: {
+    type: Number,
+    default: 14
   }
 });
 
-const emit = defineEmits(['new-tex', 'save-tex', 'load-tex', 'rename-tex', 'load-template']);
+const emit = defineEmits(['new-tex', 'save-tex', 'load-tex', 'rename-tex', 'load-template', 'update-font-size']);
+
+const fontSize = ref(props.initialFontSize);
 
 function handleNew() {
   emit('new-tex');
 }
 
 function handleSave() {
-  // In a real app, you'd get the content from the editor via props or a shared store
-  // For now, TexEditorView will handle getting the content and saving
   emit('save-tex');
 }
 
@@ -43,6 +64,26 @@ function handleRename() {
 
 function handleTemplate() {
   emit('load-template');
+}
+
+function increaseFontSize() {
+  if (fontSize.value < 36) {
+    fontSize.value++;
+    updateFontSize();
+  }
+}
+
+function decreaseFontSize() {
+  if (fontSize.value > 8) {
+    fontSize.value--;
+    updateFontSize();
+  }
+}
+
+function updateFontSize() {
+  // 确保字体大小在合理范围内
+  fontSize.value = Math.max(8, Math.min(36, fontSize.value));
+  emit('update-font-size', fontSize.value);
 }
 
 // Basic keyboard shortcuts (can be enhanced)
@@ -99,5 +140,27 @@ window.addEventListener('keydown', (e) => {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 300px;
+}
+
+/* 字体大小控制组件样式 */
+.font-size-control {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.font-size-control button {
+  padding: 2px 8px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.font-size-input {
+  width: 40px;
+  text-align: center;
+  margin: 0 4px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 </style>

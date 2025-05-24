@@ -1,6 +1,6 @@
 <!-- src\components\editor\TexEditor.vue -->
 <template>
-  <div ref="editorContainer" class="editor-container"></div>
+  <div ref="editorContainer" class="editor-container" :style="{ fontSize: `${fontSize}px` }"></div>
 </template>
 
 <script setup>
@@ -14,12 +14,32 @@ import { oneDark } from '@codemirror/theme-one-dark'; // 重新导入暗色主�
 import { alphaTex } from '../../codemirror/lang-alphatex'; // 导入 AlphaTex 语言包
 
 const props = defineProps({
-  modelValue: String
+  modelValue: String,
+  fontSize: {
+    type: Number,
+    default: 14
+  }
 });
 const emit = defineEmits(['update:modelValue']);
 
 const editorContainer = ref(null);
 let editorView = null;
+
+// 监听字体大小变化
+watch(
+  () => props.fontSize,
+  (newSize) => {
+    if (editorContainer.value) {
+      // 更新编辑器容器的字体大小
+      editorContainer.value.style.fontSize = `${newSize}px`;
+      
+      // 可能需要通知 CodeMirror 刷新以适应新的字体大小
+      if (editorView) {
+        editorView.requestMeasure();
+      }
+    }
+  }
+);
 
 onMounted(() => {
   editorView = new EditorView({
@@ -70,8 +90,8 @@ watch(
 .editor-container {
   width: 100%;
   height: 100%;
-  font-size: 14px;
   border: none;
+  font-family: monospace; /* 添加此行以设置等宽字体 */
 }
 
 /* 为 CodeMirror 编辑器内容设置等宽字体 */
