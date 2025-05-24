@@ -1,3 +1,4 @@
+<!-- src\components\editor\TexEditor.vue -->
 <template>
   <div ref="editorContainer" class="editor-container"></div>
 </template>

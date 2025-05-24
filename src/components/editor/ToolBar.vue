@@ -1,3 +1,4 @@
+<!-- src\components\editor\ToolBar.vue -->
 <template>
   <div class="toolbar">
     <button @click="handleNew" title="New (Ctrl+N)">New</button>
