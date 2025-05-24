@@ -1,7 +1,7 @@
 <template>
   <header class="global-header">
     <div class="header-content">
-      <span class="app-title">AlphaTab Vue Editor</span>
+      <span class="app-title">AlphaTab Vue</span>
       <div class="header-buttons">
         <button
           @click="openLink('https://github.com/LIUBINfighter/alphatab-vue')"
@@ -9,6 +9,7 @@
           title="GitHub Repository"
         >
           <Github class="icon" />
+          <!-- Github Repo -->
         </button>
 
         <button
@@ -17,6 +18,7 @@
           title="AlphaTab Official Website"
         >
           <ExternalLink class="icon" />
+          AlphaTab.js
         </button>
 
         <button
@@ -25,6 +27,7 @@
           title="Documentation"
         >
           <BookOpen class="icon" />
+          Dev Record
         </button>
 
         <button
@@ -41,7 +44,7 @@
           class="menu-button"
           title="Open Menu"
         >
-        <FileText class="icon" />
+        <FileMusic class="icon" />
           Menu
         </button>
       </div>
@@ -56,7 +59,7 @@
 
 <script setup lang="ts">
 import { defineEmits, ref } from 'vue';
-import { Github, ExternalLink, BookOpen, FileText } from 'lucide-vue-next';
+import { Github, ExternalLink, BookOpen, FileText ,FileMusic } from 'lucide-vue-next';
 import QuickDocs from '../manual/QuickDocs.vue';
 
 const emit = defineEmits(['toggle-menu']);

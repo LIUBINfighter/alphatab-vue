@@ -9,7 +9,7 @@
   - Codemirror.js (编辑器)
 - **构建工具**: Vite
 - **Runtime**: Bun
-- **图标库**: [lucide](https://lucide.dev/)  
+- **图标库**: [Lucide-vue-next](https://lucide.dev/guide/packages/lucide-vue-next)   [lucide](https://lucide.dev/)  
   安装命令: `bun add lucide-vue-next`
 
 ## 参考文档

@@ -3,7 +3,7 @@
   <div class="quick-docs-overlay" @click="handleOverlayClick">
     <div class="quick-docs-modal" @click.stop>
       <div class="quick-docs-header">
-        <h2>快速文档</h2>
+        <h2>欢迎使用 AlphaTab Vue</h2>
         <button @click="$emit('close')" class="close-btn">
           <X class="icon" />
         </button>
@@ -79,7 +79,8 @@ onUnmounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
+  /* padding: 1.5rem; */
+  padding: 0.5rem;
   border-bottom: 1px solid #e0e0e0;
   background: #f8f9fa;
 }
