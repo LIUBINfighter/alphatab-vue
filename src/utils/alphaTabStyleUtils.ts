@@ -216,9 +216,9 @@ export function resetToDefaultTheme(api: any) {
 }
 
 // 导入所有可用主题
-import { DARK_THEME_CSS as DarkDefaultTheme } from '../assets/themes/DarkDefault';
-import { DARK_THEME_CSS as DeepOceanTheme } from '../assets/themes/DeepOcean';
-import { DARK_THEME_CSS as VibrantNightTheme } from '../assets/themes/VibrantNight';
+import { DARK_THEME_CSS as DarkDefaultTheme } from '../config/themes/DarkDefault';
+import { DARK_THEME_CSS as DeepOceanTheme } from '../config/themes/DeepOcean';
+import { DARK_THEME_CSS as VibrantNightTheme } from '../config/themes/VibrantNight';
 
 // 添加主题类型
 export type ThemeName = 'default' | 'dark' | 'ocean' | 'vibrant';

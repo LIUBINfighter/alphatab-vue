@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { provide, shallowRef, ref, computed, onMounted } from 'vue';
 import { applyTheme, type ThemeName } from './utils/alphaTabStyleUtils';
-import { availableScores } from './assets/availableScores';
+import { availableScores } from './config/availableScores';
 import SimpleDisplay from './components/SimpleDisplay.vue';
-import ScoreList from './components/manual/ScoreList.vue';
-import TexEditorView from './components/TexEditorView.vue';
+import ScoreList from './components/layout/ScoreList.vue';
+import TexEditorView from './views/TexEditorView.vue';
 import GlobalHeader from './components/layout/GlobalHeader.vue'; // Import GlobalHeader
 
 // 使用 shallowRef 避免大型对象的深度响应性

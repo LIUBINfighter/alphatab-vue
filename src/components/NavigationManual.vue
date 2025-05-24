@@ -13,7 +13,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import ScoreList from './manual/ScoreList.vue';
+import ScoreList from './layout/ScoreList.vue';
 
 const props = defineProps({
   availableScores: Array

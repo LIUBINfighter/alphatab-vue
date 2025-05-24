@@ -78,9 +78,9 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import ToolBar from './editor/ToolBar.vue';
-import TexEditor from './editor/TexEditor.vue';
-import SimpleDisplay from './SimpleDisplay.vue';
+import ToolBar from '../components/editor/ToolBar.vue';
+import TexEditor from '../components/editor/TexEditor.vue';
+import SimpleDisplay from '../components/SimpleDisplay.vue';
 
 // 为编辑器视图的 SimpleDisplay 定义 ControlBar 功能
 const editorControlFeatures = ref([

@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { defineEmits, ref } from 'vue';
 import { Github, ExternalLink, BookOpen, FileText ,FileMusic } from 'lucide-vue-next';
-import QuickDocs from '../manual/QuickDocs.vue';
+import QuickDocs from './QuickDocs.vue';
 
 const emit = defineEmits(['toggle-menu']);
 
