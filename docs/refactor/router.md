@@ -1,0 +1,158 @@
+# AlphaTab-Vue 项目重构日记 (阶段一：路由与状态管理初步优化)
+
+## 项目背景
+对 alphatab-vue 项目进行现代化重构，目标是提升代码的可维护性、可扩展性，并改善用户体验。
+
+**日期**：2025年5月24日 (基于我们的对话时间)
+
+## 第一部分：引入 Vue Router - 从手动视图切换到路由驱动
+
+### 1. Intuition (最初的直觉与痛点)
+**痛点**：项目最初可能依赖于 App.vue 内的本地状态 (如 currentView ref) 来手动控制显示哪个视图 (乐谱播放器 vs. Tex 编辑器)。这种方式在应用功能增多时，会导致 App.vue 逻辑臃肿，状态管理混乱，并且不利于实现通过 URL 直接访问特定视图或内容的功能。
+
+**直觉**：需要一个标准的、声明式的方式来管理应用的视图状态和导航。Vue Router 是 Vue 生态中解决这个问题的标准方案，它能将 URL 与组件清晰地映射起来，实现"URL 即状态"的理念。
+
+### 2. Preliminary Plan (初步方案)
+**核心目标**：用 Vue Router 替换 App.vue 中的手动视图切换逻辑。
+
+**步骤**：
+- 安装 Vue Router
+- 创建路由配置文件 (src/router/index.ts)，定义 /score 和 /editor 路径及其对应的视图组件 (ScorePlayerView.vue, TexEditorView.vue)
+- 在 main.ts 中注册路由插件
+- 修改 App.vue：
+  - 移除 currentView ref 和相关的 v-if 条件渲染
+  - 在模板中添加 `<router-view>` 来显示当前路由匹配的组件
+  - 修改导航相关的函数 (如 handleNavigation) 和 ScoreList 组件的交互，使其通过 router.push() 进行页面跳转
+- 创建新的视图组件 ScorePlayerView.vue 作为 SimpleDisplay.vue 的包装器，并初步处理乐谱数据的传递 (最初通过 provide/inject 传递 currentScoreRef)
+
+### 3. Debugging/Thinking Process (调试与思考过程)
+**挑战1**：乐谱数据的传递。最初，ScorePlayerView 依赖 App.vue 通过 provide/inject 传递的 currentScoreRef。这在引入路由后，如何让 ScorePlayerView 感知到应该加载哪个乐谱是一个关键问题。
+
+**思考**：URL 应该是乐谱的唯一真实来源。因此，乐谱的标识符需要成为路由参数。
+
+**挑战2**：ScoreList 组件的 props 和事件处理。ScoreList 的显示内容 (乐谱列表 vs. 编辑器菜单) 和头部按钮的行为需要根据当前所在的视图 (即当前路由) 动态调整。
+
+**思考**：App.vue 中的 scoreListProps 计算属性需要从依赖本地的 currentView ref 转为依赖 useRoute().name。
+
+**挑战3**：初始加载和重定向。应用启动时，应该自动加载一个默认的乐谱或视图。
+
+**思考**：在路由配置中设置根路径 / 的 redirect 到一个默认的乐谱路由。
+
+### 4. Final Result (最终结果 - 路由引入阶段)
+- 成功引入 Vue Router，应用视图的切换由 URL驱动
+- App.vue 移除了手动的视图切换逻辑，变得更加简洁
+- 可以通过 URL 直接访问乐谱播放器或 Tex 编辑器视图 (尽管乐谱加载仍依赖 App.vue 的 currentScoreRef)
+- 为后续通过 URL 参数加载特定乐谱打下了基础
+
+### 5. Takehome Message (经验总结)
+- 路由是单页应用的基石：对于任何有多个视图或需要通过 URL 定位内容的 SPA，尽早引入路由管理至关重要
+- URL 即状态：尽可能让 URL 成为应用状态的"单一事实来源"，这有助于提高应用的可预测性和可维护性
+- 逐步迁移：在重构复杂系统时，分阶段进行可以降低风险，并允许在每个阶段后进行验证。我们先建立了路由基础，再处理具体内容的加载
+
+## 第二部分：实现乐谱别名系统 - 优化 URL 和乐谱加载
+
+### 1. Intuition (最初的直觉与痛点)
+**痛点**：直接使用乐谱文件名 (尤其是包含中文、日文或特殊字符的文件名) 作为 URL 参数会导致 URL 冗长、不美观，并且需要进行 encodeURIComponent 和 decodeURIComponent 处理，容易出错。
+
+**直觉**：需要一个更简洁、URL 友好的方式来标识乐谱。为每个乐谱定义一个唯一的、全英文（或 ASCII）的"别名"(slug) 是常见的解决方案。
+
+### 2. Preliminary Plan (初步方案)
+**核心目标**：使用乐谱别名作为路由参数，替换之前可能使用的编码后的文件名或完整路径。
+
+**步骤**：
+- 修改 src/config/availableScores.ts，为每个乐谱对象添加一个 alias 字段，确保其唯一且 URL 友好
+- 更新 src/router/index.ts：
+  - 将 /score/:scoreFilename 路由参数改为 /score/:scoreAlias
+  - 更新根路径 / 的重定向逻辑，使其重定向到第一个乐谱的别名对应的路由
+- 修改 ScorePlayerView.vue：
+  - 接收 scoreAlias prop
+  - 根据 scoreAlias 从 availableScores 数组中查找对应的乐谱对象，并获取其真实的 path 用于加载
+  - 移除之前通过 inject 获取 currentScoreRef 的逻辑
+- 修改 App.vue：
+  - 移除 currentScore ref 和相关的 provide
+  - 更新 scoreListProps，使其在生成乐谱列表项时，将 item.id 设置为乐谱的 alias
+  - 更新 handleNavigation 和 handleScoreSelected 函数，使其在进行乐谱相关的路由跳转时，使用乐谱的 alias 作为路由参数
+- 调整 ScoreList.vue，确保其在用户选择乐谱时，发出的是乐谱的 alias
+
+### 3. Debugging/Thinking Process (调试与思考过程)
+**挑战1**：别名的唯一性和生成策略。如何为大量乐谱（特别是名称相似或包含非拉丁字符的）生成清晰、唯一的别名。
+
+**思考**：对于英文名，小写并用连字符替换空格。对于中文/日文名，考虑拼音/罗马音，或手动指定有意义的英文标识。对于文件名相同但扩展名不同的乐谱，在别名中加入区分标记 (如 -gp, -gpx)。
+
+**挑战2**：确保所有相关组件都使用别名。从路由定义、视图组件的数据获取，到 App.vue 的导航逻辑和 ScoreList 的事件传递，都需要统一使用别名。
+
+**思考**：仔细梳理数据流，确保 alias 在正确的地方被用作标识符。例如，ScoreList 的 item.id 应该存 alias，这样它发出的事件参数就是 alias。
+
+**挑战3**：应用入口的默认乐谱加载。在 router/index.ts 中，如何稳定地获取第一个乐谱的有效别名进行重定向。
+
+**思考**：availableScores.value[0]?.alias 是一种简洁的获取方式，但需要注意 availableScores 列表为空或第一个条目没有 alias 的边界情况，并提供一个后备别名或确保数据有效性。通过 console.log 验证 defaultScoreAlias 的值非常重要。
+
+**Debug发现**：最初直接访问 /score 路径（没有别名）时，页面无法正确加载乐谱。
+
+**解决方案**：强化了根路径 / 到 /score/:defaultScoreAlias 的重定向逻辑，确保应用启动时总能加载一个有效的默认乐谱。
+
+### 4. Final Result (最终结果 - 别名系统阶段)
+- URL 变得简洁、美观且对 SEO 更友好 (例如 /score/guitar-loneliness-blue-planet)
+- 移除了对乐谱文件名进行 URL 编码/解码的需要
+- ScorePlayerView 完全通过路由参数 (scoreAlias) 驱动乐谱加载，App.vue 不再管理当前乐谱状态
+- 应用的入口能够正确重定向并加载默认乐谱
+- 整个乐谱导航和加载流程更加清晰和健壮
+
+### 5. Takehome Message (经验总结)
+- 为资源设计友好的标识符：在 Web 开发中，使用 slug (别名) 作为 URL 参数是一种非常好的实践，能提升用户体验和开发体验
+- 数据一致性是关键：当引入新的标识符（如别名）时，需要确保在整个数据流和组件交互中都使用这个新的标识符，避免混用导致错误
+- 入口和边界条件处理：应用的初始加载和各种边界情况（如列表为空、参数缺失）是常见的 Bug 来源，需要特别注意并进行充分测试。通过日志调试能快速定位问题
+
+## 第三部分：引入 Pinia - 集中化状态管理
+
+### 1. Intuition (最初的直觉与痛点)
+**痛点**：即使引入了路由，App.vue 中仍然存在一些跨组件共享的状态，如 isScoreListVisible (菜单显示状态)、savedTexFiles (已保存的 Tex 文件列表)、currentTheme (主题状态)。这些状态如果继续由 App.vue 管理并通过 props 或 provide/inject 传递，当应用规模扩大时，依然会面临状态管理分散、追踪困难的问题。
+
+**直觉**：需要一个专门的状态管理库来集中管理这些全局或跨组件共享的状态。Pinia 作为 Vue 官方推荐的新一代状态管理库，以其简洁的 API 和 TypeScript 友好性成为首选。
+
+### 2. Preliminary Plan (初步方案)
+**核心目标**：将 App.vue 中的共享状态迁移到 Pinia stores。
+
+**步骤**：
+- 安装 Pinia 并在 main.ts 中注册
+- 创建独立的 Pinia store 文件：
+  - stores/ui.ts：管理 isScoreListVisible 及其相关的 actions (toggleScoreListVisibility, closeScoreList)
+  - stores/texFiles.ts：管理 savedTexFiles 及其相关的 actions (loadSavedTexFiles, refreshSavedTexFiles)
+  - stores/theme.ts：管理 currentTheme 及其相关的 action (changeTheme)
+- 修改 App.vue：
+  - 移除本地的 isScoreListVisible, savedTexFiles, currentTheme ref 及其相关的逻辑函数和 provide
+  - 在 setup 中初始化并使用这些 stores
+  - 模板和方法中直接从 store 获取状态或调用 actions。例如，ScoreList 的 v-if 直接绑定 uiStore.isScoreListVisible
+  - scoreListProps 计算属性从 texFilesStore.savedTexFiles 获取编辑器文件列表
+  - 移除 window.addEventListener('tex-files-updated', ...)，其功能将由 TexEditorView 调用 texFilesStore.refreshSavedTexFiles() 替代
+- 修改 GlobalHeader.vue：
+  - 使其直接从 uiStore 调用 toggleScoreListVisibility action，而不是通过 emit 事件给 App.vue
+
+### 3. Debugging/Thinking Process (调试与思考过程)
+**挑战1**：Store 的组织。如何合理地划分 store，使其既能集中管理相关状态，又不会过于臃肿。
+
+**思考**：按功能领域划分，如 UI 相关的、Tex 文件相关的、主题相关的，是比较清晰的做法。
+
+**挑战2**：组件与 Store 的交互。组件如何正确地读取 store 的 state 和调用 actions。
+
+**思考**：在组件的 setup 函数中实例化 store，然后就可以像操作普通对象一样访问其 state 和 actions。对于 state，Pinia 会自动处理其响应性。
+
+**挑战3**：初始化逻辑。某些状态（如已保存的 Tex 文件列表、初始主题的应用）需要在应用或 store 初始化时进行加载或设置。
+
+**思考**：可以在 App.vue 的 onMounted钩子中调用 store 的 action 来进行初始化加载 (如 texFilesStore.loadSavedTexFiles())。或者，某些 store 可以在其定义时就执行一些初始化操作。
+
+**挑战4**：路径调整。在 GlobalHeader.vue 中导入 uiStore 时，需要注意相对路径的正确性 (如 ../../stores/ui)。
+
+### 4. Final Result (最终结果 - Pinia 初步集成阶段)
+- App.vue 中的共享状态成功迁移到 Pinia stores，组件自身逻辑更加聚焦于视图渲染和用户交互
+- 状态管理更加集中，可维护性和可测试性得到提升
+- 组件间通信（如 GlobalHeader 控制菜单显示）通过共享 store 实现，减少了事件传递的层级
+- 为后续 TexEditorView 与 texFilesStore 的交互（如更新文件列表）做好了准备
+
+### 5. Takehome Message (经验总结)
+- 选择合适的状态管理方案：对于中大型 Vue 应用，使用 Pinia (或 Vuex) 进行状态管理几乎是必然选择。Pinia 的组合式 API 风格与 Vue 3 的 setup 语法非常契合
+- Store 按领域划分：将状态和逻辑按功能领域组织到不同的 store 中，有助于保持代码的模块化和可理解性
+- 明确 Store 的职责：Store 不仅存储状态，还应该封装相关的业务逻辑 (actions) 和计算属性 (getters)
+- 组件只负责"消费"状态：组件应尽可能地从 Store 中读取状态和调用 Action，避免自身维护过多的共享状态
+
+这个阶段的重构工作非常成功！我们不仅解决了最初的痛点，还为项目未来的发展打下了坚实的基础。接下来优化 TexEditorView.vue 将会进一步完善整个应用的架构。期待我们接下来的合作！
