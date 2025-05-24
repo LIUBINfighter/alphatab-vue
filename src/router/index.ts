@@ -6,7 +6,12 @@ import TexEditorView from '../views/TexEditorView.vue';
 import { availableScores } from '../config/availableScores'; 
 
 // 使用第一个乐谱的别名作为默认值 (如果列表为空，则提供一个后备值)
-const defaultScoreAlias = availableScores.value[0]?.alias || 'default-fallback-alias';
+const defaultScoreAlias = availableScores.value[0]?.alias || 'classic-guitar-loneliness-and-blue-planet';
+// const defaultScoreAlias = 'classic-guitar-loneliness-and-blue-planet';
+
+console.log('Router setup: defaultScoreAlias is:', defaultScoreAlias);
+console.log('Router setup: availableScores.value is:', JSON.parse(JSON.stringify(availableScores.value)));
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,6 +19,10 @@ const router = createRouter({
     {
       path: '/',
       // 旧: redirect: `/score/${defaultScoreFilename}`, 
+      redirect: `/score/${defaultScoreAlias}`, // 新: 重定向到默认乐谱的别名
+    },
+    {
+      path: '/score/',
       redirect: `/score/${defaultScoreAlias}`, // 新: 重定向到默认乐谱的别名
     },
     {

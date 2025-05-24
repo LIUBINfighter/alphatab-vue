@@ -9,7 +9,7 @@ export interface ScoreInfo {
 }
 
 export const availableScores = ref<ScoreInfo[]>([
-  { name: '吉他与孤独与蓝色星球', path: `${import.meta.env.BASE_URL}scores/吉他与孤独与蓝色星球.gpx`, alias: 'guitar-solo-blue-planet' },
+  { name: '吉他与孤独与蓝色星球', path: `${import.meta.env.BASE_URL}scores/吉他与孤独与蓝色星球.gpx`, alias: 'classic-guitar-loneliness-and-blue-planet' },
   { name: '春日影', path: `${import.meta.env.BASE_URL}scores/春日影.gp`, alias: 'spring-shadow' },
   { name: 'Canon Rock', path: 'https://www.alphatab.net/files/canon.gp', alias: 'canon-rock' },
   // Canon Rock 是目前用来进行全面测试的（多音轨，metadata完整）
