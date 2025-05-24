@@ -1,23 +1,31 @@
 // src/views/ScorePlayerView.vue
 <template>
   <SimpleDisplay
-    v-if="currentScore"
-    :score="currentScore"
-    :key="currentScore"
+    v-if="currentScoreInfo"
+    :score="currentScoreInfo.path"
+    :key="currentScoreInfo.alias"
     :control-bar-features="playerControlFeatures"
   />
   <div v-else>
-    <p>Loading score...</p>
+    <p>Score with alias '{{ scoreAliasProp }}' not found, or scores are loading...</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from 'vue';
+import { computed } from 'vue';
 import SimpleDisplay from '../components/SimpleDisplay.vue';
 import { playerControlFeatures } from '../config/playerControlFeatures';
+import { availableScores, type ScoreInfo } from '../config/availableScores';
 
-// 使用可选链和默认值来处理注入
-const currentScore = inject('currentScoreRef', ref(''));
+const props = defineProps<{
+  scoreAlias: string;
+}>();
+
+const scoreAliasProp = computed(() => props.scoreAlias);
+
+const currentScoreInfo = computed<ScoreInfo | undefined>(() => {
+  return availableScores.value.find(score => score.alias === props.scoreAlias);
+});
 </script>
 
 <style scoped>
