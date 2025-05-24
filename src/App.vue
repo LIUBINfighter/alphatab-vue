@@ -6,29 +6,16 @@ import { applyTheme, type ThemeName } from './utils/alphaTabStyleUtils';
 import { availableScores } from './config/availableScores';
 import ScoreList from './components/layout/ScoreList.vue';
 import GlobalHeader from './components/layout/GlobalHeader.vue';
+import { playerControlFeatures } from "./config/playerControlFeatures";
 
 const router = useRouter();
 const route = useRoute();
 
-// 使用 shallowRef 避免大型对象的深度响应性
 const alphaTabApi = shallowRef(null);
 provide('alphaTabApi', alphaTabApi);
 
-const initialScorePath = `${import.meta.env.BASE_URL}scores/吉他与孤独与蓝色星球.gpx`;
-
-
-import { playerControlFeatures } from "./config/playerControlFeatures" 
-// 为播放器视图的 SimpleDisplay 定义要显示的所有控件
-
-
-const currentView = ref<'score' | 'texEditor'>('score'); // 'score' 或 'texEditor'
-const currentScore = ref(initialScorePath); // 当前乐谱路径，仅用于 'score' 视图
-// 确保使用 ref 包装的值进行 provide
-provide('currentScoreRef', currentScore);
 const isScoreListVisible = ref(false);
-
-// 存储在localStorage中的AlphaTex文件列表
-const savedTexFiles = ref<Array<{ name: string, id: string }>>([]);
+const savedTexFiles = ref<Array<{ name: string, id: string }>>([]); // 存储在localStorage中的AlphaTex文件列表
 
 // 在组件挂载时加载已保存的文件列表
 onMounted(() => {
@@ -46,50 +33,51 @@ function loadSavedTexFiles() {
 
 interface NavigationPayload {
   view?: 'score' | 'texEditor';
-  path?: string;
-  action?: string; // For actions like 'loadTexSampleAction'
-  texFileId?: string; // 用于加载特定的Tex文件
+  path?: string; // 现在使用score的alias
+  action?: string;
+  texFileId?: string;
 }
 
 const scoreListProps = computed(() => {
-  if (currentView.value === 'score') {
+  const currentRouteName = route.name;
+
+  if (currentRouteName === 'ScorePlayer') {
     return {
       title: '选择乐谱',
-      items: availableScores.value.map(s => ({ name: s.name, type: 'score', id: s.path })),
+      items: availableScores.value.map(s => ({ 
+        name: s.name, 
+        type: 'score' as const, 
+        id: s.alias
+      })),
       headerButtonConfig: {
         label: 'Tex 编辑器',
-        actionPayload: { view: 'texEditor' }
+        actionPayload: { view: 'texEditor' as const }
       }
     };
-  } else { // currentView.value === 'texEditor'
+  } else if (currentRouteName === 'TexEditor') {
     return {
       title: '编辑器菜单',
       items: [
-        // { name: '新建文件', type: 'action', id: 'newTexFileAction' },
-        // { name: '加载模板', type: 'action', id: 'loadTexTemplatesAction' },
         ...savedTexFiles.value.map(file => ({
           name: file.name,
-          type: 'texFile',
+          type: 'texFile' as const,
           id: file.id
         }))
       ],
       headerButtonConfig: {
         label: '返回播放器',
-        actionPayload: { view: 'score' }
+        actionPayload: { view: 'score' as const }
       }
     };
   }
+  return { title: 'Menu', items: [], headerButtonConfig: null };
 });
 
-// 修改 handleNavigation 函数
 function handleNavigation(payload: NavigationPayload) {
   isScoreListVisible.value = false;
 
   if (payload.path) {
-    currentScore.value = payload.path; // 这里会触发响应式更新
-    if(route.name !== 'ScorePlayer') {
-      router.push({ name: 'ScorePlayer' });
-    }
+    router.push({ name: 'ScorePlayer', params: { scoreAlias: payload.path } });
   } else if (payload.texFileId) {
     router.push({ name: 'TexEditor' });
     window.dispatchEvent(new CustomEvent('tex-editor-action', {
@@ -98,19 +86,14 @@ function handleNavigation(payload: NavigationPayload) {
   } else if (payload.view === 'texEditor') {
     router.push({ name: 'TexEditor' });
   } else if (payload.view === 'score') {
-    router.push({ name: 'ScorePlayer' });
+    const defaultAlias = availableScores.value[0]?.alias || 'default-fallback-alias';
+    router.push({ name: 'ScorePlayer', params: { scoreAlias: defaultAlias } });
   }
 }
 
-// 更新已保存的Tex文件列表
-window.addEventListener('tex-files-updated', () => {
-  loadSavedTexFiles();
-});
-
-function handleScoreSelected(selectedScorePath: string) {
-  currentScore.value = selectedScorePath;
-  currentView.value = 'score'; // 确保切换到乐谱视图
+function handleScoreSelected(selectedScoreAlias: string) {
   isScoreListVisible.value = false;
+  router.push({ name: 'ScorePlayer', params: { scoreAlias: selectedScoreAlias } });
 }
 
 function toggleScoreListVisibility() {
@@ -134,8 +117,6 @@ provide('changeTheme', (themeName: ThemeName) => {
   // 因为这里没有 api 实例，传入 undefined 作为第二个参数
   applyTheme(themeName, undefined);
 });
-
-// 移除 handleRequestScoreList 函数
 </script>
 
 <template>
@@ -148,7 +129,7 @@ provide('changeTheme', (themeName: ThemeName) => {
       :headerButtonConfig="scoreListProps.headerButtonConfig"
       @close="closeScoreList"
       @navigate="handleNavigation"
-    />
+      @score-selected="handleScoreSelected" />
     <main class="main-content">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
