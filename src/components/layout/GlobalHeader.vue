@@ -68,7 +68,7 @@ function toggleMenu() {
   emit('toggle-menu');
 }
 
-function openLink(url) {
+function openLink(url: string) {
   window.open(url, '_blank');
 }
 
