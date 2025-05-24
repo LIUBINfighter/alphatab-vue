@@ -1,25 +1,30 @@
+// 此文件是 AlphaTex 语言支持包的入口点。
+// 它导入了 parser.js 中定义的词法分析器和 highlight.js 中定义的语法高亮规则，
+// 并将它们组合成一个 CodeMirror LanguageSupport 实例。
+// 这个实例使得 CodeMirror 编辑器能够理解和正确显示 AlphaTex 代码，
+// 同时还提供了诸如括号自动匹配等编辑辅助功能。
 // src/codemirror/lang-alphatex/index.js
 import { StreamLanguage } from '@codemirror/language';
 import { alphaTexStreamParser } from './parser.js';
-import { alphaTexSyntaxHighlighting, tokenTable } from './highlight.js'; // Import the highlighter extension and tokenTable
+import { alphaTexSyntaxHighlighting, tokenTable } from './highlight.js';
 import { LanguageSupport } from "@codemirror/language";
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
 
-// Define the language using StreamLanguage and the token mapping
 const alphaTexLanguage = StreamLanguage.define({
-  ...alphaTexStreamParser, // Spread the parser's token and startState methods
-  languageData: { // Provide language-specific data
-    commentTokens: { line: "//" }
-    // You can add other language data here if needed, e.g., closeBrackets, indent
+  ...alphaTexStreamParser,
+  languageData: {
+    commentTokens: { line: "//" },
+    closeBrackets: { brackets: ["(", "{", '"', "'"] } // For auto-pairing
   },
-  tokenTable // Map token names from parser to Lezer highlight tags
+  tokenTable
 });
 
-
-// Function to create the LanguageSupport instance
 export function alphaTex() {
   return new LanguageSupport(
-    alphaTexLanguage, // The language definition
-    alphaTexSyntaxHighlighting // The syntax highlighting style extension
-    // You could also add other language-specific extensions here if needed
+    alphaTexLanguage,
+    [
+      alphaTexSyntaxHighlighting,
+      closeBrackets() // Add the closeBrackets extension
+    ]
   );
 }
