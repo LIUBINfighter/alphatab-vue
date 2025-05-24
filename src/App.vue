@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { provide, shallowRef, ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { applyTheme, type ThemeName } from './utils/alphaTabStyleUtils';
 import { availableScores } from './config/availableScores';
-import SimpleDisplay from './components/SimpleDisplay.vue';
 import ScoreList from './components/layout/ScoreList.vue';
-import TexEditorView from './views/TexEditorView.vue';
-import GlobalHeader from './components/layout/GlobalHeader.vue'; // Import GlobalHeader
+import GlobalHeader from './components/layout/GlobalHeader.vue';
+
+const router = useRouter();
+const route = useRoute();
 
 // 使用 shallowRef 避免大型对象的深度响应性
 const alphaTabApi = shallowRef(null);
@@ -20,6 +22,8 @@ import { playerControlFeatures } from "./components/playerControlFeatures"
 
 const currentView = ref<'score' | 'texEditor'>('score'); // 'score' 或 'texEditor'
 const currentScore = ref(initialScorePath); // 当前乐谱路径，仅用于 'score' 视图
+// 确保使用 ref 包装的值进行 provide
+provide('currentScoreRef', currentScore);
 const isScoreListVisible = ref(false);
 
 // 存储在localStorage中的AlphaTex文件列表
@@ -76,33 +80,25 @@ const scoreListProps = computed(() => {
   }
 });
 
+// 修改 handleNavigation 函数
 function handleNavigation(payload: NavigationPayload) {
-  if (payload.view) {
-    currentView.value = payload.view;
-    if (payload.view === 'score' && payload.path) {
-      currentScore.value = payload.path;
+  isScoreListVisible.value = false;
+
+  if (payload.path) {
+    currentScore.value = payload.path; // 这里会触发响应式更新
+    if(route.name !== 'ScorePlayer') {
+      router.push({ name: 'ScorePlayer' });
     }
-  } else if (payload.action === 'loadTexSampleAction') {
-    console.log('Action: Load Tex Sample triggered');
-  } else if (payload.action === 'newTexFileAction') {
-    currentView.value = 'texEditor';
-    // 通知TexEditorView创建新文件
-    window.dispatchEvent(new CustomEvent('tex-editor-action', { 
-      detail: { action: 'new' }
-    }));
-  } else if (payload.action === 'loadTexTemplatesAction') {
-    // 通知TexEditorView显示模板选择界面
-    window.dispatchEvent(new CustomEvent('tex-editor-action', { 
-      detail: { action: 'showTemplates' }
-    }));
   } else if (payload.texFileId) {
-    currentView.value = 'texEditor';
-    // 通知TexEditorView加载特定文件
+    router.push({ name: 'TexEditor' });
     window.dispatchEvent(new CustomEvent('tex-editor-action', {
       detail: { action: 'load', fileId: payload.texFileId }
     }));
+  } else if (payload.view === 'texEditor') {
+    router.push({ name: 'TexEditor' });
+  } else if (payload.view === 'score') {
+    router.push({ name: 'ScorePlayer' });
   }
-  isScoreListVisible.value = false;
 }
 
 // 更新已保存的Tex文件列表
@@ -149,38 +145,15 @@ provide('changeTheme', (themeName: ThemeName) => {
       :title="scoreListProps.title"
       :listItems="scoreListProps.items"
       :headerButtonConfig="scoreListProps.headerButtonConfig"
-      @score-selected="handleScoreSelected"
       @close="closeScoreList"
       @navigate="handleNavigation"
     />
     <main class="main-content">
-      <transition name="fade" mode="out-in">
-        <template v-if="currentView === 'score'">
-          <SimpleDisplay 
-            :score="currentScore" 
-            :key="currentScore" 
-            :control-bar-features="playerControlFeatures" 
-          />
-        </template>
-        <template v-else-if="currentView === 'texEditor'">
-          <TexEditorView />
-          <!-- 
-            说明: TexEditorView.vue 内部也使用 SimpleDisplay 组件。
-            要使其 ControlBar 显示默认控件外加 'zoom'，
-            需要在 TexEditorView.vue 文件中进行如下类似的修改：
-
-            在 TexEditorView.vue 的 <script setup> 中:
-            const editorControlFeatures = ref([
-              'stop', 'play-pause', 'speed-control', 'print', 'download', // 默认控件
-              'zoom' // 额外添加 zoom
-            ]);
-
-            然后在 TexEditorView.vue 的模板中，当使用 SimpleDisplay 时:
-            <SimpleDisplay :tex="alphaTexContent" :control-bar-features="editorControlFeatures" />
-            (具体 props 取决于 TexEditorView.vue 的实现)
-          -->
-        </template>
-      </transition>
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" :key="route.fullPath" />
+        </transition>
+      </router-view>
     </main>
   </div>
 </template>
