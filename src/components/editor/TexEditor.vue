@@ -10,7 +10,8 @@ import { EditorState } from '@codemirror/state'; // 从 @codemirror/state 导入
 import { EditorView } from '@codemirror/view';   // 从 @codemirror/view 导入
 import { basicSetup } from 'codemirror';        // basicSetup 通常可以从 codemirror 伞形包导入
 import { oneDark } from '@codemirror/theme-one-dark'; // 重新导入暗色主题
-import { javascript } from '@codemirror/lang-javascript'; // 导入 JavaScript 语言包
+// import { javascript } from '@codemirror/lang-javascript'; // 导入 JavaScript 语言包
+import { alphaTex } from '../../codemirror/lang-alphatex'; // 导入 AlphaTex 语言包
 
 const props = defineProps({
   modelValue: String
@@ -27,7 +28,8 @@ onMounted(() => {
       extensions: [
         basicSetup,
         oneDark, // 添加暗色主题
-        javascript({ jsx: true }), // 添加 JavaScript (及 JSX) 语言高亮
+        // javascript({ jsx: true }), // 添加 JavaScript (及 JSX) 语言高亮
+        alphaTex(),
         EditorView.lineWrapping, // 添加自动换行
         EditorView.contentAttributes.of({ style: "padding-bottom: 50vh;" }), // 允许滚动过最后一行
         EditorView.updateListener.of((v) => {
