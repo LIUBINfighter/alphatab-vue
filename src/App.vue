@@ -1,39 +1,33 @@
 <!-- App.vue -->
 <script setup lang="ts">
-import { provide, shallowRef, ref, computed, onMounted } from 'vue';
+import { provide, shallowRef, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { applyTheme, type ThemeName } from './utils/alphaTabStyleUtils';
 import { availableScores } from './config/availableScores';
 import ScoreList from './components/layout/ScoreList.vue';
 import GlobalHeader from './components/layout/GlobalHeader.vue';
 import { playerControlFeatures } from "./config/playerControlFeatures";
 
+// Import stores
+import { useUIStore } from './stores/ui';
+import { useTexFilesStore } from './stores/texFiles';
+import { useThemeStore } from './stores/theme';
+
 const router = useRouter();
 const route = useRoute();
+const uiStore = useUIStore();
+const texFilesStore = useTexFilesStore();
+const themeStore = useThemeStore();
 
 const alphaTabApi = shallowRef(null);
 provide('alphaTabApi', alphaTabApi);
 
-const isScoreListVisible = ref(false);
-const savedTexFiles = ref<Array<{ name: string, id: string }>>([]); // 存储在localStorage中的AlphaTex文件列表
-
-// 在组件挂载时加载已保存的文件列表
 onMounted(() => {
-  loadSavedTexFiles();
+  texFilesStore.loadSavedTexFiles();
 });
-
-// 从localStorage加载已保存的文件列表
-function loadSavedTexFiles() {
-  const fileKeys = Object.keys(localStorage).filter(key => key.startsWith('alphaTexFile:'));
-  savedTexFiles.value = fileKeys.map(key => {
-    const name = key.replace('alphaTexFile:', '');
-    return { name, type: 'texFile', id: key };
-  });
-}
 
 interface NavigationPayload {
   view?: 'score' | 'texEditor';
-  path?: string; // 现在使用score的alias
+  path?: string;
   action?: string;
   texFileId?: string;
 }
@@ -47,7 +41,7 @@ const scoreListProps = computed(() => {
       items: availableScores.value.map(s => ({ 
         name: s.name, 
         type: 'score' as const, 
-        id: s.alias
+        id: s.alias 
       })),
       headerButtonConfig: {
         label: 'Tex 编辑器',
@@ -57,24 +51,22 @@ const scoreListProps = computed(() => {
   } else if (currentRouteName === 'TexEditor') {
     return {
       title: '编辑器菜单',
-      items: [
-        ...savedTexFiles.value.map(file => ({
-          name: file.name,
-          type: 'texFile' as const,
-          id: file.id
-        }))
-      ],
+      items: texFilesStore.savedTexFiles.map(file => ({
+        name: file.name,
+        type: 'texFile' as const,
+        id: file.id
+      })),
       headerButtonConfig: {
         label: '返回播放器',
         actionPayload: { view: 'score' as const }
       }
     };
   }
-  return { title: 'Menu', items: [], headerButtonConfig: null };
+  return { title: '菜单', items: [], headerButtonConfig: null };
 });
 
 function handleNavigation(payload: NavigationPayload) {
-  isScoreListVisible.value = false;
+  uiStore.closeScoreList();
 
   if (payload.path) {
     router.push({ name: 'ScorePlayer', params: { scoreAlias: payload.path } });
@@ -92,44 +84,24 @@ function handleNavigation(payload: NavigationPayload) {
 }
 
 function handleScoreSelected(selectedScoreAlias: string) {
-  isScoreListVisible.value = false;
+  uiStore.closeScoreList();
   router.push({ name: 'ScorePlayer', params: { scoreAlias: selectedScoreAlias } });
 }
 
-function toggleScoreListVisibility() {
-  isScoreListVisible.value = !isScoreListVisible.value;
-}
-
-function closeScoreList() {
-  isScoreListVisible.value = false;
-}
-
-// 在脚本部分设置样式状态
-// 设置提供给组件的样式状态
-const currentTheme = ref<ThemeName>('default');
-
-// 提供样式状态
-provide('currentTheme', currentTheme);
-
-// 提供切换主题的方法，使用明确的类型
-provide('changeTheme', (themeName: ThemeName) => {
-  currentTheme.value = themeName;
-  // 因为这里没有 api 实例，传入 undefined 作为第二个参数
-  applyTheme(themeName, undefined);
-});
 </script>
 
 <template>
   <div id="app-container">
-    <GlobalHeader @toggle-menu="toggleScoreListVisibility" />
+    <GlobalHeader />
     <ScoreList
-      v-if="isScoreListVisible"
+      v-if="uiStore.isScoreListVisible"
       :title="scoreListProps.title"
       :listItems="scoreListProps.items"
       :headerButtonConfig="scoreListProps.headerButtonConfig"
-      @close="closeScoreList"
+      @close="uiStore.closeScoreList"
       @navigate="handleNavigation"
-      @score-selected="handleScoreSelected" />
+      @score-selected="handleScoreSelected"
+    />
     <main class="main-content">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
