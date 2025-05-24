@@ -41,7 +41,7 @@
         </button>
 
         <button
-          @click="toggleMenu"
+          @click="uiStore.toggleScoreListVisibility"
           class="menu-button"
           title="Open Menu"
         >
@@ -59,15 +59,12 @@
 </template>
 
 <script setup lang="ts">
-import { defineEmits, ref } from 'vue';
-import { Github, ExternalLink, BookOpen, FileText ,FileMusic } from 'lucide-vue-next';
+import { ref } from 'vue';
+import { Github, ExternalLink, BookOpen, FileText, FileMusic } from 'lucide-vue-next';
 import QuickDocs from './QuickDocs.vue';
+import { useUIStore } from '../../stores/ui';
 
-const emit = defineEmits(['toggle-menu']);
-
-function toggleMenu() {
-  emit('toggle-menu');
-}
+const uiStore = useUIStore();
 
 function openLink(url: string) {
   window.open(url, '_blank');
