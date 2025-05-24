@@ -1,3 +1,4 @@
+<!-- App.vue -->
 <script setup lang="ts">
 import { provide, shallowRef, ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';

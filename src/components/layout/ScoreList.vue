@@ -1,3 +1,4 @@
+<!-- src\components\layout\ScoreList.vue -->
 <template>
   <div class="score-list-container">
     <div class="score-list-header">
