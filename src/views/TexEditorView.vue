@@ -4,6 +4,7 @@
     <ToolBar 
       :currentFileName="currentFileName"
       :initialFontSize="fontSize"
+      v-model:always-scroll-to-bottom="alwaysScrollToBottom" 
       @new-tex="createNewFile"
       @save-tex="saveCurrentFile"
       @load-tex="showFileList"
@@ -16,7 +17,11 @@
         <TexEditor v-model="editorContent" :fontSize="fontSize" />
       </div>
       <div class="preview-panel">
-        <SimpleDisplay :tex="editorContent" :control-bar-features="editorControlFeatures" />
+        <SimpleDisplay 
+          :tex="editorContent" 
+          :control-bar-features="editorControlFeatures"
+          :always-scroll-to-bottom="alwaysScrollToBottom"
+        />
       </div>
     </div>
 
@@ -80,7 +85,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'; // 确保导入 watch
 import ToolBar from '../components/editor/ToolBar.vue';
 import TexEditor from '../components/editor/TexEditor.vue';
 import SimpleDisplay from '../components/SimpleDisplay.vue';
@@ -97,6 +102,8 @@ const saveFileName = ref('');
 const savedFiles = ref([]);
 // 添加字体大小控制
 const fontSize = ref(14);
+// 新增：始终滚动至底部状态
+const alwaysScrollToBottom = ref(false);
 
 // 模板列表
 const templates = ref([
@@ -111,6 +118,11 @@ const updateFontSize = (size) => {
   // 可选：将字体大小保存到本地存储，以便在下次加载时恢复
   localStorage.setItem('alphaTexEditorFontSize', size.toString());
 };
+
+// 监听 alwaysScrollToBottom 变化并保存到 localStorage
+watch(alwaysScrollToBottom, (newValue) => {
+  localStorage.setItem('alphaTexEditorAlwaysScrollToBottom', newValue.toString());
+});
 
 // 从localStorage中加载已保存文件列表
 const loadSavedFilesList = () => {
@@ -253,6 +265,12 @@ onMounted(() => {
   const savedFontSize = localStorage.getItem('alphaTexEditorFontSize');
   if (savedFontSize) {
     fontSize.value = parseInt(savedFontSize, 10) || 14;
+  }
+
+  // 新增：尝试从本地存储加载“始终滚动至底部”设置
+  const savedAlwaysScroll = localStorage.getItem('alphaTexEditorAlwaysScrollToBottom');
+  if (savedAlwaysScroll) {
+    alwaysScrollToBottom.value = savedAlwaysScroll === 'true';
   }
 });
 

@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, toRaw, inject, watch, provide } from 'vue' // 添加 provide
+import { onMounted, ref, toRaw, inject, watch, provide, nextTick } from 'vue' // 添加 provide 和 nextTick
 import ControlBar from './ControlBar.vue'
 import TrackSidebar from './TrackSidebar.vue'
 import { applyDarkThemeViaApi, resetToDefaultTheme, injectAlphaTabStyle } from '../utils/alphaTabStyleUtils';
@@ -45,6 +45,10 @@ const props = defineProps({
   showTrackSidebar: { // 新增：控制是否显示音轨侧边栏
     type: Boolean,
     default: true
+  },
+  alwaysScrollToBottom: { // 新增：控制是否始终滚动到底部
+    type: Boolean,
+    default: false
   }
 })
 
@@ -158,6 +162,10 @@ function initializeAlphaTab() {
       if (atOverlayRef.value) {
         atOverlayRef.value.style.display = 'none';
       }
+      // 使用封装的方法执行滚动操作
+      if (props.alwaysScrollToBottom && alphaTabApi.value) {
+        scrollToBottom();
+      }
     });
 
     api.scoreLoaded.on(score => {
@@ -194,6 +202,91 @@ function initializeAlphaTab() {
     console.error('AlphaTab main container or overlay element not found');
   }
 }
+
+// 封装"滚动到底部"的功能为一个可重用的方法
+function scrollToBottom() {
+  if (!alphaTabApi.value) return;
+  
+  nextTick(() => {
+    // 确保分数已加载
+    if (alphaTabApi.value.score) {
+      try {
+        const score = alphaTabApi.value.score;
+        const masterBars = score.masterBars;
+        
+        // 如果没有小节，则退出
+        if (!masterBars || masterBars.length === 0) {
+          console.warn('无法滚动：没有小节');
+          return;
+        }
+        
+        // 策略1：直接使用DOM滚动（简单可靠的方法）
+        const viewport = document.querySelector('.at-viewport');
+        if (viewport) {
+          setTimeout(() => {
+            viewport.scrollTop = viewport.scrollHeight;
+          }, 10);
+        }
+        
+        // 策略2：尝试设置位置并延迟滚动（API方法）
+        setTimeout(() => {
+          try {
+            // 找到最后一个有效的小节
+            let lastValidBarIndex = -1;
+            for (let i = masterBars.length - 1; i >= 0; i--) {
+              if (masterBars[i] && masterBars[i].calculateDuration() > 0) {
+                lastValidBarIndex = i;
+                break;
+              }
+            }
+            
+            if (lastValidBarIndex >= 0) {
+              const targetBar = masterBars[lastValidBarIndex];
+              const endTick = targetBar.start + targetBar.calculateDuration();
+              
+              // 设置位置并延迟滚动（给AlphaTab更多时间更新内部状态）
+              alphaTabApi.value.tickPosition = endTick;
+              
+              // 尝试使用API滚动
+              setTimeout(() => {
+                try {
+                  alphaTabApi.value.scrollToCursor();
+                } catch (err) {
+                  console.warn('API滚动失败，使用DOM滚动:', err);
+                }
+              }, 150); // 更长的延迟确保位置更新
+            }
+          } catch (e) {
+            console.warn('设置tickPosition失败:', e);
+          }
+        }, 50);
+        
+      } catch (e) {
+        console.error('滚动到乐谱末尾时出错:', e);
+        
+        // 最终回退：尝试找到任何可滚动的容器
+        const scrollElement = document.querySelector('.at-viewport');
+        if (scrollElement) {
+          scrollElement.scrollTop = scrollElement.scrollHeight;
+        }
+      }
+    } else {
+      // 如果分数未加载，使用简单的 DOM 滚动
+      const scrollElement = document.querySelector('.at-viewport');
+      if (scrollElement) {
+        scrollElement.scrollTop = scrollElement.scrollHeight;
+      }
+    }
+  });
+}
+
+// 监听 alwaysScrollToBottom 属性的变化，当变为 true 时立即滚动到底部
+watch(() => props.alwaysScrollToBottom, (newValue) => {
+  if (newValue && alphaTabApi.value) {
+    // 当选中"始终滚动至底部"时，立即执行一次滚动
+    scrollToBottom();
+  }
+});
 
 onMounted(() => {
   // 确保 .at-viewport 元素已挂载

@@ -20,6 +20,16 @@
       />
       <button @click="increaseFontSize" title="Increase Font Size">+</button>
     </div>
+
+    <!-- 新增：始终滚动至底部复选框 -->
+    <div class="scroll-to-bottom-control">
+      <input 
+        type="checkbox" 
+        id="alwaysScrollToBottom" 
+        v-model="localAlwaysScrollToBottom"
+      />
+      <label for="alwaysScrollToBottom">始终滚动至底部</label>
+    </div>
     
     <!-- 当前文件名显示 -->
     <div class="current-file">
@@ -29,7 +39,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue'; // 确保导入 watch
 
 const props = defineProps({
   currentFileName: {
@@ -39,12 +49,35 @@ const props = defineProps({
   initialFontSize: {
     type: Number,
     default: 14
+  },
+  alwaysScrollToBottom: { // 新增 prop 用于 v-model
+    type: Boolean,
+    default: false
   }
 });
 
-const emit = defineEmits(['new-tex', 'save-tex', 'load-tex', 'rename-tex', 'load-template', 'update-font-size']);
+const emit = defineEmits([
+  'new-tex', 
+  'save-tex', 
+  'load-tex', 
+  'rename-tex', 
+  'load-template', 
+  'update-font-size',
+  'update:alwaysScrollToBottom' // 新增 emit 用于 v-model
+]);
 
 const fontSize = ref(props.initialFontSize);
+const localAlwaysScrollToBottom = ref(props.alwaysScrollToBottom);
+
+// 监听 prop 变化以更新本地状态
+watch(() => props.alwaysScrollToBottom, (newValue) => {
+  localAlwaysScrollToBottom.value = newValue;
+});
+
+// 监听本地状态变化以通知父组件
+watch(localAlwaysScrollToBottom, (newValue) => {
+  emit('update:alwaysScrollToBottom', newValue);
+});
 
 function handleNew() {
   emit('new-tex');
@@ -111,6 +144,8 @@ window.addEventListener('keydown', (e) => {
   gap: 8px; /* Spacing between buttons */
   height: 40px; /* Fixed height for the toolbar */
   box-sizing: border-box;
+  flex-wrap: nowrap; /* 防止换行 */
+  overflow-x: auto; /* 如果内容过多则允许水平滚动 */
 }
 
 .toolbar button {
@@ -162,5 +197,23 @@ window.addEventListener('keydown', (e) => {
   padding: 4px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+/* 新增：滚动到底部复选框样式 */
+.scroll-to-bottom-control {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  white-space: nowrap; /* 防止标签换行 */
+}
+
+.scroll-to-bottom-control input[type="checkbox"] {
+  margin-right: 4px;
+}
+
+.scroll-to-bottom-control label {
+  font-size: 13px; /* 调整标签字体大小以适应工具栏 */
+  color: #333;
+  cursor: pointer;
 }
 </style>
