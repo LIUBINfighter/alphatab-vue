@@ -41,6 +41,7 @@
           class="menu-button"
           title="Open Menu"
         >
+        <FileText class="icon" />
           Menu
         </button>
       </div>

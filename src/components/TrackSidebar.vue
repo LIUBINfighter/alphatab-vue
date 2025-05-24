@@ -61,6 +61,12 @@
           <li><Volume2 class="help-icon" /> 控制音轨静音/取消静音</li>
           <li><Headphones class="help-icon" /> 设置音轨独奏模式</li>
         </ul>
+      <p>使用示例：</p>
+      <ul>
+          <li>1.不听原音练习，点亮 <Volume2 class="help-icon" />静音</li>
+          <li>2.只听自己乐器，点亮 <Headphones class="help-icon" />Solo</li>
+          <li>3.只看自己的谱 按灭其他的<Eye class="help-icon" /></li>
+      </ul>
       </div>
     </div>
   </div>
@@ -392,7 +398,7 @@ onMounted(() => {
 .sidebar-icon {
   width: 20px;
   height: 20px;
-  margin-right: 10px;
+  /* margin-right: 10px; */
 }
 
 .tracks-container {
