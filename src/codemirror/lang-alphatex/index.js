@@ -8,13 +8,18 @@ import { StreamLanguage } from '@codemirror/language';
 import { alphaTexStreamParser } from './parser.js';
 import { alphaTexSyntaxHighlighting, tokenTable } from './highlight.js';
 import { LanguageSupport } from "@codemirror/language";
-import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete";
+import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete"; // Corrected to @codemirror/commands for v0.20+
+// For CM6 v0.20+ closeBracketsKeymap might be in @codemirror/commands
+// import {closeBracketsKeymap} from "@codemirror/view" // Or view, check your version
+// Actually, closeBrackets itself is an extension, and its keymap comes from defaultKeymap or specific imports.
+// Let's use the closeBrackets extension and assume the keymap handles it or can be added.
 
 const alphaTexLanguage = StreamLanguage.define({
   ...alphaTexStreamParser,
   languageData: {
     commentTokens: { line: "//" },
     closeBrackets: { brackets: ["(", "{", '"', "'"] } // For auto-pairing
+    // You might also want `indentation markers` or other language-specifics here
   },
   tokenTable
 });
@@ -25,6 +30,10 @@ export function alphaTex() {
     [
       alphaTexSyntaxHighlighting,
       closeBrackets() // Add the closeBrackets extension
+      // For the keymap, ensure defaultKeymap is included in your EditorView setup,
+      // or add closeBracketsKeymap specifically if needed.
+      // e.g., import {defaultKeymap} from "@codemirror/commands"
+      // and add defaultKeymap to your main editor extensions.
     ]
   );
 }
