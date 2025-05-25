@@ -69,7 +69,15 @@ export default defineConfig({
             { text: '意外白边', link: '/working-set/unexpected-white-border' }
           ]
         }
-      ]
-    }
+      ],
+      '/views/': [
+      {
+        text: '视图',
+        items: [
+          { text: 'Tex编辑器视图', link: '/views/TexEditorView' }
+        ]
+      }
+    ]
+    },
   }
 })
