@@ -1,5 +1,6 @@
-2025-05-23
+# VitePress构建错误：未闭合HTML标签问题
 
+2025-05-23
 
 github action 报错,初步认为是没有本地构建解决报错导致的
 
@@ -29,5 +30,3 @@ SyntaxError: [plugin vite:vue] docs/working-set/unexpected-white-border.md (24:6
     at createDescriptor (file:///F:/Code/alphatab-vue/node_modules/@vitejs/plugin-vue/dist/index.mjs:71:43)
     at transformMain (file:///F:/Code/alphatab-vue/node_modules/@vitejs/plugin-vue/dist/index.mjs:2421:34)
 error: script "docs:build" exited with code 1
-
-```

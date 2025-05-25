@@ -1,4 +1,4 @@
-# VitePress文档部署方案
+# AlphaTab Vue项目文档与部署方案
 
 `roo code` + `deepseek-v3-0324`
 
