@@ -4,6 +4,10 @@ export default defineConfig({
   title: 'AlphaTab Vue 文档',
   description: 'AlphaTab Vue组件库文档',
   base: '/alphatab-vue/docs/',
+  ignoreDeadLinks: [
+    './../../src/views/ScorePlayerView.vue',
+    './../../src/views/TexEditorView.vue'
+  ],
   themeConfig: {
     nav: [
       { text: '指南', link: '/custom-style/first-step' },
