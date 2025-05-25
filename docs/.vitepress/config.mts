@@ -26,7 +26,11 @@ export default defineConfig({
           { text: 'API参考', link: '/wiki/API' },
           { text: '组件文档', link: '/wiki/COMPONENTS' },
           { text: '开发指南', link: '/wiki/DEVELOPMENT' },
-          { text: 'README', link: '/wiki/README' }
+          { text: 'README', link: '/wiki/README' },
+          { text: '视图管理', link: '/wiki/视图管理' },
+          { text: '组件层级', link: '/wiki/组件层级' },
+          { text: '组件定制化', link: '/wiki/组件定制化' },
+          { text: '样式管理', link: '/wiki/样式管理' }
         ]
       },
       {
