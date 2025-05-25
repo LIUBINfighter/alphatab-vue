@@ -10,74 +10,43 @@ export default defineConfig({
       { text: 'API', link: '/wiki/API' },
       { text: '开发', link: '/wiki/DEVELOPMENT' }
     ],
-    sidebar: {
-      '/custom-style/': [
-        {
-          text: '自定义样式',
-          items: [
-            { text: '入门', link: '/custom-style/first-step' },
-            { text: '实现', link: '/custom-style/implementation' },
-            { text: '颜色方案', link: '/custom-style/color-scheme' },
-            { text: '暗色模式', link: '/custom-style/darkmode-prompt' },
-            { text: '帮助', link: '/custom-style/help' },
-            { text: '问题', link: '/custom-style/question' }
-          ]
-        }
-      ],
-      '/issue/': [
-        {
-          text: '问题跟踪',
-          items: [
-            { text: '不完整应用', link: '/issue/imcomplete-apply' }
-          ]
-        }
-      ],
-      '/refactor/': [
-        {
-          text: '重构记录',
-          items: [
-            { text: '清理事件', link: '/refactor/clean-emit' }
-          ]
-        }
-      ],
-      '/usecase/': [
-        {
-          text: '使用案例',
-          items: [
-            { text: '自定义控制栏', link: '/usecase/CustomControlBar' }
-          ]
-        }
-      ],
-      '/wiki/': [
-        {
-          text: '文档',
-          items: [
-            { text: 'API', link: '/wiki/API' },
-            { text: '组件', link: '/wiki/COMPONENTS' },
-            { text: '开发指南', link: '/wiki/DEVELOPMENT' },
-            { text: 'README', link: '/wiki/README' }
-          ]
-        }
-      ],
-      '/working-set/': [
-        {
-          text: '工作集',
-          items: [
-            { text: '主题对比', link: '/working-set/compare-theme' },
-            { text: '完整主题', link: '/working-set/complete-theme' },
-            { text: '暗色主题', link: '/working-set/dark-theme' },
-            { text: '意外白边', link: '/working-set/unexpected-white-border' }
-          ]
-        }
-      ],
-      '/views/': [
+    sidebar: [
       {
-        text: '视图',
+        text: '指南',
         items: [
-          { text: 'Tex编辑器视图', link: '/views/TexEditorView' }
+          { text: '快速入门', link: '/custom-style/first-step' },
+          { text: '样式实现', link: '/custom-style/implementation' },
+          { text: '颜色方案', link: '/custom-style/color-scheme' },
+          { text: '暗色模式', link: '/custom-style/darkmode-prompt' }
+        ]
+      },
+      {
+        text: '开发文档',
+        items: [
+          { text: 'API参考', link: '/wiki/API' },
+          { text: '组件文档', link: '/wiki/COMPONENTS' },
+          { text: '开发指南', link: '/wiki/DEVELOPMENT' },
+          { text: 'README', link: '/wiki/README' }
+        ]
+      },
+      {
+        text: '实用资源',
+        items: [
+          { text: '使用案例', link: '/usecase/CustomControlBar' },
+          { text: 'Tex编辑器视图', link: '/views/TexEditorView' },
+          { text: '主题对比', link: '/working-set/compare-theme' },
+          { text: '完整主题', link: '/working-set/complete-theme' }
+        ]
+      },
+      {
+        text: '问题与优化',
+        items: [
+          { text: '已知问题', link: '/issue/imcomplete-apply' },
+          { text: '重构记录', link: '/refactor/clean-emit' },
+          { text: '样式问题', link: '/custom-style/question' },
+          { text: '帮助文档', link: '/custom-style/help' }
         ]
       }
     ]
-    },
   }
 })
