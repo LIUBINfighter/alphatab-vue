@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref, inject, onMounted, onUnmounted, watch, defineEmits } from 'vue'
+import { ref, inject, onMounted, onUnmounted, watch } from 'vue'
 import { Music } from 'lucide-vue-next'
 
 const emit = defineEmits(['track-selected'])
