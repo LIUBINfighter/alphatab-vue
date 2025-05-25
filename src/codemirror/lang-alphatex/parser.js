@@ -114,13 +114,8 @@ export const alphaTexStreamParser = {
     // 6. Symbols
     if (stream.match("|")) {
       state.measureCount++;
-      if (state.measureCount === 1 || state.measureCount === 5 || (state.measureCount > 5 && (state.measureCount - 1) % 4 === 0 && state.measureCount > 9 )) { // Logic for 1, 5, 9, 13...
-        // A more robust way for 1,5,9,13 (common phrasing) would be (measureCount - 1) % 4 === 0
-        // User asked for 1, 5, 11 -> 1, 5, (5+6), (5+6+6)...  this is more complex.
-        // Let's use 1, 5, 9, 13, 17 for now as an example of highlighting specific measures
-        if (state.measureCount === 1 || state.measureCount === 5 || state.measureCount === 9 || state.measureCount === 13 || state.measureCount === 17) {
-            return "barLineHighlight";
-        }
+      if ((state.measureCount - 1) % 5 === 0) { // Logic for 1, 6, 11, 16...
+      return "barLineHighlight";
       }
       return "barLine";
     }

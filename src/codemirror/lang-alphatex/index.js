@@ -9,6 +9,7 @@ import { alphaTexStreamParser } from './parser.js';
 import { alphaTexSyntaxHighlighting, tokenTable } from './highlight.js';
 import { LanguageSupport } from "@codemirror/language";
 import { closeBrackets, closeBracketsKeymap } from "@codemirror/autocomplete"; // Corrected to @codemirror/commands for v0.20+
+import { measureNumberDecorations } from './lineNumber.js';
 // For CM6 v0.20+ closeBracketsKeymap might be in @codemirror/commands
 // import {closeBracketsKeymap} from "@codemirror/view" // Or view, check your version
 // Actually, closeBrackets itself is an extension, and its keymap comes from defaultKeymap or specific imports.
@@ -29,6 +30,7 @@ export function alphaTex() {
     alphaTexLanguage,
     [
       alphaTexSyntaxHighlighting,
+      measureNumberDecorations, // <--- 将你的新插件添加到扩展数组中
       closeBrackets() // Add the closeBrackets extension
       // For the keymap, ensure defaultKeymap is included in your EditorView setup,
       // or add closeBracketsKeymap specifically if needed.

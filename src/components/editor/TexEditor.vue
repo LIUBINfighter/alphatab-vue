@@ -91,11 +91,18 @@ watch(
   width: 100%;
   height: 100%;
   border: none;
-  font-family: monospace; /* 添加此行以设置等宽字体 */
+  font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Courier New', monospace;
 }
 
 /* 为 CodeMirror 编辑器内容设置等宽字体 */
 .editor-container :deep(.cm-editor) {
-  font-family: monospace;
+  font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Courier New', monospace;
+}
+
+/* 确保内部内容也使用等宽字体 */
+.editor-container :deep(.cm-content),
+.editor-container :deep(.cm-line),
+.editor-container :deep(.cm-scroller) {
+  font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Courier New', monospace;
 }
 </style>
