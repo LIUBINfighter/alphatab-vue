@@ -35,7 +35,12 @@ export default defineConfig({
           { text: '使用案例', link: '/usecase/CustomControlBar' },
           { text: 'Tex编辑器视图', link: '/views/TexEditorView' },
           { text: '主题对比', link: '/working-set/compare-theme' },
-          { text: '完整主题', link: '/working-set/complete-theme' }
+          { text: '完整主题', link: '/working-set/complete-theme' },
+          { text: '暗色主题实现', link: '/working-set/dark-theme' },
+          { text: '部署方案', link: '/working-set/deployment-plan' },
+          { text: '代码高亮', link: '/working-set/highlight-code' },
+          { text: '快速文档', link: '/working-set/quick-docs' },
+          { text: '白边问题', link: '/working-set/unexpected-white-border' }
         ]
       },
       {
@@ -44,7 +49,12 @@ export default defineConfig({
           { text: '已知问题', link: '/issue/imcomplete-apply' },
           { text: '重构记录', link: '/refactor/clean-emit' },
           { text: '样式问题', link: '/custom-style/question' },
-          { text: '帮助文档', link: '/custom-style/help' }
+          { text: '帮助文档', link: '/custom-style/help' },
+          { text: 'CodeMirror插件崩溃', link: '/issue/codemirror-plugin-crash' },
+          { text: '部署问题', link: '/issue/deploy' },
+          { text: 'Roll-up问题', link: '/issue/Roll-up' },
+          { text: 'Vitepress问题', link: '/issue/vitepress' },
+          { text: '路由重构', link: '/refactor/router' }
         ]
       }
     ]

@@ -4,7 +4,7 @@
 
 ---
 
-**工程日志：Vue 主应用与 VitePress 文档站点的 GitHub Pages 部署历险记**
+**Vue主应用与VitePress文档站点的GitHub Pages双站点部署方案**
 
 **项目代号：** AlphaTab-Vue
 

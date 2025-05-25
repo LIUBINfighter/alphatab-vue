@@ -1,4 +1,4 @@
-# 项目日记：AlphaTab-Vue 重构
+# CodeMirror插件崩溃问题：TypeError: tags3 is not iterable
 
 **日期：** 2025-05-24
 
