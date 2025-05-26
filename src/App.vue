@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { availableScores } from './config/availableScores';
 import ScoreList from './components/layout/ScoreList.vue';
 import GlobalHeader from './components/layout/GlobalHeader.vue';
+import { setRootThemeClass } from './utils/alphaTabStyleUtils';
 
 // Import stores
 import { useUIStore } from './stores/ui';
@@ -22,6 +23,7 @@ provide('alphaTabApi', alphaTabApi);
 
 onMounted(() => {
   texFilesStore.loadSavedTexFiles();
+  setRootThemeClass('default');
 });
 
 interface NavigationPayload {

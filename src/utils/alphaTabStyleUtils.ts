@@ -223,6 +223,8 @@ import { DARK_THEME_CSS as VibrantNightTheme } from '../config/themes/VibrantNig
 // 添加主题类型
 export type ThemeName = 'default' | 'dark' | 'ocean' | 'vibrant';
 
+const ALL_THEME_NAMES: ThemeName[] = ['default', 'dark', 'ocean', 'vibrant'];
+
 // 使用类型定义更新 THEMES 常量
 const THEMES: Record<ThemeName, string | null> = {
   default: null,
@@ -249,7 +251,8 @@ export function applyTheme(themeName: ThemeName, api?: any): void {
   
   // 移除之前的主题样式
   removeInjectedStyle();
-  
+  setRootThemeClass(themeName);
+
   // 如果是默认主题，重置为API默认
   if (themeName === 'default') {
     if (api) {
@@ -258,17 +261,12 @@ export function applyTheme(themeName: ThemeName, api?: any): void {
     activeTheme = 'default';
     return;
   }
-  
+
   // 应用API样式（如果提供了API实例）
   if (api) {
-    if (themeName === 'dark') {
-      applyDarkThemeViaApi(api);
-    } else {
-      // 对于其他主题，我们仍使用API基础样式，但CSS会覆盖细节
-      applyDarkThemeViaApi(api);
-    }
+    applyDarkThemeViaApi(api);
   }
-  
+
   // 注入CSS样式
   const themeCSS = THEMES[themeName];
   if (themeCSS) {
@@ -309,6 +307,18 @@ function removeInjectedStyle() {
     existingStyle.remove();
     console.log("已移除之前的主题样式");
   }
+}
+
+/**
+ * 设置根元素的主题类
+ */
+export function setRootThemeClass(themeName: ThemeName): void {
+  const rootEl = document.documentElement;
+  ALL_THEME_NAMES.forEach(name => {
+    rootEl.classList.remove(`theme-${name}`);
+  });
+  rootEl.classList.add(`theme-${themeName}`);
+  console.log(`Applied root theme class: theme-${themeName}`);
 }
 
 // 保留向后兼容性的函数

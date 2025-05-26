@@ -115,6 +115,28 @@ function close() {
   list-style: none;
   padding: 0;
   margin: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-bg);
+}
+
+.score-list::-webkit-scrollbar {
+  width: 8px;
+  background-color: var(--scrollbar-bg);
+}
+
+.score-list::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-bg);
+  border-radius: 4px;
+  border: 2px solid var(--scrollbar-border-color);
+  background-clip: content-box;
+}
+
+.score-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover-bg);
+}
+
+.score-list::-webkit-scrollbar-thumb:active {
+  background-color: var(--scrollbar-thumb-active-bg);
 }
 
 .score-item {

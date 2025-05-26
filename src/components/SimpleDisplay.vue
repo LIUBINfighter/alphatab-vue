@@ -472,6 +472,40 @@ function handleTrackSidebarSelection(trackIndex) {
   scroll-padding-top: 30px;
   box-sizing: border-box;
   transition: left 0.3s ease; /* 添加过渡效果 */
+
+  /* Custom scrollbar styles */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-bg);
+}
+
+.at-viewport::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background-color: var(--scrollbar-bg);
+}
+
+.at-viewport::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-bg);
+  border-radius: 5px;
+  border: 2px solid var(--scrollbar-border-color);
+  background-clip: content-box;
+}
+
+.at-viewport::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover-bg);
+}
+
+.at-viewport::-webkit-scrollbar-thumb:active {
+  background-color: var(--scrollbar-thumb-active-bg);
+}
+
+.at-viewport::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg);
+  border-radius: 5px;
+}
+
+.at-viewport::-webkit-scrollbar-corner {
+  background: var(--scrollbar-bg);
 }
 
 /* 当侧边栏存在时，视口需要偏移 */

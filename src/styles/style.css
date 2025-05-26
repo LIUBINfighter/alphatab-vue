@@ -16,3 +16,39 @@ body {
 *::after {
   box-sizing: inherit; /* Inherit from the body/html */
 }
+
+/* 默认 (浅色) 主题滚动条变量 */
+:root.theme-default {
+  --scrollbar-bg: #f1f1f1;
+  --scrollbar-thumb-bg: #c1c1c1;
+  --scrollbar-thumb-hover-bg: #a8a8a8;
+  --scrollbar-thumb-active-bg: #888888;
+  --scrollbar-border-color: var(--scrollbar-bg);
+}
+
+/* 深色主题滚动条变量 */
+:root.theme-dark {
+  --scrollbar-bg: #2a2a2a;
+  --scrollbar-thumb-bg: #666666;
+  --scrollbar-thumb-hover-bg: #888888;
+  --scrollbar-thumb-active-bg: #aaaaaa;
+  --scrollbar-border-color: var(--scrollbar-bg);
+}
+
+/* 深海蓝主题滚动条变量 */
+:root.theme-ocean {
+  --scrollbar-bg: #0F1A2D;
+  --scrollbar-thumb-bg: #2F4F4F;
+  --scrollbar-thumb-hover-bg: #3E6060;
+  --scrollbar-thumb-active-bg: #4D7373;
+  --scrollbar-border-color: var(--scrollbar-bg);
+}
+
+/* 炫彩夜晚主题滚动条变量 */
+:root.theme-vibrant {
+  --scrollbar-bg: #1e1e2f;
+  --scrollbar-thumb-bg: #6A5ACD;
+  --scrollbar-thumb-hover-bg: #7B68EE;
+  --scrollbar-thumb-active-bg: #8A76F2;
+  --scrollbar-border-color: var(--scrollbar-bg);
+}
