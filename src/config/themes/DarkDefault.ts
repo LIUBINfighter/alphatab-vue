@@ -195,6 +195,61 @@ export const DARK_THEME_CSS = `
 /* ========== 控制元素 ========== */
 /* 工具栏背景 */
 .at-controls {
+  background-color: #1e1e1e !important;
+  color: #FFFFFF !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-bg) !important;
+}
+
+/* 按钮 */
+.at-controls .btn {
+  color: #FFFFFF !important;
+}
+
+.at-controls .btn.active {
+  background-color: #2e7d32 !important;
+}
+
+/* 下拉菜单 */
+.at-controls select {
+  background-color: #1e1e1e !important;
+  color: #FFFFFF !important;
+}
+
+/* 水平滚动条样式 */
+.at-controls::-webkit-scrollbar {
+  height: 8px !important;
+  width: 8px !important;
+  background-color: var(--scrollbar-bg) !important;
+}
+
+.at-controls::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-bg) !important;
+  border-radius: 4px !important;
+  border: 1px solid var(--scrollbar-border-color) !important;
+}
+
+.at-controls::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover-bg) !important;
+}
+
+.at-controls::-webkit-scrollbar-thumb:active {
+  background-color: var(--scrollbar-thumb-active-bg) !important;
+}
+
+.at-controls::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg) !important;
+  border-radius: 4px !important;
+}
+
+.at-controls::-webkit-scrollbar-corner {
+  background: var(--scrollbar-bg) !important;
+}
+
+/* ========== Additions for Sliders within .at-controls in DARK_THEME_CSS ========== */
+
+/* 工具栏背景 */
+.at-controls {
   background-color: #1e1e1e !important; /* 工具栏背景使用深灰色 */
   color: #FFFFFF !important;
 }
@@ -212,5 +267,111 @@ export const DARK_THEME_CSS = `
 .at-controls select {
   background-color: #1e1e1e !important; /* 下拉菜单背景与工具栏背景保持一致 */
   color: #FFFFFF !important;
+}
+
+
+/* ========== Additions for TrackSidebar in DARK_THEME_CSS ========== */
+
+/* Main Track Sidebar Container */
+.track-sidebar {
+  background-color: #242424 !important; /* A dark grey, slightly different from .at-main or .at-controls for visual hierarchy */
+  border-right: 1px solid #383838 !important; /* A subtle border */
+}
+
+/* Expanded Track Sidebar */
+.track-sidebar.expanded {
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5) !important; /* More pronounced shadow for dark theme */
+  /* Scrollbar should be handled by the CSS variable system if implemented */
+}
+
+/* Sidebar Header (e.g., "音轨" button) */
+.track-sidebar .sidebar-header {
+  background-color: #1e1e1e !important; /* Match .at-controls background */
+  color: #FFFFFF !important; /* Text is already white, ensure it stays so */
+}
+.track-sidebar .sidebar-header:hover {
+  background-color: #2c2c2c !important; /* Slight hover effect */
+}
+
+/* Container for individual track items */
+.track-sidebar .tracks-container {
+  /* Inherits background from .track-sidebar, which is fine */
+}
+
+/* Individual Track Item */
+.track-sidebar .track-item {
+  background-color: transparent !important; /* Use the sidebar's main background */
+  border-bottom: 1px solid #383838 !important; /* Match sidebar border color */
+  color: #E0E0E0 !important; /* Default text color for track items */
+}
+
+/* Active/Selected Track Item */
+.track-sidebar .track-item.active {
+  background-color: #333333 !important; /* A slightly lighter, distinct background for active item */
+  color: #FFFFFF !important;
+}
+
+/* Track Name Text */
+.track-sidebar .track-name {
+  color: #E0E0E0 !important; /* Ensure track names are light */
+}
+.track-sidebar .track-item.active .track-name {
+  color: #FFFFFF !important; /* Ensure active track names are bright white */
+}
+
+
+/* Control Buttons (Eye, Volume, Headphones) within a track item */
+.track-sidebar .control-button {
+  background-color: #3a3a3a !important; /* A noticeable button background */
+  color: #CCCCCC !important; /* Icon color */
+}
+
+.track-sidebar .control-button:hover {
+  background-color: #4a4a4a !important;
+  color: #FFFFFF !important;
+}
+
+.track-sidebar .control-button.active {
+  background-color: #69F0AE !important; /* Using the accent green from your score highlights */
+  color: #121212 !important; /* Dark icon on bright green for contrast */
+}
+
+/* Volume Slider */
+.track-sidebar .volume-slider {
+  background: #3a3a3a !important; /* Track of the slider */
+}
+
+/* WebKit Volume Slider Thumb */
+.track-sidebar .volume-slider::-webkit-slider-thumb {
+  background: #69F0AE !important; /* Thumb color matching active buttons */
+  border: 1px solid #1e1e1e; /* Optional: slight border for definition */
+}
+
+/* Firefox Volume Slider Thumb */
+.track-sidebar .volume-slider::-moz-range-thumb {
+  background: #69F0AE !important; /* Thumb color matching active buttons */
+  border: 1px solid #1e1e1e; /* Optional: slight border for definition */
+}
+
+/* Help Text Section */
+.track-sidebar .track-controls-help {
+  background-color: #2a2a2a !important; /* A slightly different dark background */
+  color: #bbbbbb !important; /* Light grey text for help */
+  border-top: 1px solid #383838 !important; /* Separator line */
+}
+
+.track-sidebar .track-controls-help p,
+.track-sidebar .track-controls-help ul,
+.track-sidebar .track-controls-help li {
+  color: #bbbbbb !important; /* Ensure all text inside is light */
+}
+
+.track-sidebar .track-controls-help .help-icon {
+  color: #bbbbbb !important; /* Ensure help icons are also styled if they inherit stroke/fill */
+}
+
+/* Ensure icons within the sidebar header are white */
+.track-sidebar .sidebar-header .sidebar-icon {
+    color: #FFFFFF !important;
 }
 `;
