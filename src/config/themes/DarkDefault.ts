@@ -175,15 +175,15 @@ export const DARK_THEME_CSS = `
 /* 光标 - 小节 */
 .at-cursor-bar {
   background-color: rgba(105, 240, 174, 0.15) !important; /* 光标背景改为半透明绿色 */
-  border-left: 2px solid #69F0AE !important; /* 光标左边框改为生动的绿色 */
-  box-shadow: 0 0 10px rgba(105, 240, 174, 0.4) !important; /* 光标阴影改为绿色 */
+  border-left: 0.5px solid #69F0AE !important; /* 光标左边框改为生动的绿色 */
+  box-shadow: 0 0 1px rgba(105, 240, 174, 0.4) !important; /* 光标阴影改为绿色 */
 }
 
 /* 光标 - 节拍 */
 .at-cursor-beat {
   background-color: #69F0AE !important; /* 节拍光标改为生动的绿色 */
   box-shadow: 0 0 4px rgba(105, 240, 174, 0.8) !important; /* 节拍光标阴影改为绿色 */
-  width: 5px !important; /* 增加宽度 */
+  width: 120px !important; /* 增加宽度 */
 }
 
 /* 高亮 - 播放中的元素 */
