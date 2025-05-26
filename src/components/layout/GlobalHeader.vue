@@ -10,7 +10,7 @@
           title="GitHub Repository"
         >
           <Github class="icon" />
-          <!-- Github Repo -->
+          <span class="button-text"><!-- Github Repo --></span>
         </button>
 
         <button
@@ -19,7 +19,7 @@
           title="AlphaTab Official Website"
         >
           <ExternalLink class="icon" />
-          AlphaTab.js
+          <span class="button-text">AlphaTab.js</span>
         </button>
 
         <button
@@ -28,7 +28,7 @@
           title="Documentation"
         >
           <BookOpen class="icon" />
-          Dev Record
+          <span class="button-text">Dev Record</span>
         </button>
 
         <button
@@ -37,7 +37,7 @@
           title="快速文档"
         >
           <FileText class="icon" />
-          Quick Docs
+          <span class="button-text">Quick Docs</span>
         </button>
 
         <button
@@ -46,7 +46,7 @@
           title="Open Menu"
         >
         <FileMusic class="icon" />
-          Menu
+          <span class="button-text">Menu</span>
         </button>
       </div>
     </div>
@@ -76,15 +76,15 @@ const showQuickDocs = ref(false);
 <style scoped>
 .global-header {
   width: 100%;
-  height: 50px; /* Adjust height as needed */
+  min-height: 50px;
   background-color: #333;
   color: white;
   display: flex;
   align-items: center;
-  padding: 20px 20px;
+  padding: 10px 10px;
   box-sizing: border-box;
   border-bottom: 1px solid #444;
-  flex-shrink: 0; /* Prevent header from shrinking if content overflows */
+  flex-shrink: 0;
 }
 
 .header-content {
@@ -96,7 +96,10 @@ const showQuickDocs = ref(false);
 
 .header-buttons {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  /* margin-left: 15px; 确保与标题保持距离 */
 }
 
 .icon {
@@ -104,9 +107,15 @@ const showQuickDocs = ref(false);
   height: 18px;
 }
 
+.button-text {
+  margin-left: 6px; /* 图标和文本之间的间距 */
+}
+
 .app-title {
   font-size: 1.2em;
   font-weight: bold;
+  white-space: nowrap; /* 防止标题换行 */
+  flex-shrink: 0; /* 防止标题被压缩 */
 }
 
 .menu-button {
@@ -117,56 +126,58 @@ const showQuickDocs = ref(false);
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  display: flex;
+  align-items: center;
 }
 
 .menu-button:hover {
   background-color: #365a8a;
 }
 
-.quick-docs-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 0.375rem;
-  color: var(--text-color);
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .menu-button {
+    padding: 6px 10px; /* 进一步减小按钮内边距 */
+    font-size: 13px;
+  }
+  
+  .button-text {
+    margin-left: 4px; /* 减小图标和文本的间距 */
+  }
+  
+  .header-buttons {
+    gap: 5px; /* 减小按钮间距 */
+  }
+  
+  .app-title {
+    font-size: 1.1em; /* 略微减小标题大小 */
+  }
 }
 
-.quick-docs-btn:hover {
-  background: var(--hover-bg);
-  border-color: var(--primary-color);
+@media (max-width: 600px) {
+  .menu-button .button-text {
+    display: none;
+  }
+  
+  .menu-button {
+    padding: 6px;
+  }
+  
+  .header-buttons {
+    margin-left: 10px;
+  }
 }
 
-.quick-docs-btn .icon {
-  width: 1rem;
-  height: 1rem;
-}
-
-.fab-button {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #436d9d;
-  color: white;
-  border: none;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: background-color 0.2s ease;
-}
-
-.fab-button:hover {
-  background-color: #365a8a;
-}
-
-.fab-button .icon {
-  width: 20px;
-  height: 20px;
+/* 超小屏幕 - 隐藏标题 */
+@media (max-width: 330px) {
+  .app-title {
+    display: none;
+  }
+  
+  .header-buttons {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>
