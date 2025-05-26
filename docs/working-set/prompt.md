@@ -11,4 +11,4 @@
 
 最后一个任务是检查 @/docs/.vitepress/config.mts 是否包含了所有新增的markdown文件
 
-最后应该返回在 docs/wiki/下的markdown文件以及写好的 config,mts
+最后应该返回在 docs/wiki/下的markdown文件以及写好的 config.mts
