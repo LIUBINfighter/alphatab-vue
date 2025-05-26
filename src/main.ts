@@ -4,7 +4,6 @@ import App from './App.vue';
 import router from './router';
 import pinia from './stores';
 import './styles/style.css';
-import './styles/scrollbar.css';
 
 // --- 处理来自 404.html 的 SPA 重定向逻辑 (针对 GitHub Pages) ---
 const queryParams = new URLSearchParams(window.location.search);
