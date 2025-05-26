@@ -2,34 +2,35 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>AlphaTab Vue - Page Not Found</title>
+    <title>AlphaTab Vue - Redirecting...</title>
     <script type="text/javascript">
-      // spa-github-pages script (https://github.com/rafgraph/spa-github-pages)
-      // It transforms a direct URL like https://user.github.io/repo/some/path?query=1#hash
-      // into https://user.github.io/repo/?p=/some/path&q=query#hash
-      // Your main app (index.html) then needs to read these query params.
+      // Single Page Apps for GitHub Pages
+      // https://github.com/rafgraph/spa-github-pages
+      // This script is designed to work with GitHub Pages.
 
-      // Determine the number of path segments to strip due to the BASE_URL (repo name)
-      // For example, if BASE_URL is '/alphatab-vue/', segmentCount should be 1.
-      // If BASE_URL is '/', segmentCount should be 0.
-      var base = "{{ VITE_BASE_URL }}"; // This will be replaced by Vite using define
-      var segmentCount = 0;
-      if (base && base !== '/') {
-        // Remove leading/trailing slashes and count segments
-        segmentCount = base.replace(/^\/|\/$/g, '').split('/').length;
-      }
+      // 设置 segmentCount：
+      // 0: 如果你的站点是用户/组织站点 (例如 username.github.io)
+      // 1: 如果你的站点是项目站点 (例如 username.github.io/repository-name)
+      var segmentCount = 1; // 对于 /alphatab-vue/ 这样的仓库路径，设置为 1
 
       var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?p=/' +
-        l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&q=' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
+      var newPath = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+                    // 构建基础路径，例如 /alphatab-vue/ (这是 index.html 所在的路径)
+                    l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + 
+                    // 将原始路径、查询参数和哈希值附加为查询参数 'p', 'q', 和原始哈希
+                    '/?p=/' +
+                    // 提取基础路径之后的部分，例如 score/some-alias
+                    l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
+                    (l.search ? '&q=' + l.search.slice(1).replace(/&g, '~and~') : '') +
+                    l.hash;
+      l.replace(newPath);
     </script>
   </head>
   <body>
-    If you are not redirected automatically, please refresh the page or click <a href="{{ VITE_BASE_URL }}">here</a> to go to the homepage.
+    <p>If you are not redirected automatically, please click <a id="redirect-link" href="/alphatab-vue/">here</a>.</p>
+    <script type="text/javascript">
+      // 你可以硬编码这里的链接，因为仓库名是固定的
+      // document.getElementById('redirect-link').href = '/alphatab-vue/';
+    </script>
   </body>
 </html>
