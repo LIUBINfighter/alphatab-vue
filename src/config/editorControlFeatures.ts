@@ -6,7 +6,7 @@ export const editorControlFeatures = ref([
   'speed-control', 
   'print', 
   'download',
-  'zoom', // 添加 zoom 控件
+  // 'zoom', // 添加 zoom 控件
   // 'style-control',
   'dark-theme',
   'layout'
