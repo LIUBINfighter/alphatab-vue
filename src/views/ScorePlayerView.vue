@@ -1,4 +1,4 @@
-// src/views/ScorePlayerView.vue
+<!-- src/views/ScorePlayerView.vue -->
 <template>
   <SimpleDisplay
     v-if="currentScoreInfo"
