@@ -85,25 +85,25 @@ export default defineConfig({
         },
         {
           text: '工程日志',
-          collapsed: false, // 根据偏好设置是否默认折叠
+          // collapsed: false, // 根据偏好设置是否默认折叠
           items: [
             // 示例链接，文件名需要你根据实际情况统一
             { text: '25-05-27 模板和SOP', link: '/pathway/diary/'},
             // { text: '', link: '/pathway/diary/' },
-            { text: 'AlphaTab Dark Styling', link: '/pathway/diary/25-05-21-imcomplete-apply' },
+            { text: 'AlphaTab Dark Styling', link: '/pathway/diary/25-05-21-incomplete-apply' },
             { text: 'Vue & VitePress', link: '/pathway/diary/25-05-23-deploy' },
             { text: 'Rollup on Linux missing modeuls', link: '/pathway/diary/25-05-23-rollup' },
             { text: 'CodeMirror插件崩溃 tag3', link: '/pathway/diary/25-05-24-codemirror-plugin-crash' },
             { text: 'Refactor: Router', link: '/pathway/diary/25-05-24-router' },
-            { text: 'Refactor: Deeplink', link: '/pathway/diary/25-05-26-clean-url' },
+            { text: 'Refactor: Deeplink', link: '/pathway/diary/25-05-26-clean-url' }
           ],
         },
         {
           text: '工作集',
           collapsed: false,
           items: [
-            { text: '记录：暗色模式 CSS 调试', link: '/pathway/working-set/dark-mode-css-debug' },
-            { text: '记录：CodeMirror 插件崩溃分析', link: '/pathway/working-set/codemirror-crash' },
+            // { text: 'DarkDefault CSS 调试', link: '/pathway/working-set/dark-mode-css-debug' },
+            // { text: '记录：CodeMirror 插件崩溃分析', link: '/pathway/working-set/codemirror-crash' },
             // ... 更多记录
           ],
         },

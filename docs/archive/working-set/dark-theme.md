@@ -1,6 +1,6 @@
 # 暗色主题样式优化
 
-- [符干 (Stems)、符尾 (Flags) 和符杠 (Beams)在最初的着色方案中没有被覆盖](../issue/imcomplete-apply.md)
+<!-- - [符干 (Stems)、符尾 (Flags) 和符杠 (Beams)在最初的着色方案中没有被覆盖](../issue/imcomplete-apply.md) -->
 
 目前查看下来需要优化的部分
 
