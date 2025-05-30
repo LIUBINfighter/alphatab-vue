@@ -1,4 +1,4 @@
-// electron/main.js
+// electron/main.cjs
 const { app, BrowserWindow } = require('electron');
 const path = require('node:path'); // 使用 node: 前缀以明确是 Node.js 内置模块
 const url = require('node:url');
@@ -9,7 +9,7 @@ function createWindow() {
     width: 1200, // 你可以根据应用调整
     height: 800, // 你可以根据应用调整
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'), // 指定预加载脚本
+      preload: path.join(__dirname, 'preload.cjs'), // 指定预加载脚本
       nodeIntegration: false, // 出于安全原因，保持为 false
       contextIsolation: true,  // 出于安全原因，保持为 true
       // webSecurity: false, // 在开发中如果遇到跨域加载本地文件问题，可以临时打开，但生产中务必小心
@@ -24,7 +24,7 @@ function createWindow() {
     slashes: true,
   });
 
-  console.log(`[Electron main.js] Loading URL: ${startUrl}`);
+  console.log(`[Electron main.cjs] Loading URL: ${startUrl}`);
   mainWindow.loadURL(startUrl);
 
   // 如果是开发模式 (通过 ELECTRON_START_URL 判断或 NODE_ENV)，则打开开发者工具

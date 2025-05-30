@@ -1,4 +1,4 @@
-// electron/preload.js
+// electron/preload.cjs
 const { contextBridge, ipcRenderer } = require('electron');
 
 // 向渲染进程暴露一个名为 'electronRuntime' 的全局 API
@@ -17,4 +17,4 @@ contextBridge.exposeInMainWorld('electronRuntime', {
   // invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args)
 });
 
-console.log('[Electron preload.js] Preload script executed, electronRuntime exposed.');
+console.log('[Electron preload.cjs] Preload script executed, electronRuntime exposed.');
