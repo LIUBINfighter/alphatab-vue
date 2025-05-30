@@ -379,6 +379,10 @@ onMounted(() => {
   z-index: 1000; /* 提高z-index，确保在高光元素之上 */
 }
 
+.tracks-container::-webkit-scrollbar {
+  display: none;
+}
+
 .track-sidebar.expanded {
   width: 250px;
   overflow-y: auto;

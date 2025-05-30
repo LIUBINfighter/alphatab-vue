@@ -148,6 +148,10 @@ window.addEventListener('keydown', (e) => {
   overflow-x: auto; /* 如果内容过多则允许水平滚动 */
 }
 
+.toolbar::-webkit-scrollbar {
+  display: none;
+}
+
 .toolbar button {
   padding: 6px 12px;
   background-color: #436d9d;
