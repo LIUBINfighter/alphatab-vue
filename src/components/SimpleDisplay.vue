@@ -27,6 +27,7 @@ import { onMounted, ref, toRaw, inject, watch, provide, nextTick } from 'vue' //
 import ControlBar from './ControlBar.vue'
 import TrackSidebar from './TrackSidebar.vue'
 import { applyDarkThemeViaApi, resetToDefaultTheme, injectAlphaTabStyle } from '../utils/alphaTabStyleUtils';
+import * as alphaTab from '@coderline/alphatab';
 
 const props = defineProps({
   score: {
@@ -76,10 +77,15 @@ function initializeAlphaTab() {
     }
 
     const settings = {
+      core: { // <--- 添加 'core' 部分
+          workers: ['/alphatab/dist/alphaTab.worker.mjs'],
+          fontFile: '/font/alphaTab.woff'
+      },
       // file: 将根据 props.score 的类型进行条件设置
       player: {
         enablePlayer: true,
-        soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
+      //  soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
+        soundFont: '/soundfont/dist/sonivox.sf2',
         enableCursor: true,
         enableHighlights: true,
         scrollMode: alphaTab.ScrollMode.Continuous,
