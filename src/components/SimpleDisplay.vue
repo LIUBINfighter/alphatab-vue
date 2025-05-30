@@ -68,33 +68,35 @@ const customStyleEnabled = ref(false); // 默认不启用自定义样式
 provide('customStyleEnabled', customStyleEnabled); // 提供给 DarkTheme 组件使用
 provide('toggleCustomStyle', toggleCustomStyle); // 提供切换方法
 
-// 封装 AlphaTab 初始化和加载逻辑
 function initializeAlphaTab() {
   if (atMainRef.value && atOverlayRef.value) {
-    // 如果已有 API 实例，先销毁
     if (alphaTabApi.value) {
       alphaTabApi.value.destroy();
     }
 
     const settings = {
-      core: { // <--- 添加 'core' 部分
-          workers: ['/alphatab/dist/alphaTab.worker.mjs'],
-          fontFile: '/font/alphaTab.woff'
+      core: { // ✅ 确保 core 部分存在且配置正确
+        fontDirectory: '/alphatab/dist/font/' // ✅ 字体文件夹路径
       },
-      // file: 将根据 props.score 的类型进行条件设置
       player: {
         enablePlayer: true,
-      //  soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
-        soundFont: '/soundfont/dist/sonivox.sf2',
+        soundFont: '/alphatab/dist/soundfont/sonivox.sf2', // 你这个路径已正确
+        engine: '/alphatab/dist/alphaTab.worker.mjs',      // ✅ Worker 路径
         enableCursor: true,
         enableHighlights: true,
         scrollMode: alphaTab.ScrollMode.Continuous,
-        scrollElement: typeof document !== 'undefined' ? document.querySelector('.at-viewport') : null, // 确保在 DOM 更新后选择
+        scrollElement: typeof document !== 'undefined' ? document.querySelector('.at-viewport') : null,
         scrollOffsetY: -30
       }
-      // 移除初始化时的深色主题设置，使用默认样式
+      // 'file' 属性会根据 props.score 动态设置 (如下面的逻辑所示)
     };
 
+    // console.log("settings",settings)
+
+    if (!props.tex && typeof props.score === 'string') {
+      settings.file = props.score; // 将乐谱文件路径添加到 settings
+    }
+    
     if (!props.tex && typeof props.score === 'string') {
       settings.file = props.score;
     }
