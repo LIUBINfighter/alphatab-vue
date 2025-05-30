@@ -98,6 +98,10 @@ function shouldShow(featureName) {
   padding: 0; /* 移除任何可能导致溢出的内边距 */
 }
 
+.at-controls::-webkit-scrollbar {
+  display: none;
+}
+
 .at-controls-right {
   display: flex;
   flex-wrap: nowrap;
