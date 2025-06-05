@@ -14,7 +14,7 @@ export const availableScores = ref<ScoreInfo[]>([
   { name: 'Canon Rock', path: 'https://www.alphatab.net/files/canon.gp', alias: 'canon-rock' },
   { name: '花之舞', path:`${import.meta.env.BASE_URL}scores/花舞.gp5`, alias:'flower-dance' ,}
   { name: 'One More Chance, One More Time', path: '${import.meta.env.BASE_URL}scores/秒速五厘米 - One More Chance, One More Time.gpx', alias: 'One More Chance, One More Time' },
-    { name: '花之舞', path:`${import.meta.env.BASE_URL}scores/花舞.gp5`, alias:'flower-dance' },
+  { name: '花之舞', path:`${import.meta.env.BASE_URL}scores/花舞.gp5`, alias:'flower-dance' },
   // Canon Rock 是目前用来进行全面测试的（多音轨，metadata完整）
   // { name: '[东方アレンジ]碎月 指弹', path: `${import.meta.env.BASE_URL}score/碎月-指弹(东方アレンジ).gpx`},
   // 不知道为何不支持这个gpx文件
