@@ -12,7 +12,7 @@ export const availableScores = ref<ScoreInfo[]>([
   { name: '吉他与孤独与蓝色星球', path: `${import.meta.env.BASE_URL}scores/吉他与孤独与蓝色星球.gpx`, alias: 'classic-guitar-loneliness-and-blue-planet' },
   { name: '春日影', path: `${import.meta.env.BASE_URL}scores/春日影.gp`, alias: 'spring-shadow' },
   { name: 'Canon Rock', path: 'https://www.alphatab.net/files/canon.gp', alias: 'canon-rock' },
-  { name: 'One More Chance, One More Time', path: '${import.meta.env.BASE_URL}scores/秒速五厘米 - One More Chance, One More Time.gpx', alias: 'One More Chance, One More Time' },
+  { name: 'One More Chance, One More Time', path: `${import.meta.env.BASE_URL}scores/秒速五厘米 - One More Chance, One More Time.gpx`, alias: 'One-More-Chance,One-More-Time' },
   { name: '花之舞', path:`${import.meta.env.BASE_URL}scores/花舞.gp5`, alias:'flower-dance' },
   // Canon Rock 是目前用来进行全面测试的（多音轨，metadata完整）
   // { name: '[东方アレンジ]碎月 指弹', path: `${import.meta.env.BASE_URL}score/碎月-指弹(东方アレンジ).gpx`},
